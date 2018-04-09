@@ -1,1 +1,44 @@
-# 3scale_advanced_development
+= 3scale_advanced_development
+
+== Module 1: Custom Signup flows
+
+. Explore multiple signup flow strategies:
+.. Single Application Signup flow
+.. Multiple Application signup flow
+.. Custom Field signup flow
+.. Group Membership signup flow
+. Provide custom homepage to choose particular signup flow.
+. Understand signup flow requiring administrator approvals.
+
+== Module 2: non-REST API Management
+
+. Understand advantages of REST API based services
+. Understand HATEAOS architecture
+. Understand mapping of HTTP operations with REST API methods
+. Understand other possible APIs
+.. SOAP Web Services
+.. Interface Development Language (IDL) APIs
+..  Custom APIs 
+. Use 3scale for Managing non-REST APIs:
+.. With custom Lua script
+.. With JBoss Fuse Integration
+.. With JBoss Data Virtualization Integration
+.. With code plugins
+
+== Module 3: API Management - Advanced Topics
+
+. Understand custom developer portal for supporting multiple services.
+. Understand signup flow for multiple services using service plans.
+. Enable OAuth2 for accessing API Documentation
+. Enable single sign on (SSO) for Developer Portal
+. Understand web hooks
+. Understand use of end user plans
+. Set up usage alerts for rate limiting to generate email alerts to administrators
+. Use multiple apicast gateways with same AMP backend, each configured for exposing different services.
+. Use 3scale CLI for importing existing services, methods and mappings to 3scale.
+. Understand creation of custom email templates.
+. Understand usage of APIs through Single page web application.
+
+== Module 4: Homework Assignment
+
+. Homework assignment on *CoolStore* application emphasising learning on the topics discussed in the course.
