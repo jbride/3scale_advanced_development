@@ -1,0 +1,19 @@
+QUESTIONBANKCODE|QUESTIONCODE|QUESTIONTYPE|QUESTIONTEXT|QUESTIONTEXTFORMAT|QUESTIONFEEDBACK|OPTION|RIGHTOPTION|OPTIONFEEDBACK|ISCORRECT|OPTIONWEIGHT|ISCASESENSITIVE|RANDOMIZEOPTIONS|STATUS
+APIMGMTDEV|APIMGMTDEV0401|5|3scale API Management allows for management of SOAP APIs without customization.|||TRUE|||0|0|||
+APIMGMTDEV|APIMGMTDEV0401|5|3scale API Management allows for management of SOAP APIs without customization.|||FALSE|||1|100|||
+APIMGMTDEV|APIMGMTDEV0402|1|Which of the following is NOT an HTTP verb used in REST APIs?|||GET|||0|0|||
+APIMGMTDEV|APIMGMTDEV0402|1|Which of the following is NOT an HTTP verb used in REST APIs?|||POST|||0|0|||
+APIMGMTDEV|APIMGMTDEV0402|1|Which of the following is NOT an HTTP verb used in REST APIs?|||DELETE|||0|0|||
+APIMGMTDEV|APIMGMTDEV0402|1|Which of the following is NOT an HTTP verb used in REST APIs?|||HEAD|||1|100|||
+APIMGMTDEV|APIMGMTDEV0403|5|REST APIs are Stateful.|||TRUE|||0|0|||
+APIMGMTDEV|APIMGMTDEV0403|5|REST APIs are Stateful.|||FALSE|||1|100|||
+APIMGMTDEV|APIMGMTDEV0404|1|Which of the following are integration use cases that are best handled in an Enterprise Integration Platform (e.g JBoss Fuse) instead of 3scale API Management?|||Data enrichment|||0|0|||
+APIMGMTDEV|APIMGMTDEV0404|1|Which of the following are integration use cases that are best handled in an Enterprise Integration Platform (e.g JBoss Fuse) instead of 3scale API Management?|||Content based routing|||0|0|||
+APIMGMTDEV|APIMGMTDEV0404|1|Which of the following are integration use cases that are best handled in an Enterprise Integration Platform (e.g JBoss Fuse) instead of 3scale API Management?|||Data transformation|||0|0|||
+APIMGMTDEV|APIMGMTDEV0404|1|Which of the following are integration use cases that are best handled in an Enterprise Integration Platform (e.g JBoss Fuse) instead of 3scale API Management?|||All of the above|||1|100|||
+APIMGMTDEV|APIMGMTDEV0405|5|LAB: The Stock API service hosted in JBoss Data Virtualization is a REST API.|||TRUE|||1|100|||
+APIMGMTDEV|APIMGMTDEV0405|5|LAB: The Stock API service hosted in JBoss Data Virtualization is a REST API.|||FALSE|||0|0||| 
+APIMGMTDEV|APIMGMTDEV0406|5|Code plug-ins can be used for traffic management of APIs using non-HTTP protocols on 3scale API Management.|||TRUE|||1|100|||
+APIMGMTDEV|APIMGMTDEV0406|5|Code plug-ins can be used for traffic management of APIs using non-HTTP protocols on 3scale API Management.|||FALSE|||0|0|||
+APIMGMTDEV|APIMGMTDEV0407|5|LAB: The Private Base URL for the Stores API is the REST endpoint exposed by a Fuse Camel route.|||TRUE|||1|100|||
+APIMGMTDEV|APIMGMTDEV0407|5|LAB: The Private Base URL for the Stores API is the REST endpoint exposed by a Fuse Camel route.|||FALSE|||0|0||| 

@@ -1,0 +1,29 @@
+:scrollbar:
+:data-uri:
+
+
+== SOAP Services
+
+* Protocol
+* Function-driven
+* WS-Security
+* Calls cannot be cached
+* Heavy payload
+* XML data format
+
+
+ifdef::showscript[]
+
+Transcript:
+
+Where REST is an architecture that is more data-driven, SOAP--short for Simple Object Access Protocol--is a standardized protocol for transferring structured information that is more function-driven. This, coupled with the fact that much of the existing web service architecture was developed with SOAP/XML, makes supporting SOAP web services a common requirement in API  management.
+
+SOAP is its own protocol. It is more complex than REST because it defines more standards than REST--things like security and how messages are sent. These built-in standards carry more overhead, but they can be a deciding factor for organizations that require more comprehensive features such as security, transactions, and ACID (Atomicity, Consistency, Isolation, Durability) compliance.
+
+SOAP has tighter security. WS-Security, in addition to SSL support, is a built-in standard that provides enterprise-level security features.
+
+
+
+
+
+endif::showscript[]
