@@ -10,7 +10,7 @@
 . Provide custom homepage to choose particular signup flow.
 . Understand signup flow requiring administrator approvals.
 
-== Module 2: non-REST API Management
+== Module 2: API Variants
 
 . Understand advantages of REST API based services
 . Understand HATEAOS architecture
@@ -29,8 +29,6 @@
 
 . Understand custom developer portal for supporting multiple services.
 . Understand signup flow for multiple services using service plans.
-. Enable OAuth2 for accessing API Documentation
-. Enable single sign on (SSO) for Developer Portal
 . Understand web hooks
 . Understand use of end user plans
 . Set up usage alerts for rate limiting to generate email alerts to administrators
