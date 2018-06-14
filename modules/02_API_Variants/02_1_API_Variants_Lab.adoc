@@ -16,16 +16,14 @@
 
 
 .Prerequisites
+* Red Hat OpenShift Container Platform administration URL and userID/password.
+* 3scale AMP installation
++
+Refer to pre-req courses to learn how to provision a 3scale AMP environment and to determine its URLs and log in credentials
 * Client virtual machine utlized in the _API Management Implementation_ and the _API Management Development_ pre-requisite courses.
 * `OCP_WILDCARD_DOMAIN` environment variables set in your shell
 +
 TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variable is no longer set, return to the _API Management Implementation_ course and follow the steps there to set them again.
-+
-* 3scale AMP installation
-+
-Refer to pre-req courses to learn how to provide a 3scale AMP environment and to determine its URLs and log in credentials
-+
-* Red Hat OpenShift Container Platform administration URL and userID/password.
 
 :numbered:
 
@@ -165,13 +163,23 @@ storesdb-1-6z5lx      1/1       Running     0          12m
 
 . Test the `Stores` API SOAP service:
 
-.. In a web browser, navigate to the Stores Web Services Description Language (WSDL): `http://<<your stores api route>>/StoresWS?wsdl`
+.. Execute the following to determine the URL to the WSDL of your new _Stores_ SOAP service:
 +
-IMPORTANT: `<<your stores api route>>` is the hostname defined during the deployment.
+-----
+$ echo -en "\n\nhttp://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api `/StoresWS?wsdl\n\n"
+-----
 
-* Expect to see the WSDL in the response:
+.. At the command line, view the WSDL exposed by the Stores service:
++
+-----
+$ curl -v http://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api `/StoresWS?wsdl
+-----
+
+.. In a web browser, navigate to the Stores WSDL using the previously determined URL:
 +
 image::images/3scale_amp_stores_api_8.png[]
++
+NOTE:  There is a known bug with the rendering of WSDLs in recent versions of Firefox.
 
 .. In a new browser tab or window, open the URL link:http://wsdlbrowser.com["http://wsdlbrowser.com^"].
 .. Provide the URL of the Stores WSDL and click *Browse*.
