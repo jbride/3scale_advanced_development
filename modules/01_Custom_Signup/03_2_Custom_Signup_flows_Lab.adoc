@@ -42,50 +42,50 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
             {% for plan in service.application_plans%}
 ----
 +
-NOTE: The above liquid filter allows to iterate through the list of all services for the provider, and further iterate through all the application plans. Thus, this filter allows you to display a list of all services along with the service plans.
+NOTE: The above liquid filter iterates through the list of all services for the provider, and then further iterates through all the application plans. Thus, this filter allows you to display a list of all services along with the service plans.
 +
 .. Plan Features/Limits
 +
 [source, text]
 ----
-            <div class="col-md-4">
-                <article class="panel panel-default">
-                    <div class="panel-heading">
-                        <strong>{{ plan.name }}</strong>
+    <div class="col-md-4">
+        <article class="panel panel-default">
+            <div class="panel-heading">
+                <strong>{{ plan.name }}</strong>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    {% if plan.features == present %}
+                    <div class="col-md-6">
+                        <h5>Features</h5>
+                        <ul class="features list-unstyled">
+                            {% for feature in plan.features %}
+                            <li>
+                                <i class="fa fa-check"></i> {{ feature.name }}
+                            </li>
+                            {% endfor %}
+                        </ul>
                     </div>
-                    <div class="panel-body">
-                        <div class="row">
-                            {% if plan.features == present %}
-                            <div class="col-md-6">
-                                <h5>Features</h5>
-                                <ul class="features list-unstyled">
-                                    {% for feature in plan.features %}
-                                    <li>
-                                        <i class="fa fa-check"></i> {{ feature.name }}
-                                    </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
+                    {% endif %}
+                    <div class="col-md-6">
+                        <h5>Limits</h5>
+                        <ul class="limits list-unstyled">
+                            {% if plan.usage_limits == present %} {% for limit in plan.usage_limits %}
+                            <li>
+                                <i class="fa fa-signal"></i> {{ limit.metric.name }} &ndash; {{ limit.value }} {{ limit.metric.unit }}s per {{ limit.period }}
+                            </li>
+                            {% endfor %} {% else %}
+                            <li>
+                                <i class="fa fa-signal"></i> No limits
+                            </li>
                             {% endif %}
-                            <div class="col-md-6">
-                                <h5>Limits</h5>
-                                <ul class="limits list-unstyled">
-                                    {% if plan.usage_limits == present %} {% for limit in plan.usage_limits %}
-                                    <li>
-                                        <i class="fa fa-signal"></i> {{ limit.metric.name }} &ndash; {{ limit.value }} {{ limit.metric.unit }}s per {{ limit.period }}
-                                    </li>
-                                    {% endfor %} {% else %}
-                                    <li>
-                                        <i class="fa fa-signal"></i> No limits
-                                    </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        </div>
+                        </ul>
                     </div>
+                </div>
+            </div>
 ----
 +
-NOTE: The above code allows display of the plan name and features/limits setup for the plan.
+NOTE: The above code displays the plan name and features/limits setup for the plan.
 +
 .. Signup link
 +
