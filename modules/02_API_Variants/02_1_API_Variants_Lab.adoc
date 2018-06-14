@@ -16,14 +16,14 @@
 
 
 .Prerequisites
-* Completion of previous labs of this course
+* Client virtual machine utlized in the _API Management Implementation_ and the _API Management Development_ pre-requisite courses.
 * `OCP_WILDCARD_DOMAIN` environment variables set in your shell
 +
-TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variables are no longer set, return to the first lab in this course and follow the steps there to set them again.
+TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variable is no longer set, return to the _API Management Implementation_ course and follow the steps there to set them again.
 +
-* 3scale Admin Portal URL and user credentials to log in
+* 3scale AMP installation
 +
-IMPORTANT: The URL for your lab environment is `https://$OCP_PROJECT_PREFIX-3scale-admin.$OCP_WILDCARD_DOMAIN`. The userID/password is `admin/admin`.
+Refer to pre-req courses to learn how to provide a 3scale AMP environment and to determine its URLs and log in credentials
 +
 * Red Hat OpenShift Container Platform administration URL and userID/password.
 
@@ -33,17 +33,20 @@ IMPORTANT: The URL for your lab environment is `https://$OCP_PROJECT_PREFIX-3sca
 
 === Overview
 
-In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster. To do this, you use two different methods:
+In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale AMP.
+
+To do this, you use two different methods:
 
 * Create custom modifications to Lua and NGINX configuration files to automatically map a REST request to a SOAP back end
-* Deploy a JBoss Fuse Integration Services application to OpenShift, which is configured to expose it as a REST service
+* Deploy a JBoss Fuse Integration Services application to OpenShift.  
++
+This Fuse application serves as a RESTful proxy to the backend JBoss EAP app and transforms between SOAP and REST.
 
 === Deploy SOAP Service to OpenShift
 
 In this section, you deploy a SOAP service running on JBoss EAP on the OpenShift Container Platform. 
 
 Follow the instructions below.
-
 
 . Inspect the SOAP service code:
 
@@ -116,10 +119,9 @@ public class StoresWS implements Stores {
 * This service can be deployed on JBoss EAP and hosted on your shared OpenShift environment.
 
 . Deploy the `Stores` web service to OpenShift:
-+
-IMPORTANT: When executing commands using the `oc` utility, you must be logged in to the master API of your OpenShift environment with your `OCP_USER_ID` credentials.
 
-.. At the shell prompt of your VM, verify that you are using the `jboss` user.
+.. At the shell prompt of your client VM, verify that you are using the `jboss` user.
+.. If need be, log into OpenShift environment using the oc utility on your client VM.
 .. Create a new project for your Stores API business service applications:
 +
 [source,text]
