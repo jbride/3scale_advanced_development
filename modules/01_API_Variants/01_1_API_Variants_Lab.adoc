@@ -211,10 +211,6 @@ image::images/3scale_amp_stores_api_9.png[]
 +
 image::images/3scale_amp_stores_api_11.png[]
 
-=== SOAP Request Using Lua and NGINX Customization
-
-In this section, we create a custom Apicast configuration in order to customize 3scale API Management Platform to route to the SOAP service deployed above.
-
 ==== Create APIcast Staging and Production Routes
 
 . Verify that you are in the `3scale AMP` project:
@@ -239,91 +235,8 @@ $ oc create route edge stores-soap-production-route \
 
 TIP: We will be using these routes to be configured as the production and sandbox API endpoints for the Stores SOAP service.
 
-==== Custom Configuration to handle SOAP requests
-
-. The custom `configuration.lua` is provided in $HOME/lab/3scale_development_labs/apicast_custom/configuration.lua file.
-. This configuration should replace the default `configuration.lua` provided in the _apicast-staging_ and _apicast-production_ gateways.
-. Study the code for `configuration.lua`. Notice the following 2 changes to handle SOAP requests:
-.. Header `WSDLAction`:
-+
-[source,text]
------
-        local headerParams = ngx.req.get_headers()
-        system_name = headerParams["WSDLAction"]
-        if system_name~= nil then
-          check_soap(system_name, usage_t, matched_rules, params)
-        end
-
-        -- if there was no match, usage is set to nil and it will respond a 404, this behavior can be changed
-        return usage_t, concat(matched_rules, ", "), params
------
-+ 
-NOTE: This section of code (lines 199-206) checks for a request header WSDLAction and matches the same to a SOAP request operation. In a later section, we will configure Metrics for each SOAP operation supported by our SOAP service, so that 3scale can provide custom analytics for each SOAP request.
-+
-.. Function `check_soap`:
-+
-[source,text]
------
-local function check_soap(system_name, usage_t, matched_rules, params)
-
-  local value = set_or_inc(usage_t, system_name, 1)
-
-  usage_t[system_name] = value
-  params['usage[' .. system_name .. ']'] = value
-  insert(matched_rules, '/'.. system_name)
-
-end
- 
------
-+
-NOTE: This section (line 69-77) provides matching of rules for metrics using the WSDLAction. 
-+
-. Now follow the steps below to apply the changes to the _apicast-staging_ deployment:
-.. Verify that you are logged in to OpenShift with your login credentials from the terminal.
-.. Verify that you are using the `3scale AMP` project:
-+
-[source,text]
------
-$ oc project $OCP_PROJECT_PREFIX-3scale-amp
------
-+
-.. Create a config map in the OpenShift project, making sure to provide the correct path to the `configuration.lua` file:
-+
-[source,text]
------
-$ oc create configmap apicast-soap --from-file=./configuration.lua
------
-
-.. Create a volume for the container, and mount it to the appropriate path:
-+
-[source,text]
------
-oc set volume dc/apicast-staging --add --name=apicast-soap --mount-path /opt/app-root/src/src/configuration.lua --source='{"configMap":{"name":"apicast-soap","items":[{"key":"configuration.lua","path":"configuration.lua"}]}}'
------
-
-.. The `oc volume` command does not support adding subpaths, so you need to apply a patch:
-+
-[source,text]
------
-$ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/0/subPath", "value":"configuration.lua"}]'
------
-+
-.. Now redeploy the apicast-staging container:
-+
-[source,text]
------
-$ oc rollout latest dc/apicast-staging
------
-.. Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
-+
-[source,text]
------
-$ oc get pods | grep apicast-staging
-apicast-staging-5-49cv1           1/1       Running   0          1m
------
 
 ==== Configure 3scale API Management
-
 
 . Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
 . Create a new service:
@@ -368,9 +281,15 @@ apicast-staging-5-49cv1           1/1       Running   0          1m
 |`GET`|`/StoresWS`|`1`|`hits`
 |=======================
 + 
-. Create an API Test GET request:
+. Set an API Test GET request:
 * *API Test GET Request*: `/StoresWS?wsdl`
 .  Click *Update and test in the Staging Environment*.
+
+
+==== Test API Managed SOAP service
+
+You should now be able to use a HTTP client to send SOAP requests to your backend SOAP service via the APIcast gateway.
+
 . Make a test request to the staging URL.
 
 .. Test the API by making a `curl` request to the staging URL:
@@ -478,7 +397,106 @@ $ curl -v -k -X POST \
    </soap:Body>
 </soap:Envelope>
 -----
+
+At this point in the lab, you have been able to successfully invoke your backend SOAP service via the APIcast gateway proxy.
+
+You could investigate the analytics of your service and view the number hits that have been reported on the _StoresWS_ method.
+
+What you don't know at this time by just observing the analytics dashboard of 3scale is which specific SOAP operations exposed by your SOAP backend have been invoked.
+
+Determining this is the objective of the next section of the lab.
+
+
+=== SOAP Request Using Lua and NGINX Customization
+
+In this section, we create a custom Apicast configuration that increments pre-configured metrics based on the SOAP operation of the HTTP request.
+
+
+==== Custom Configuration to handle SOAP requests
+
+. The custom `configuration.lua` is provided in $HOME/lab/3scale_development_labs/apicast_custom/configuration.lua file.
+. This configuration should replace the default `configuration.lua` provided in the _apicast-staging_ and _apicast-production_ gateways.
+. Study the code for `configuration.lua`. Notice the following 2 changes to handle SOAP requests:
+.. Header `WSDLAction`:
 +
+[source,text]
+-----
+        local headerParams = ngx.req.get_headers()
+        system_name = headerParams["WSDLAction"]
+        if system_name~= nil then
+          check_soap(system_name, usage_t, matched_rules, params)
+        end
+
+        -- if there was no match, usage is set to nil and it will respond a 404, this behavior can be changed
+        return usage_t, concat(matched_rules, ", "), params
+-----
++ 
+NOTE: This section of code (lines 199-206) checks for a request header WSDLAction and matches the same to a SOAP request operation. In a later section, we will configure Metrics for each SOAP operation supported by our SOAP service, so that 3scale can provide custom analytics for each SOAP request.
++
+.. Function `check_soap`:
++
+[source,text]
+-----
+local function check_soap(system_name, usage_t, matched_rules, params)
+
+  local value = set_or_inc(usage_t, system_name, 1)
+
+  usage_t[system_name] = value
+  params['usage[' .. system_name .. ']'] = value
+  insert(matched_rules, '/'.. system_name)
+
+end
+ 
+-----
++
+NOTE: This section (line 69-77) provides matching of rules for metrics using the WSDLAction. 
++
+. Now follow the steps below to apply the changes to the _apicast-staging_ deployment:
+.. Verify that you are logged in to OpenShift with your login credentials from the terminal.
+.. Verify that you are using the `3scale AMP` project:
++
+[source,text]
+-----
+$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+-----
++
+.. Create a config map in the OpenShift project, making sure to provide the correct path to the `configuration.lua` file:
++
+[source,text]
+-----
+$ oc create configmap apicast-soap --from-file=./configuration.lua
+-----
+
+.. Create a volume for the container, and mount it to the appropriate path:
++
+[source,text]
+-----
+oc set volume dc/apicast-staging --add --name=apicast-soap --mount-path /opt/app-root/src/src/configuration.lua --source='{"configMap":{"name":"apicast-soap","items":[{"key":"configuration.lua","path":"configuration.lua"}]}}'
+-----
+
+.. The `oc volume` command does not support adding subpaths, so you need to apply a patch:
++
+[source,text]
+-----
+$ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/0/subPath", "value":"configuration.lua"}]'
+-----
++
+.. Now redeploy the apicast-staging container:
++
+[source,text]
+-----
+$ oc rollout latest dc/apicast-staging
+-----
+.. Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
++
+[source,text]
+-----
+$ oc get pods | grep apicast-staging
+apicast-staging-5-49cv1           1/1       Running   0          1m
+-----
+
+==== Invoke various operations of SOAP service 
+
 .. Now try the other SOAP requests for `getStore`, `createStore` and `deleteStore` by including the appropriate `WSDLAction` header.
 Observe that the requests are served with correct responses.
 +
