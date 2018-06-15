@@ -407,7 +407,7 @@ What you don't know at this time by just observing the analytics dashboard of 3s
 Determining this is the objective of the next section of the lab.
 
 
-=== SOAP Request Using Lua and NGINX Customization
+=== SOAP Operation Tracking Using Lua and NGINX Customization
 
 In this section, we create a custom Apicast configuration that increments pre-configured metrics based on the SOAP operation of the HTTP request.
 
@@ -471,7 +471,7 @@ $ oc create configmap apicast-soap --from-file=./configuration.lua
 +
 [source,text]
 -----
-oc set volume dc/apicast-staging --add --name=apicast-soap --mount-path /opt/app-root/src/src/configuration.lua --source='{"configMap":{"name":"apicast-soap","items":[{"key":"configuration.lua","path":"configuration.lua"}]}}'
+oc set volume dc/apicast-staging --add --name=apicast-soap --mount-path /opt/app-root/src/src/apicast/configuration.lua --source='{"configMap":{"name":"apicast-soap","items":[{"key":"configuration.lua","path":"configuration.lua"}]}}'
 -----
 
 .. The `oc volume` command does not support adding subpaths, so you need to apply a patch:
