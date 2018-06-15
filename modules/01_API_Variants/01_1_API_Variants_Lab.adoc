@@ -515,11 +515,11 @@ image::images/3scale_amp_stores_api_metrics.png[]
 Now repeat the steps for updating the `configuration.lua` for the _apicast-production_ deployment, and repeat the SOAP requests once you have promoted the service to production.
 
 
-=== SOAP Request Using JBoss Fuse Integration Services
+=== SOAP Transformation Using Fuse on OpenShift
 
 An alternative to customizing Lua scripts on Apicast for supporting SOAP services is to use JBoss Fuse for mediating between API Management and SOAP Web services. In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier. The REST endpoint is then configured in 3scale API Management Platform as a service.
 
-==== Deploy `stores fis` Project to OpenShift
+==== Deploy `stores fis` application to OpenShift
 
 IMPORTANT: When running commands using the `oc` utility, you must be logged in to the master API of your OpenShift environment with your `OCP_USER_ID` credentials.
 
@@ -669,7 +669,7 @@ image::images/3scale_amp_stores_api_14.png[]
 +
 [source,text]
 -----
-$ curl -k <<camel-rest-http route>>/allstores
+$ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api`/allstores
 
 -----
 
@@ -745,7 +745,10 @@ $ oc create route edge stores-production-route \
 +
 [source,text]
 -----
-$ curl -k “<<camel-stage-apicast route>>/allstores?user_key=<<your user_key>>“
+$ export STORES_FUSE_API_KEY=<api key to your Stores App>
+
+$ curl -k "https://`oc get route stores-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
 -----
@@ -754,7 +757,8 @@ $ curl -k “<<camel-stage-apicast route>>/allstores?user_key=<<your user_key>>�
 +
 [source,text]
 -----
-$ curl -k “<<camel-prod-apicast route>>/allstores?user_key=<<your user_key>>“
+$ curl -v -k "https://`oc get route stores-production-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
 -----
