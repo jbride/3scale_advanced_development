@@ -24,6 +24,7 @@ Refer to pre-req courses to learn how to provision a 3scale AMP environment and 
 * `OCP_WILDCARD_DOMAIN` environment variables set in your shell
 +
 TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variable is no longer set, return to the _API Management Implementation_ course and follow the steps there to set them again.
+* SOAP-UI (Recommended)
 
 :numbered:
 
@@ -461,9 +462,10 @@ $ curl -v -k -X POST \
 </soap:Envelope>
 -----
 +
-.. Now try the other SOAP requests for 'getStore`, `createStore` and `deleteStore`, and observe that the requests are served with correct responses.
+.. Now try the other SOAP requests for `getStore`, `createStore` and `deleteStore` by including the appropriate `WSDLOperation` header.
+Observe that the requests are served with correct responses.
 +
-NOTE: It can be easier to execute the SOAP requests using SOAPUI. 
+NOTE: It can be easier to execute the SOAP requests using SOAP-UI (which allows for setting of custom headers in the http request). 
 +
 image::images/3scale_amp_stores_soap_soapui.png[]
 
@@ -864,3 +866,25 @@ $ oc create route edge stock-production-route \
 .  Click *Update and test in the Staging Environment*.
 . Make a test request to the staging URL.
 . Promote to production and make a test request to the production URL.
+
+== Appendix
+
+=== SOAP UI Related Hints
+
+When creating a SOAP based project in SOAP-UI, you'll need to provide the wsdl to your Store service.
+This can be a bit problematic.
+
+You won't be able to simply supply SOAP-UI with a valid URL (with API key) to your Store service WSDL.
+SOAP-UI will pull down that initial wsdl, parse it for the value of <wsdl:import location= />  attribute and error out because the value of the location attribute is not complete".  It is missing your API key.
+
+Subsequently, you'll want to execute the following:
+
+. Use curl to retrieve a copy of your wsdl and save that copy to disk
+. Using a text editor, change the value of the <wsdl:import location="" /> attribute to a valid URL to your wsdl.
+.. You will want to url encode the ampersand character in the URL
+.. Example as follows:
++
+-----
+<wsdl:import location="https://stores-soap-staging-apicast-jb.apps.dev39.openshift.opentlc.com/StoresWS?wsdl=Stores.wsdl&amp;user_key=4fab352901d3badef8cbe9e05eab1271" namespace="http://www.rhmart.com/Stores/">
+-----
+. Create a new SOAP project in SOAP-UI by referencing this downloaded and modified local wsdl.
