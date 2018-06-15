@@ -8,23 +8,34 @@
 
 .Goals
 
-* Use Red Hat 3scale API Management's gateway to connect to SOAP web services
-* Explore two SOAP solutions:
+* Use Red Hat 3scale API Management's gateway to manage SOAP based web services
+* Explore two solutions for the management of SOAP based web services:
 ** Custom headers using Lua on NGINX to automatically map a REST request to a SOAP back end
 ** Camel route installed in Red Hat JBoss Fuse Integration Services to route a REST request from 3scale API Management's gateway to a SOAP web service endpoint
 * Use 3scale API Management's gateway to connect to OData services
 
-
 .Prerequisites
-* Red Hat OpenShift Container Platform administration URL and userID/password.
-* 3scale AMP installation
+* *Red Hat OpenShift Container Platform administration URL*
++
+Similar to the pre-req course, you will need a userID/password and the ability to create projects.
+
+* *3scale AMP installation*
 +
 Refer to pre-req courses to learn how to provision a 3scale AMP environment and to determine its URLs and log in credentials
-* Client virtual machine utlized in the _API Management Implementation_ and the _API Management Development_ pre-requisite courses.
-* `OCP_WILDCARD_DOMAIN` environment variables set in your shell
+
+* *Client virtual machine*
 +
-TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variable is no longer set, return to the _API Management Implementation_ course and follow the steps there to set them again.
-* SOAP-UI (Recommended)
+You can continue to  utlize the same client virtual machine that you used in the _API Management Implementation_ and the _API Management Development_ pre-requisite courses.
+
+* `OCP_WILDCARD_DOMAIN` environment variable
++
+Ensure this remains set in the shell of your client virtual machine
++
+TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variable is no longer set, return to the _API Management Implementation_ course and follow the steps there to set it again.
+
+* *SOAP-UI* (Recommended)
++
+It is recommended that you install SOAP-UI on your local laptop.
 
 :numbered:
 
@@ -32,18 +43,24 @@ TIP: To check if your shell still has these environment variables set, run the `
 
 === Overview
 
-In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale AMP.
+It is often the case that there will be a requirement to manage SOAP based web services in addition to RESTful web services.
 
-To do this, you use two different methods:
+SOAP requests consist of HTTP POST requests with an XML payload and some additional SOAP specific headers.
+It is possible for these SOAP requests to be sent to 3scale's APIcast gateway, forwarded to your backend SOAP services and reported on to the 3scale AMP without any customizations. 
 
-* Create custom modifications to Lua and NGINX configuration files to automatically map a REST request to a SOAP back end
-* Deploy a JBoss Fuse Integration Services application to OpenShift.  
+However, if there is an additional requirement to gather metrics on requests to specific operations exposed by a backend SOAP service, then some additional set-up is needed.
+
+In this lab, you experiment with the following two approaches:
+
+. Create custom modifications to Lua and NGINX configuration files to automatically map a REST request to a SOAP back end
+. REST-to-XML transformations via a Fuse on OpenShift application 
 +
-This Fuse application serves as a RESTful proxy to the backend JBoss EAP app and transforms between SOAP and REST.
+This Fuse application serves as a RESTful proxy to the backend SOAP service and transforms between SOAP and REST.
 
 === Deploy SOAP Service to OpenShift
 
-In this section, you deploy a SOAP service running on JBoss EAP on the OpenShift Container Platform. 
+In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale AMP.
+
 
 Follow the instructions below.
 
@@ -227,12 +244,12 @@ TIP: We will be using these routes to be configured as the production and sandbo
 . The custom `configuration.lua` is provided in $HOME/lab/3scale_development_labs/apicast_custom/configuration.lua file.
 . This configuration should replace the default `configuration.lua` provided in the _apicast-staging_ and _apicast-production_ gateways.
 . Study the code for `configuration.lua`. Notice the following 2 changes to handle SOAP requests:
-.. Header `WSDLOperation`:
+.. Header `WSDLAction`:
 +
 [source,text]
 -----
         local headerParams = ngx.req.get_headers()
-        system_name = headerParams["WSDLOperation"]
+        system_name = headerParams["WSDLAction"]
         if system_name~= nil then
           check_soap(system_name, usage_t, matched_rules, params)
         end
@@ -241,7 +258,7 @@ TIP: We will be using these routes to be configured as the production and sandbo
         return usage_t, concat(matched_rules, ", "), params
 -----
 + 
-NOTE: This section of code (lines 199-206) checks for a request header WSDLOperation and matches the same to a SOAP request operation. In a later section, we will configure Metrics for each SOAP operation supported by our SOAP service, so that 3scale can provide custom analytics for each SOAP request.
+NOTE: This section of code (lines 199-206) checks for a request header WSDLAction and matches the same to a SOAP request operation. In a later section, we will configure Metrics for each SOAP operation supported by our SOAP service, so that 3scale can provide custom analytics for each SOAP request.
 +
 .. Function `check_soap`:
 +
@@ -259,7 +276,7 @@ end
  
 -----
 +
-NOTE: This section (line 69-77) provides matching of rules for metrics using the WSDLOperation. 
+NOTE: This section (line 69-77) provides matching of rules for metrics using the WSDLAction. 
 +
 . Now follow the steps below to apply the changes to the _apicast-staging_ deployment:
 .. Verify that you are logged in to OpenShift with your login credentials from the terminal.
@@ -424,7 +441,7 @@ $ curl -k "https://`oc get route stores-soap-staging-route -o template --templat
 [source,text]
 -----
 $ curl -v -k -X POST \
-       --header "WSDLOperation: Stores/getAllStores"  \
+       --header "WSDLAction: Stores/getAllStores"  \
        --header "Content-Type: application/soap+xml"  \
        --header "Accept: application/soap+xml"  \
        --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
@@ -462,7 +479,7 @@ $ curl -v -k -X POST \
 </soap:Envelope>
 -----
 +
-.. Now try the other SOAP requests for `getStore`, `createStore` and `deleteStore` by including the appropriate `WSDLOperation` header.
+.. Now try the other SOAP requests for `getStore`, `createStore` and `deleteStore` by including the appropriate `WSDLAction` header.
 Observe that the requests are served with correct responses.
 +
 NOTE: It can be easier to execute the SOAP requests using SOAP-UI (which allows for setting of custom headers in the http request). 
@@ -471,7 +488,7 @@ image::images/3scale_amp_stores_soap_soapui.png[]
 
 ==== Analytics
 
-Notice that the metrics you have set up for each operation are captured correctly by Apicast. You should see the number of hits corresponding to each WSDLOperation that you have requested to the staging endpoint.
+Notice that the metrics you have set up for each operation are captured correctly by Apicast. You should see the number of hits corresponding to each WSDLAction that you have requested to the staging endpoint.
 
 image::images/3scale_amp_stores_api_metrics.png[]
 
