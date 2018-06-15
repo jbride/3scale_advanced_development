@@ -359,7 +359,9 @@ apicast-staging-5-49cv1           1/1       Running   0          1m
 +
 [source,text]
 -----
-$ curl -k “<<stores-soap-staging-apicast route>>/StoresWS?wsdl&user_key=<<your user_key>>“
+$ export STORES_SOAP_API_KEY=<stores-soap api key>
+
+$ curl -k "https://`oc get route stores-soap-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
 -----
 +
 .. Response should be similar to below:
@@ -420,7 +422,13 @@ $ curl -k “<<stores-soap-staging-apicast route>>/StoresWS?wsdl&user_key=<<your
 +
 [source,text]
 -----
-$ curl -X POST --header "WSDLOperation: Stores/getAllStores"  --header "Content-Type: application/soap+xml"  --header "Accept: application/soap+xml"  --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' https://api-sj-3scale-apicast-staging.apps.na1.openshift.opentlc.com:443/StoresWS?user_key=6779c1c338bc6f7469a7382b4516eba5 --verbose -k
+$ curl -v -k -X POST \
+       --header "WSDLOperation: Stores/getAllStores"  \
+       --header "Content-Type: application/soap+xml"  \
+       --header "Accept: application/soap+xml"  \
+       --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
+       -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' \
+       "https://`oc get route stores-soap-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
 
 -----
 
