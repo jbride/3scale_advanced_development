@@ -292,7 +292,7 @@ You should now be able to use a HTTP client to send SOAP requests to your backen
 
 . Make a test request to the staging URL.
 
-.. Test the API by making a `curl` request to the staging URL:
+.. Test the API by making a `curl` request to the WSDL of the _Stores_ service via the APIcast staging URL:
 +
 [source,text]
 -----
@@ -355,7 +355,7 @@ $ curl -k "https://`oc get route stores-soap-staging-route -o template --templat
 
 -----
 +
-.. Now make a POST request to the Web Service for each operation and check that you get the correct result:
+.. Make a POST request to the _getAllStores_ operation of the _Stores_ Web Service :
 +
 [source,text]
 -----
@@ -369,7 +369,7 @@ $ curl -v -k -X POST \
 
 -----
 
-.. Response should contain the correct SOAP response:
+.. The response should be similar to the following:
 +
 [source,text]
 -----
@@ -409,8 +409,13 @@ Determining this is the objective of the next section of the lab.
 
 === SOAP Operation Tracking Using APIcast Custom Policies
 
-In this section, we create a custom Apicast policy for SOAP requests, and use policy chaining to ensure that the custom policy is executed by the gateway. The custom policy ensures that the metrics are updated for the SOAP operations. 
+In this section, we create a custom Apicast policy for SOAP requests, and use policy chaining to ensure that the custom policy is executed by the gateway. 
 
+The custom policy ensures that the metrics are updated for the SOAP operations. 
+
+We'll do this by adding a custom header called _SOAPAction_ to each HTTP request.
+
+The APIcast gateway of 3scale implements its SOAP operation tracking feature by keying in on SOAP requests that include this _SOAPAction_ custom header.
 
 ==== Custom Configuration to handle SOAP requests
 
@@ -420,7 +425,7 @@ In this section, we create a custom Apicast policy for SOAP requests, and use po
 +
 image::images/3scale_amp_stores_soap_policies_add.png[]
 
-. Reorder the policies so that *SOAP* policy is first, followed by the *APIcast* policy.
+. Under the _Policy Chain_ section, use the up and down arrows to reorder the policies so that *SOAP* policy is first, followed by the *APIcast* policy.
 +
 image:images/3scale_amp_stores_soap_policies_order.png[]
 
@@ -457,12 +462,24 @@ apicast-staging-5-49cv1           1/1       Running   0          1m
 
 ==== Invoke various operations of SOAP service 
 
-.. Now try the other SOAP requests for `getStore`, `createStore` and `deleteStore` by including the appropriate `SOAPAction` header.
-Observe that the requests are served with correct responses.
+In this section of the lab, you make more SOAP based invocations to your APIcast gateway.
+
+You will specify the SOAPAction header corresponding to the other `getStore`, `createStore` and `deleteStore` SOAP operations of the Store API.
+
+By doing so, you'll then be able to visualize your invocations to each SOAP operation in the build-in analytics capabilities of 3scale.
+
+. To invoke the other SOAP operations of your Store API, you can continue to use the curl utility (similar to how you previously invoked the _getAllStores_ operation).
+
+. Alternatively, it can be easier to execute the SOAP requests using SOAP-UI.
 +
-NOTE: It can be easier to execute the SOAP requests using SOAP-UI (which allows for setting of custom headers in the http request). 
+Similar to the _curl_ utility, SOAP-UI does allow for setting of the custom _SOAPAction_ header in the http request. 
 +
 image::images/3scale_amp_stores_soap_soapui.png[]
++
+If you decide to use SOAP-UI, please refer to the appendix of this lab for tips regarding the import of the _Store_ API WSDL.
+
+. Whether using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API.
+. Observe that the requests are served with correct responses.
 
 ==== Analytics
 
