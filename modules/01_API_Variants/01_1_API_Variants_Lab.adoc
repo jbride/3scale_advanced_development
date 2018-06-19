@@ -194,7 +194,7 @@ storesdb-1-6z5lx      1/1       Running     0          12m
 -----
 
 
-. Test the `Stores` API SOAP service:
+=== Test the `Stores` API SOAP service:
 
 .. Using the _curl_ utility:
 +
@@ -304,9 +304,13 @@ TIP: We will be using these routes to be configured as the production and sandbo
 |`POST`|`/StoresWS`|`1`|`stores/storesws`
 |`GET`|`/StoresWS`|`1`|`hits`
 |=======================
-+
+
+.. The mapping for the _POST_ requests will increment hits on the _StoresWS_ method every time a SOAP request is made to any of the SOAP operations of your backend _Stores_ service.
+.. The mapping for the _GET_ request will increment hits made to resources such as the _Stores_ service's WSDL.
+
 . Set an API Test GET request:
 * *API Test GET Request*: `/StoresWS?wsdl`
+
 .  Click *Update and test in the Staging Environment*.
 
 
