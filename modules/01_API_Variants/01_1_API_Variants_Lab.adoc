@@ -248,11 +248,11 @@ $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 +
 [source,text]
 -----
-$ oc create route edge stores-soap-staging-route \
+$ oc create route edge stores-soap-policy-staging-route \
   --service=apicast-staging \
   --hostname=stores-soap-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 
-$ oc create route edge stores-soap-production-route \
+$ oc create route edge stores-soap-policy-production-route \
   --service=apicast-production \
   --hostname=stores-soap-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
@@ -264,9 +264,9 @@ TIP: We will be using these routes to be configured as the production and sandbo
 
 . Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
 . Create a new service:
-* *Name*: `Stores SOAP API`
-* *System Name*: `stores-soap-api`
-* *Description*: `Stores SOAP API`
+* *Name*: `Stores SOAP Policy API`
+* *System Name*: `stores-soap-policy-api`
+* *Description*: `Stores SOAP Policy API`
 . Create an application plan:
 * *Name*: `StoresSOAPBasicPlan`
 * *System Name*: `storesSOAPBasicPlan`
@@ -277,8 +277,8 @@ TIP: We will be using these routes to be configured as the production and sandbo
 * *Application Plan*: `storesSOAPBasicPlan`
 * *Name*: `StoresSOAPApp`
 * *Description*: `Stores SOAP Application`
-. In the *API* tab, click *Stores SOAP API*, and then click *Integration*.
-* *Private Base URL*: URL to your SOAP service.
+. In the *API* tab, click *Stores SOAP Policy API*, and then click *Integration*.
+* *Private Base URL*: URL to your _stores-soap_ service.
 * *Staging Public Base URL*: URL of the route stores-soap-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
 * *Production Public Base URL*: URL of the route `stores-soap-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
 . Configure the Method:
@@ -319,7 +319,7 @@ You should now be able to use a HTTP client to send SOAP requests to your backen
 -----
 $ export STORES_SOAP_API_KEY=<stores-soap api key>
 
-$ curl -k "https://`oc get route stores-soap-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
+$ curl -k "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
 -----
 
 . The Response should be similar to below:
@@ -383,7 +383,7 @@ $ curl -v -k -X POST \
        --header "Accept: application/soap+xml"  \
        --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
        -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' \
-       "https://`oc get route stores-soap-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
+       "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
 
 -----
 
@@ -418,7 +418,7 @@ $ curl -v -k -X POST \
 </soap:Envelope>
 -----
 
-At this point in the lab, you have been able to successfully invoke your backend SOAP 1.1 service via the APIcast gateway proxy.
+At this point in the lab, you have been able to invoke your backend SOAP 1.1 service via the APIcast gateway proxy.
 
 You could investigate the analytics of your service and view the number hits that have been reported on the _StoresWS_ method.
 
@@ -439,7 +439,7 @@ These _SOAPAction_ header fields will now be used by your APIcast to update appr
 
 ==== Custom Configuration to handle SOAP requests
 
-. In the *API* tab, click *Stores SOAP API*, and then click *Integration*.
+. In the *API* tab, click *Stores SOAP Policy API*, and then click *Integration*.
 . Expand the *Policies* section.
 . In the *Policy Chain*, click *Add Policy* button and choose *SOAP*.
 +
@@ -492,13 +492,13 @@ By doing so, you'll then be able to visualize your invocations to each SOAP oper
 
 . Alternatively, it may be easier to execute the SOAP requests using SOAP-UI.
 +
-Similar to the _curl_ utility, SOAP-UI does allow for setting of the custom _SOAPAction_ header in the http request.
+Similar to the _curl_ utility, SOAP-UI allows for setting of the custom _SOAPAction_ header in the http request.
 +
 image::images/3scale_amp_stores_soap_soapui.png[]
 +
 If you decide to use SOAP-UI, please refer to the appendix of this lab for tips regarding the import of the _Stores_ API WSDL.
 
-. Using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API.
+. Using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API via your APIcast gateways.
 . Observe that the requests are served with correct responses.
 
 ==== Analytics
@@ -531,7 +531,9 @@ Now you can use *Promote to Production* to push the custom policies to the Produ
 
 === SOAP Transformation Using Fuse on OpenShift
 
-An alternative to customizing Lua scripts on Apicast for supporting SOAP services is to use JBoss Fuse for mediating between API Management and SOAP Web services. In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier. The REST endpoint is then configured in 3scale API Management Platform as a service.
+An alternative to customizing Lua scripts on Apicast for supporting SOAP services is to use JBoss Fuse for mediating between API Management and SOAP Web services. 
+In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier. 
+The REST endpoint is then configured in 3scale API Management Platform as a service.
 
 ==== Deploy `stores fis` application to OpenShift
 
@@ -717,11 +719,11 @@ $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 +
 [source,text]
 -----
-$ oc create route edge stores-staging-route \
+$ oc create route edge stores-soap-transformation-staging-route \
   --service=apicast-staging \
   --hostname=stores-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 
-$ oc create route edge stores-production-route \
+$ oc create route edge stores-soap-transformation-production-route \
   --service=apicast-production \
   --hostname=stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
@@ -732,9 +734,9 @@ $ oc create route edge stores-production-route \
 
 . Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
 . Create a new service:
-* *Name*: `Stores API`
-* *System Name*: `stores-api`
-* *Description*: `Stores API`
+* *Name*: `Stores SOAP Transformation API`
+* *System Name*: `stores-soap-transformation-api`
+* *Description*: `Stores SOAP Transformation API`
 . Create an application plan:
 * *Name*: `StoresPremiumPlan`
 * *System Name*: `storesPremiumPlan`
@@ -761,7 +763,7 @@ $ oc create route edge stores-production-route \
 -----
 $ export STORES_FUSE_API_KEY=<api key to your Stores App>
 
-$ curl -k "https://`oc get route stores-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
@@ -771,7 +773,7 @@ $ curl -k "https://`oc get route stores-staging-route -o template --template {{.
 +
 [source,text]
 -----
-$ curl -v -k "https://`oc get route stores-production-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
