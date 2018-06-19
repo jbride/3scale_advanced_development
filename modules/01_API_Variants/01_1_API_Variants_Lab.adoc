@@ -8,7 +8,7 @@
 
 .Goals
 
-* Use Red Hat 3scale API Management's gateway to manage SOAP based web services
+* Use Red Hat 3scale API Management's gateway to manage SOAP 1.1 based web services
 * Explore two solutions for the management of SOAP based web services:
 ** Custom headers using Lua on NGINX to automatically map a REST request to a SOAP back end
 ** Camel route installed in Red Hat JBoss Fuse Integration Services to route a REST request from 3scale API Management's gateway to a SOAP web service endpoint
@@ -73,6 +73,10 @@ Follow the instructions below.
 +
 [source,xml]
 -----
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+
+  ...
+
   <wsdl:portType name="Stores">
     <wsdl:operation name="getAllStores">
       <wsdl:input message="tns:getAllStoresRequest"/>
@@ -91,7 +95,18 @@ Follow the instructions below.
     	<wsdl:output message="tns:deleteStoreResponse"></wsdl:output>
     </wsdl:operation>
   </wsdl:portType>
+
+  ...
+
+</wsdl>
 -----
+
+.. Note that this WSDL adheres to the SOAP 1.1 specification.
+... The SOAP 1.1 specification defines the following namespace: _http://schemas.xmlsoap.org/wsdl/soap/_
+... The SOAP 1.2 specification defines the following namespace: _http://schemas.xmlsoap.org/wsdl/soap12/_
++
+NOTE: The two versions of the SOAP specification mandate different mechanisms to invoke SOAP operations defined in its WSDLs.
+Later in this lab, the ramifications of the two specifications will become evident in the context of managing SOAP services using 3scale.
 
 .. Open the file `$HOME/lab/3scale_development_labs/Stores/src/main/java/com/redhat/service/StoresWS.java`.
 .. Inspect the SOAP web service implementation:
@@ -355,7 +370,6 @@ $ curl -k "https://`oc get route stores-soap-staging-route -o template --templat
 +
 -----
 $ curl -v -k -X POST \
-       --header "WSDLAction: Stores/getAllStores"  \
        --header "Content-Type: application/soap+xml"  \
        --header "Accept: application/soap+xml"  \
        --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
@@ -365,7 +379,7 @@ $ curl -v -k -X POST \
 -----
 
 .. Notice the inclusion of the _SOAPAction_ header.
-.. As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification], an HTTP client *MUST* use this header filed when issuing a SOAP HTTP Request. 
+.. As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification], an HTTP client *MUST* use this header field when issuing a SOAP HTTP Request. 
 
 .. The response should be similar to the following:
 +
@@ -395,7 +409,7 @@ $ curl -v -k -X POST \
 </soap:Envelope>
 -----
 
-At this point in the lab, you have been able to successfully invoke your backend SOAP service via the APIcast gateway proxy.
+At this point in the lab, you have been able to successfully invoke your backend SOAP 1.1 service via the APIcast gateway proxy.
 
 You could investigate the analytics of your service and view the number hits that have been reported on the _StoresWS_ method.
 
@@ -410,9 +424,9 @@ In this section, we create a custom Apicast policy for SOAP requests, and use po
 
 The custom policy ensures that the metrics are updated for the SOAP operations. 
 
-Similar to the previous section of this lab, you will continue to make use of the HTTP header called _SOAPAction_.
+Similar to the previous section of this lab, you continue to use a SOAP 1.1 web service and you continue to make use of the HTTP header called _SOAPAction_ in the requests to that SOAP web service.
 
-In this section, however, you will configure custom policies that indicate to the APIcast gateway how to map the values of the _SOAPAction_ header to custom API management metrics.
+These _SOAPAction_ header fields will now be used by your APIcast to update appropriate API metrics.
 
 ==== Custom Configuration to handle SOAP requests
 
@@ -463,26 +477,43 @@ In this section of the lab, you make more SOAP based invocations to your APIcast
 
 You will specify the SOAPAction header corresponding to the other `getStore`, `createStore` and `deleteStore` SOAP operations of the Store API.
 
-By doing so, you'll then be able to visualize your invocations to each SOAP operation in the build-in analytics capabilities of 3scale.
+By doing so, you'll then be able to visualize your invocations to each SOAP operation in the built-in analytics capabilities of 3scale.
 
 . To invoke the other SOAP operations of your Store API, you can continue to use the curl utility (similar to how you previously invoked the _getAllStores_ operation).
 
-. Alternatively, it can be easier to execute the SOAP requests using SOAP-UI.
+. Alternatively, it may be easier to execute the SOAP requests using SOAP-UI.
 +
 Similar to the _curl_ utility, SOAP-UI does allow for setting of the custom _SOAPAction_ header in the http request. 
 +
 image::images/3scale_amp_stores_soap_soapui.png[]
 +
-If you decide to use SOAP-UI, please refer to the appendix of this lab for tips regarding the import of the _Store_ API WSDL.
+If you decide to use SOAP-UI, please refer to the appendix of this lab for tips regarding the import of the _Stores_ API WSDL.
 
-. Whether using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API.
+. Using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API.
 . Observe that the requests are served with correct responses.
 
 ==== Analytics
 
-Notice that the metrics you have set up for each operation are captured correctly by Apicast. You should see the number of hits corresponding to each SOAPAction that you have requested to the staging endpoint.
+Notice that the metrics you have set up for each operation are captured correctly by Apicast. 
+You should see the number of hits corresponding to each SOAPAction that you have requested to the staging endpoint.
 
 image::images/3scale_amp_stores_api_metrics.png[]
+
+==== Management of SOAP 1.2 Web Services
+
+Management of SOAP 1.2 Web Service is similar to the approach you have taken here to manage your SOAP 1.1 _Stores_ Web Service.
+
+What you will want to do different however is make use of the optional _action_ parameter of the _Content-Type_ HTTP header rather than the _SOAPAction_ header in your HTTP requests.
+
+The _action_ parameter of the _application/soap+xml_ Content-Type header is specified in link:https://www.w3.org/TR/soap12-part2/#ActionFeature[v1.2 of the SOAP standard]
+
+For example using the curl utility: 
+
+-----
+
+--header application/soap+xml;charset=UTF-8;action="http://www.rhmart.com/Stores/getAllStores".
+
+-----
 
 ==== SOAP Requests to Production Endpoint(Bonus)
 
