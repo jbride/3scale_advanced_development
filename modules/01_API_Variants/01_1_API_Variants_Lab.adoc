@@ -290,20 +290,16 @@ TIP: We will be using these routes to be configured as the production and sandbo
 
 You should now be able to use a HTTP client to send SOAP requests to your backend SOAP service via the APIcast gateway.
 
-. Make a test request to the staging URL.
-
-.. Test the API by making a `curl` request to the WSDL of the _Stores_ service via the APIcast staging URL:
+. Test the API by making a `curl` request to the WSDL of the _Stores_ service via the APIcast staging URL:
 +
-[source,text]
 -----
 $ export STORES_SOAP_API_KEY=<stores-soap api key>
 
 $ curl -k "https://`oc get route stores-soap-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
 -----
+ 
+. The Response should be similar to below:
 +
-.. Response should be similar to below:
-+
-[source,text]
 -----
 <wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://service.redhat.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://www.rhmart.com/Stores/" name="StoresWSService" targetNamespace="http://service.redhat.com/">
 <wsdl:import location="http://stores-api-sj.apps.na1.openshift.opentlc.com/StoresWS?wsdl=Stores.wsdl" namespace="http://www.rhmart.com/Stores/"></wsdl:import>
@@ -354,10 +350,9 @@ $ curl -k "https://`oc get route stores-soap-staging-route -o template --templat
 </wsdl:definitions>
 
 -----
+ 
+. Make a POST request to the _getAllStores_ operation of the _Stores_ Web Service :
 +
-.. Make a POST request to the _getAllStores_ operation of the _Stores_ Web Service :
-+
-[source,text]
 -----
 $ curl -v -k -X POST \
        --header "WSDLAction: Stores/getAllStores"  \
@@ -369,9 +364,11 @@ $ curl -v -k -X POST \
 
 -----
 
+.. Notice the inclusion of the _SOAPAction_ header.
+.. As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification], an HTTP client *MUST* use this header filed when issuing a SOAP HTTP Request. 
+
 .. The response should be similar to the following:
 +
-[source,text]
 -----
 ...
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -413,9 +410,9 @@ In this section, we create a custom Apicast policy for SOAP requests, and use po
 
 The custom policy ensures that the metrics are updated for the SOAP operations. 
 
-We'll do this by adding a custom header called _SOAPAction_ to each HTTP request.
+Similar to the previous section of this lab, you will continue to make use of the HTTP header called _SOAPAction_.
 
-The APIcast gateway of 3scale implements its SOAP operation tracking feature by keying in on SOAP requests that include this _SOAPAction_ custom header.
+In this section, however, you will configure custom policies that indicate to the APIcast gateway how to map the values of the _SOAPAction_ header to custom API management metrics.
 
 ==== Custom Configuration to handle SOAP requests
 
