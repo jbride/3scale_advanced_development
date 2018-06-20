@@ -584,7 +584,7 @@ image::images/3scale_amp_custom_signup_field_plan_11.png[]
 . Notice the Application State.
 . Click on *Accept* to accept the application.
 +
-image::images/3scale_amp_custom_signup_field_plan_18.png[]
+image::images/3scale_amp_group_member_signup_plan_18.png[]
 +
 . Run a test request with the user key to confirm the application access is working correctly.
 
