@@ -155,7 +155,6 @@ public class StoresWS implements Stores {
 .. If need be, log into OpenShift environment using the oc utility on your client VM.
 .. Create a new project for your Stores API business service applications:
 +
-[source,text]
 -----
 $ oc new-project $OCP_PROJECT_PREFIX-stores-api \
      --display-name="Stores API" \
@@ -164,28 +163,24 @@ $ oc new-project $OCP_PROJECT_PREFIX-stores-api \
 
 .. If you are not already there, change to this new project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-stores-api
 -----
 +
 .. Import the `stores-api` template into your OpenShift environment:
 +
-[source,text]
 -----
 $ oc create -f $HOME/lab/3scale_development_labs/templates/stores-api.json
 -----
 
 .. Create the new application using the `stores-api` template:
 +
-[source,text]
 -----
 $ oc new-app --template=stores-soap --param HOSTNAME_HTTP=stores-api-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
 
 .. Wait a few minutes for the SOAP service to be deployed and for pods to be started, and then run this command:
 +
-[source,text]
 -----
 $ oc get pods
 NAME                  READY     STATUS      RESTARTS   AGE
@@ -239,14 +234,12 @@ Later in this lab, you'll need routes for your staging and production APIcast ga
 
 . Verify that you are in the `3scale AMP` project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 
 . Create new routes for the Stores API staging and production APIcast:
 +
-[source,text]
 -----
 $ oc create route edge stores-soap-policy-staging-route \
   --service=apicast-staging \
@@ -472,13 +465,11 @@ NOTE: The *pattern* should match the *SOAPAction* for each operation. The *metri
 
 . Now redeploy the apicast-staging container in OpenShift by executing the following command from the terminal window where you are logged in to OpenShift AMP project:
 +
-[source,text]
 -----
 $ oc rollout latest dc/apicast-staging
 -----
 . Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
 +
-[source,text]
 -----
 $ oc get pods | grep apicast-staging
 apicast-staging-5-49cv1           1/1       Running   0          1m
@@ -546,28 +537,24 @@ IMPORTANT: When running commands using the `oc` utility, you must be logged in t
 . At the shell prompt of your VM, verify that you are using the `jboss` user.
 . If you are not already there, change to this new project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-stores-api
 -----
 
 . Import the `stores-fis` template to your OpenShift environment:
 +
-[source,text]
 -----
 $ oc create -f $HOME/lab/3scale_development_labs/templates/stores-fis.json
 -----
 
 . Create a new application using the `stores-fis` template:
 +
-[source,text]
 -----
 $ oc new-app --template=stores-fis --param ROUTE_HOST=stores-fis-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
 
 . Wait a few minutes for the `fis` service to be deployed and for the pods to be started:
 +
-[source,text]
 -----
 $ oc get pods
 NAME                  READY     STATUS      RESTARTS   AGE
@@ -687,7 +674,6 @@ image::images/3scale_amp_stores_api_14.png[]
 
 .. Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
 +
-[source,text]
 -----
 $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api`/allstores
 
@@ -695,7 +681,6 @@ $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n 
 
 .. Check the response:
 +
-[source,text]
 -----
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}[sjayanti@localhost camel-webservice-fis]
 -----
@@ -714,14 +699,12 @@ The REST-SOAP Camel proxy is now correctly deployed, and you can begin to config
 
 . Verify that you are in the `3scale AMP` project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 
 . Create new routes for the Stores API staging and production APIcast:
 +
-[source,text]
 -----
 $ oc create route edge stores-soap-transformation-staging-route \
   --service=apicast-staging \
@@ -763,7 +746,6 @@ $ oc create route edge stores-soap-transformation-production-route \
 
 .. Test the API by making a `curl` request to the staging URL, and check the response:
 +
-[source,text]
 -----
 $ export STORES_FUSE_API_KEY=<api key to your Stores App>
 
@@ -775,7 +757,6 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 
 .. Promote the API to production, test the production URL, and check the response:
 +
-[source,text]
 -----
 $ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
 
@@ -805,7 +786,6 @@ IMPORTANT: When executing commands using the `oc` utility, you must be logged in
 . At the shell prompt of your VM, verify that you are using the `jboss` user.
 . Create a new project for your stock API business service applications:
 +
-[source,text]
 -----
 $ oc new-project $OCP_PROJECT_PREFIX-stock-api \
      --display-name="Stock API" \
@@ -814,27 +794,23 @@ $ oc new-project $OCP_PROJECT_PREFIX-stock-api \
 
 . If you are not already there, change to this new project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-stock-api
 -----
 . Import the `stock-api` template to your OpenShift environment:
 +
-[source,text]
 -----
 $ oc create -f $HOME/lab/3scale_development_labs/templates/stock-api.json
 -----
 
 . Add the `datasources` environment variable secret to the project:
 +
-[source,text]
 -----
 $ oc secret new datavirt-app-config $HOME/lab/3scale_development_labs/Stock/datasources.env
 -----
 
 . Create a new service account for the `datavirt` user and provide view access:
 +
-[source,text]
 -----
 $ oc create serviceaccount datavirt-service-account
 $ oc policy add-role-to-user view system:serviceaccount:stock-api:datavirt-service-account
@@ -842,13 +818,11 @@ $ oc policy add-role-to-user view system:serviceaccount:stock-api:datavirt-servi
 
 . Create the new application using the `stock-api` template:
 +
-[source,text]
 -----
 $ oc new-app --template=stock-api --param HOSTNAME_HTTP=stock-api-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
 . Test the `stock` API service deployed in your OpenShift environment:
 +
-[source,text]
 -----
 $ oc get pods
 NAME                  READY     STATUS      RESTARTS   AGE
@@ -859,7 +833,6 @@ stockpg-5-j8181       1/1       Running     0          18h
 
 . Once the API and the database pods are running, test the `odata` service by making a request to the endpoint:
 +
-[source,text]
 -----
 $ curl -k http://stock-api-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN/odata4/Stock-API/FederatedStock/stock?$format=JSON
 -----
@@ -879,14 +852,12 @@ Follow the steps in the API Management lab to create secure routes to the `apica
 
 . Verify that you are in the `3scale AMP` project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 +
 . Create new routes for the Stock API staging and production APIcast:
 +
-[source,text]
 -----
 $ oc create route edge stock-staging-route \
   --service=apicast-staging \

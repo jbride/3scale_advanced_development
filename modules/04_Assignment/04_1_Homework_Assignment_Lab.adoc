@@ -62,7 +62,6 @@ Below are the steps:
 . Open a terminal window and login to your OCP admin console.
 . Create a new project for your Products API business service applications:
 +
-[source,text]
 -----
 $ oc new-project $OCP_PROJECT_PREFIX-coolstore \
      --display-name="CoolStore API" \
@@ -71,28 +70,24 @@ $ oc new-project $OCP_PROJECT_PREFIX-coolstore \
 +
 . If you are not already there, change to this new project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-coolstore
 -----
 +
 . Import the `coolstore` template to your OpenShift environment:
 +
-[source,text]
 -----
 $ oc create -f ~/lab/3scale_development_labs/CoolStore/coolstore-template.yml
 -----
 +
 . Create a new application using the `coolstore` template:
 +
-[source,text]
 -----
 $ oc new-app --template=coolstore
 -----
 +
 . Expose the *Inventory* & *Catalog* routes:
 +
-[source,text]
 -----
 $ oc create route edge inventory-route --service=inventory
 $ oc create route edge catalog-route --service=catalog
@@ -100,7 +95,6 @@ $ oc create route edge catalog-route --service=catalog
 + 
 . Wait for a couple of minutes for the deployments to complete. The inventory & catalog service & database pods should be running.
 +
-[source,text]
 -----
 $ oc get pods
 NAME                           READY     STATUS      RESTARTS   AGE
