@@ -10,7 +10,7 @@
 
 * Use Red Hat 3scale API Management's gateway to manage SOAP 1.1 based web services
 * Explore two solutions for the management of SOAP based web services:
-** Custom headers using Lua on NGINX to automatically map a REST request to a SOAP back end
+** SOAP Policy to automatically associate metrics to SOAP operations
 ** Camel route installed in Red Hat JBoss Fuse Integration Services to route a REST request from 3scale API Management's gateway to a SOAP web service endpoint
 * Use 3scale API Management's gateway to connect to OData services
 
@@ -504,6 +504,8 @@ You should see the number of hits corresponding to each SOAPAction that you have
 image::images/3scale_amp_stores_api_metrics.png[]
 
 ==== Management of SOAP 1.2 Web Services
+
+NOTE:  This section is for informational purposes only.
 
 Management of SOAP 1.2 Web Service is similar to the approach you have taken here to manage your SOAP 1.1 _Stores_ Web Service.
 
