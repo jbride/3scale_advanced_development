@@ -493,7 +493,7 @@ image::images/3scale_amp_stores_soap_soapui.png[]
 +
 If you decide to use SOAP-UI, please refer to the appendix of this lab for tips regarding the import of the _Stores_ API WSDL.
 
-. Using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API via your APIcast gateways.
+. Using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API_ via your APIcast gateways.
 . Observe that the requests are served with correct responses.
 
 ==== Analytics
@@ -507,12 +507,15 @@ image::images/3scale_amp_stores_api_metrics.png[]
 
 Management of SOAP 1.2 Web Service is similar to the approach you have taken here to manage your SOAP 1.1 _Stores_ Web Service.
 
-What you will want to do different however is make use of the optional _action_ parameter of the _Content-Type_ HTTP header rather than the _SOAPAction_ header in your HTTP requests.
+What you will want to do different is:
 
-The _action_ parameter of the _application/soap+xml_ Content-Type header is specified in link:https://www.w3.org/TR/soap12-part2/#ActionFeature[v1.2 of the SOAP standard]
+. Do not set a _SOAPAction_ header in your HTTP requests.
+. Use the _Content-Type_ header on HTTP requests and set a value for its _action_ parameter 
 
-For example using the curl utility:
+.. The _action_ parameter of the _application/soap+xml_ Content-Type header is specified in link:https://www.w3.org/TR/soap12-part2/#ActionFeature[v1.2 of the SOAP standard]
 
+.. An example using the curl utility is as follows:
++
 -----
 
 --header application/soap+xml;charset=UTF-8;action="http://www.rhmart.com/Stores/getAllStores".
@@ -526,9 +529,11 @@ Now you can use *Promote to Production* to push the custom policies to the Produ
 
 === SOAP Transformation Using Fuse on OpenShift
 
-An alternative to customizing policies that get executed by your APIcast gateways for gathering of metrics based on the SOAP operations of a SOAP service is to use JBoss Fuse.
+In the previous section of the lab, you observed how 3scale can managed SOAP services.
+You also introduced a SOAP policy into your APIcast gateways for gathering of metrics based on SOAP operations.
 
-JBoss Fuse can serve as a mediation layer between the data plane of your API Management deployment and your backend SOAP services. 
+As an alternative to having 3scale manage SOAP services, you could introduce a _mediation_ layer into your architecture that exposes REST and transforms to SOAP.
+An ideal tool for this purpose is JBoss Fuse.
 
 In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier. 
 The REST endpoint is then configured in 3scale API Management Platform as a service.
@@ -559,22 +564,23 @@ stores-soap-1-jnjrb   1/1       Running     0          1h
 storesdb-1-6z5lx      1/1       Running     0          1h
 -----
 
+==== Examine the Fuse Mediation Layer:
 
-. Examine the Camel route:
-
-.. Log in to the OpenShift administration console from a web browser using your login credentials.
-.. Navigate to the `Stores API` project.
-.. Click the *Stores-FIS* pod, and then click *Open Java Console*:
+. Log in to the OpenShift administration console from a web browser using your login credentials.
+. Navigate to the `Stores API` project.
+. Click the *Stores-FIS* pod, and then click *Open Java Console*:
 +
 image::images/3scale_amp_stores_api_13.png[]
+ 
+. Click *Route Diagram*.
 +
-.. Click *Route Diagram*.
-* Expect to see all of the Camel routes defined:
+Expect to see all of the Camel routes defined:
 +
 image::images/3scale_amp_stores_api_14.png[]
 
-.. Alternatively, click *Source* and look into the Camel route:
-* A REST route is exposed to provide HTTP methods and URLs for the different SOAP operations provided by the Stores API:
+. Alternatively, click *Source* and look into the Camel route:
++
+A REST route is exposed to provide HTTP methods and URLs for the different SOAP operations provided by the Stores API:
 +
 [source,xml]
 -----
@@ -600,8 +606,8 @@ image::images/3scale_amp_stores_api_14.png[]
     </route>
 
 -----
-
-* Note the two GET methods for `getStore` and `getAllStores`, the POST method for `postStore`, and the DELETE method for `deleteStore` operation.
++
+Note the two GET methods for `getStore` and `getAllStores`, the POST method for `postStore`, and the DELETE method for `deleteStore` operation.
 
 * Each of the `direct` routes corresponds to the four operations defined in the REST service:
 +
@@ -648,9 +654,10 @@ image::images/3scale_amp_stores_api_14.png[]
         <to customId="true" id="_to4" uri="direct:soap"/>
     </route>
 -----
-** Each of the routes above gets the request, constructs the CXF request message object, and updates the header to the right `soapMethod` for calling the SOAP web service.
++
+Each of the routes above gets the request, constructs the CXF request message object, and updates the header to the right `soapMethod` for calling the SOAP web service.
 
-* A route to call the SOAP endpoint:
+. A route to call the SOAP endpoint:
 +
 [source,xml]
 -----
@@ -666,16 +673,36 @@ image::images/3scale_amp_stores_api_14.png[]
     </route>
 -----
 
-. Test the Camel REST route:
+. Investigate the property that defines the URL to the backend SOAP service
+.. In your virtual machine, navigate to the source code of the project at: $HOME/lab/3scale_development_labs/StoresFIS
+.. Inspect the properties found in the project's _application.properties_ file:
++
+-----
+cat src/main/resources/application.properties
+-----
++
+Notice a property called _cxf.endpoint.soap_ is defined:
++
+-----
 
-.. Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
+...
+
+
+# cxf endpoint address
+cxf.endpoint.soap = http://stores-soap:8080
+
+-----
+
+====. Test the Camel REST route:
+
+. Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
 +
 -----
 $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api`/allstores
 
 -----
 
-.. Check the response:
+. Check the response:
 +
 -----
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}[sjayanti@localhost camel-webservice-fis]
