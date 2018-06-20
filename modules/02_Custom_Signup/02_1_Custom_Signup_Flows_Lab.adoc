@@ -295,7 +295,26 @@ This flow is used to control the services a user can see and subscribe. A typica
 
 NOTE: Please attempt this lab after completing the labs in Module 4.
 
-In the below use case, we will take the scenario of using the Stores API. We have 2 different APIs, a StoresSOAP API that uses Lua script for accessing the SOAP endpoint. We can make this *internal* and only available to developers who are signed up as internal users. The other Stores API using Fuse endpoint could be used by *public* users. This could be our way to ensure proper integration using the right endpoints for different types of users. Signup to these APIs will be available only after the users are registered and sign in to the Developer Portal. We will also restrict *public* users to have an Account Approval required, so that before they could access the Stores API, an admin user will approve their request.
+In the below use case, we will take the scenario of using the _Stores_ related APIs. 
+
+In previous labs, you have created 2 different _Stores_ related APIs: 
+
+. *Stores SOAP Policy API*
++
+Manages SOAP services and introduces a custom SOAP policy to track metrics per SOAP operation.
++
+We can make this *internal* and only available to developers who are signed up as internal users. 
+
+. *Stores SOAP Transformation API*
++
+Uses JBoss Fuse as a REST to SOAP XML mediation layer.
++
+This endpoint could be used by *public* users. 
++
+This could be our way to ensure proper integration using the right endpoints for different types of users. 
+
+Signup to these APIs will be available only after the users are registered and sign in to the Developer Portal. 
+We will also restrict *public* users to have an Account Approval required, so that before they could access the Stores API, an admin user will approve their request.
 
 The below steps are required to accomplish this scenario.
 
