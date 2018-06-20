@@ -26,6 +26,8 @@ In this lab, we will be following the 4 examples discussed in the blog and adapt
 
 == Save Original Signup Flow as a _Partial_
 
+=== Overview
+
 The out-of-the-box _Homepage_ found in the 3scale _Content Management System_ (CMS) includes a very simple sign-up flow embedded in it.
 
 In this section of the lab, you extract that embedded sign-up flow and save it as a _Partial_.
@@ -37,6 +39,8 @@ In subsequent sections of this lab, you will implement more sophisticated sign-u
 All of your sign-up flows can easily be swapped in and out of the Developer Portal homepage simply by changing the reference to the desired partial.
 
 You will then be able to compare and contrast their features and behavior.
+
+=== Procedure
 
 . From the 3scale Admin Portal, click the _Developer Portal_ link in the top toolbar to navigate to the CMS.
 . Observe default look-n-feel of Developer Portal homepage
@@ -74,9 +78,25 @@ image::images/3scale_amp_custom_signup_single_plan_2.png[]
 
 == Single Application Signup flow
 
-This is the simplest signup flow that only allows a subscription to a single Service and Application Plan upon account creation. You do not need to enable any special features in the 3scale Developer portal to use this flow.
+=== Overview
+
+This is the simplest signup flow.
+It only allows a subscription to a single Service and Application Plan upon account creation.
+
+This signup flow is actually very similar to the original sign-up flow you saved as a _partial_ in the previous section of this lab.
+
+The only difference between this signup flow and the original is :
+
+. The original partial is focused specifically on the sample _Echo_ API that comes out of the box with a fresh install of the product.
+. This _single-app_ sign up flow used in this section iterates through the application plans of all services from the provider account.
++
+The API consumer is allowed to sign-up for 1 of the possible many application plans displayed.
+
+You do not need to enable any special features in the 3scale Developer portal to use this flow.
 
 The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid*.
+
+=== Procedure
 
 . Open the file *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid* and examine the code for the signup:
 .. Service/Application filter
@@ -176,6 +196,9 @@ image::images/3scale_amp_custom_signup_single_plan_2.png[]
 image::images/3scale_amp_custom_signup_single_plan_3.png[]
 +
 . Now sign up using the form by clicking on the *Signup for ProductsBasicPlan*.
++
+Notice that you are only allowed to select the link to a single application plan at a time.
+
 . Fill up the form with a new user details and a valid email address.
 +
 image::images/3scale_amp_custom_signup_single_plan_4.png[]
@@ -195,7 +218,15 @@ image::images/3scale_amp_custom_signup_single_plan_7.png[]
 
 == Multiple Application Signup Flow
 
-The multiple application signup flow allows users to signup for multiple services (and the associated application plans) directly using a single signup form. To use this flow, the *Multiple Applications* feature needs to be enabled in the Developer Portal.
+=== Overview
+The multiple application signup flow allows users to signup for multiple services (and the associated application plans) at the same time.
+
+It does so by providing a _partial_ that renders a multi-select check box HTML form in the Developer Portal.
+
+In addition, the *Multiple Applications* feature needs to be enabled in the Developer Portal.
+
+
+=== Procedure
 
 . Login to the admin portal using your credentials and navigate to *Developer Portal*.
 . Click on *Feature Visibility*.
@@ -257,6 +288,8 @@ image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 NOTE: Note that if there are any services with default application plans, then a default application is created for the account created using the signup form. In order to prevent this, do NOT mark any application plan as default in the service specification.
 
 == Custom Field Flow
+
+=== Overview
 
 This flow is used to control the services a user can see and subscribe. A typical usecase is if there are multiple application plans each with different access (e.g a different plan for internal developers and another for external developers). This field can be combined with signup flows including using *Account Approval* so that an admin can view and approve the user to a particular service.
 
@@ -381,12 +414,17 @@ Now repeat the steps from the above section to create a user with *internal* acc
 
 == Group Membership Flow
 
-Group Membership flow is especially useful when you want to control the access to Services, and not just the application plans. If you want to create sections of content that users can only access when they have the correct permissions then you should use this flow. To subscribe to any API a user must have signed up to create an account first. Therefore, the Services and Plans are only visible to users once they have an Account. You should assign the appropriate Group Membership once the Account has been created.
+=== Overview
+
+Group Membership flow is especially useful when you want to control the access to Services, and not just the application plans.
+If you want to create sections of content that users can only access when they have the correct permissions then you should use this flow.
+To subscribe to any API a user must have signed up to create an account first.
+Therefore, the Services and Plans are only visible to users once they have an Account.
+You should assign the appropriate Group Membership once the Account has been created.
 
 
-Our usecase for this lab will be similar to the last lab on custom field signup. Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *private* or *external* so that service will only be seen by the users who belong to the particular group. This way, we can restrict even the ability to view the services that are not available for the users.
-
-Below are the steps for enabling the group membership signup flow:
+Our usecase for this lab will be similar to the last lab on custom field signup. Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *private* or *external* so that service will only be seen by the users who belong to the particular group.
+This way, we can restrict even the ability to view the services that are not available for the users.
 
 === Set up Service Plan
 
