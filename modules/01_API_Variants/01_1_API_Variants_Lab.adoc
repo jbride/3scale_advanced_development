@@ -693,7 +693,7 @@ cxf.endpoint.soap = http://stores-soap:8080
 
 -----
 
-====. Test the Camel REST route:
+==== Test the Camel REST route:
 
 . Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
 +
