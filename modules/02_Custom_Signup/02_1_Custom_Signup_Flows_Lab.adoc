@@ -6,7 +6,7 @@
 
 == Custom Signup Flows Lab
 
-In this lab you create custom signup flows for managing Developer signups for APIs managed through 3scale. A few scenarios covered are single application,  multiple application signups, group membership flows. 
+In this lab you create custom signup flows for managing Developer signups for APIs managed through 3scale. A few scenarios covered are single application,  multiple application signups, group membership flows.
 
 .Goals
 * Create API documentation for the Products API application
@@ -24,10 +24,57 @@ https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flo
 
 In this lab, we will be following the 4 examples discussed in the blog and adapt it to the services and APIs managed here.
 
+== Save Original Signup Flow as a _Partial_
+
+The out-of-the-box _Homepage_ found in the 3scale _Content Management System_ (CMS) includes a very simple sign-up flow embedded in it.
+
+In this section of the lab, you extract that embedded sign-up flow and save it as a _Partial_.
+You then reference that new partial in your _Homepage_.
+
+Because you are just moving the original sign-up flow logic from being buried in the _Homepage_ to being a referenced _partial_, no change to the look and feel of your Developer Portal is to be expected.
+
+In subsequent sections of this lab, you will implement more sophisticated sign-up flows that are also implemented as _partials_ .
+All of your sign-up flows can easily be swapped in and out of the Developer Portal homepage simply by changing the reference to the desired partial.
+
+You will then be able to compare and contrast their features and behavior.
+
+. From the 3scale Admin Portal, click the _Developer Portal_ link in the top toolbar to navigate to the CMS.
+. Observe default look-n-feel of Developer Portal homepage
+.. At the top of the CMS, click: _Visit Developer Portal_
+.. Make note of the default look-n-feel of the Developer Portal along with its focus on the _Echo API_.
+
+. Navigate to: *My -> Root -> Homepage*:
+. Cut out lines 119 - 182 from the _Homepage_.
+. From the blue drop-down selection at the top-right, click _New Partial_.
++
+image::images/click_new_partial.png[]
+
+. Set the _System name_ of the New partial as: _original_app_signup_form_ .
+. Paste was previously deleted from the Homepage into the the large text box of your new _original_app_signup_form_ partial.
+. Click:  Create Partial
+. Return back to the Homepage and enter the following at line 119:
++
+-----
+<section class="plan">
+    {% include 'original_app_signup_form' %}
+</section>
+-----
++
+image::images/reference_original_partial.png[]
+
+.. Save the _Homepage_ file.
+
+. Publish both the changes.
++
+Toward the top of the CMS, click _Drafts_ and then "Publish All"
++
+image::images/3scale_amp_custom_signup_single_plan_2.png[]
+
+. Click on *Visit Developer Portal* again and ensure nothing has changed.
 
 == Single Application Signup flow
 
-This is the simplest signup flow that only allows a subscription to a single Service and Application Plan upon account creation. You do not need to enable any special features in the 3scale Developer portal to use this flow. 
+This is the simplest signup flow that only allows a subscription to a single Service and Application Plan upon account creation. You do not need to enable any special features in the 3scale Developer portal to use this flow.
 
 The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid*.
 
@@ -36,7 +83,7 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
 +
 [source, text]
 ----
-            {% for service in provider.services %} 
+            {% for service in provider.services %}
       		<h2> {{ service.name }} </h2>
       		<div class="row">
             {% for plan in service.application_plans%}
@@ -92,7 +139,7 @@ NOTE: The above code displays the plan name and features/limits setup for the pl
 [source, text]
 ----
                    <a class="btn btn-cta-secondary pull-right" href="{{ urls.signup }}?{{ plan | to_param }}&{{ service.service_plans.first | to_param }}">Signup to plan {{ plan.name }}</a>
-                          		
+
 ----
 +
 NOTE: This section shows the link to redirect to the signup form for the chosen plan and service.
@@ -107,8 +154,7 @@ NOTE: This section shows the link to redirect to the signup form for the chosen 
 image::images/3scale_amp_custom_signup_single_plan.png[]
 
 . Edit the *Homepage*:
-.. Delete the lines 119 - 230.
-.. Add the following line to the bottom of the file:
+.. At around line 120, replace _original_app_signup_form_ with _single_app_signup_form_.
 +
 [source, text]
 ....
@@ -142,14 +188,14 @@ image::images/3scale_amp_custom_signup_single_plan_5.png[]
 +
 image::images/3scale_amp_custom_signup_single_plan_6.png[]
 +
-. Click on the *activate your account* link and sign in with the username/password used to create the account. 
+. Click on the *activate your account* link and sign in with the username/password used to create the account.
 . Finally, in the admin portal click on the *Developers* tab, check that the Account & user are created.
 +
 image::images/3scale_amp_custom_signup_single_plan_7.png[]
 
 == Multiple Application Signup Flow
 
-The multiple application signup flow allows users to signup for multiple services (and the associated application plans) directly using a single signup form. To use this flow, the *Multiple Applications* feature needs to be enabled in the Developer Portal. 
+The multiple application signup flow allows users to signup for multiple services (and the associated application plans) directly using a single signup form. To use this flow, the *Multiple Applications* feature needs to be enabled in the Developer Portal.
 
 . Login to the admin portal using your credentials and navigate to *Developer Portal*.
 . Click on *Feature Visibility*.
@@ -303,7 +349,7 @@ image::images/3scale_amp_custom_signup_field_plan_7.png[]
 +
 image::images/3scale_amp_custom_signup_field_plan_8.png[]
 +
-NOTE: Note that even if no application is selected during signup, the *default* plans for each service are created for each account. 
+NOTE: Note that even if no application is selected during signup, the *default* plans for each service are created for each account.
 +
 . Now activate the user by clicking on the activation link in the email.
 . Login as the new user created to the Developer Portal.
@@ -318,13 +364,13 @@ image::images/3scale_amp_custom_signup_field_plan_9.png[]
 +
 image::images/3scale_amp_custom_signup_field_plan_11.png[]
 +
-. Click on *Create Application*. 
+. Click on *Create Application*.
 . Note the success page shows the application *Pending Approval*.
 +
 image::images/3scale_amp_custom_signup_field_plan_12.png[]
 +
 . Now in the Admin Portal, navigate to the *Developers*, select the Account and click on the Application created for Stores API.
-. Notice the Application State. 
+. Notice the Application State.
 . Click on *Accept* to accept the application.
 +
 image::images/3scale_amp_custom_signup_field_plan_13.png[]
@@ -335,7 +381,7 @@ Now repeat the steps from the above section to create a user with *internal* acc
 
 == Group Membership Flow
 
-Group Membership flow is especially useful when you want to control the access to Services, and not just the application plans. If you want to create sections of content that users can only access when they have the correct permissions then you should use this flow. To subscribe to any API a user must have signed up to create an account first. Therefore, the Services and Plans are only visible to users once they have an Account. You should assign the appropriate Group Membership once the Account has been created. 
+Group Membership flow is especially useful when you want to control the access to Services, and not just the application plans. If you want to create sections of content that users can only access when they have the correct permissions then you should use this flow. To subscribe to any API a user must have signed up to create an account first. Therefore, the Services and Plans are only visible to users once they have an Account. You should assign the appropriate Group Membership once the Account has been created.
 
 
 Our usecase for this lab will be similar to the last lab on custom field signup. Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *private* or *external* so that service will only be seen by the users who belong to the particular group. This way, we can restrict even the ability to view the services that are not available for the users.
@@ -457,7 +503,7 @@ image::images/3scale_amp_group_member_signup_plan_10.png[]
 +
 image::images/3scale_amp_group_member_signup_plan_11.png[]
 +
-NOTE: Note that the account created does not have any service subscriptions or applications associated with it. 
+NOTE: Note that the account created does not have any service subscriptions or applications associated with it.
 +
 . Now activate the user by clicking on the *Activate* link in the Developers page.
 +
@@ -494,10 +540,10 @@ image::images/3scale_amp_group_member_signup_plan_17.png[]
 +
 image::images/3scale_amp_custom_signup_field_plan_11.png[]
 +
-. Click on *Create Application*. 
+. Click on *Create Application*.
 
 . Now in the Admin Portal, navigate to the *Developers*, select the Account and click on the Application created for Stores API.
-. Notice the Application State. 
+. Notice the Application State.
 . Click on *Accept* to accept the application.
 +
 image::images/3scale_amp_custom_signup_field_plan_18.png[]
