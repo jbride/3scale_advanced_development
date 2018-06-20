@@ -526,20 +526,16 @@ Now you can use *Promote to Production* to push the custom policies to the Produ
 
 === SOAP Transformation Using Fuse on OpenShift
 
-An alternative to customizing Lua scripts on Apicast for supporting SOAP services is to use JBoss Fuse for mediating between API Management and SOAP Web services. 
+An alternative to customizing policies that get executed by your APIcast gateways for gathering of metrics based on the SOAP operations of a SOAP service is to use JBoss Fuse.
+
+JBoss Fuse can serve as a mediation layer between the data plane of your API Management deployment and your backend SOAP services. 
+
 In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier. 
 The REST endpoint is then configured in 3scale API Management Platform as a service.
 
 ==== Deploy `stores fis` application to OpenShift
 
-IMPORTANT: When running commands using the `oc` utility, you must be logged in to the master API of your OpenShift environment with your `OCP_USER_ID` credentials.
-
-. At the shell prompt of your VM, verify that you are using the `jboss` user.
-. If you are not already there, change to this new project:
-+
------
-$ oc project $OCP_PROJECT_PREFIX-stores-api
------
+. If you are not already there, change to the `$OCP_PROJECT_PREFIX-stores-api` project:
 
 . Import the `stores-fis` template to your OpenShift environment:
 +
