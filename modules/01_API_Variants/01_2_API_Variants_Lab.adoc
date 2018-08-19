@@ -724,11 +724,13 @@ $ oc project $OCP_USERNAME-3scale-amp
 -----
 $ oc create route edge stores-soap-transformation-staging-route \
   --service=apicast-staging \
-  --hostname=stores-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+  --hostname=stores-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  -n $GW_PROJECT
 
 $ oc create route edge stores-soap-transformation-production-route \
   --service=apicast-production \
-  --hostname=stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+  --hostname=stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  -n $GW_PROJECT
 -----
 
 
@@ -877,11 +879,13 @@ $ oc project $OCP_USERNAME-3scale-amp
 -----
 $ oc create route edge stock-staging-route \
   --service=apicast-staging \
-  --hostname=stock-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+  --hostname=stock-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  -n $GW_PROJECT
 
 $ oc create route edge stock-production-route \
   --service=apicast-production \
-  --hostname=stock-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+  --hostname=stock-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  -n $GW_PROJECT
 -----
 
 === Configure 3scale API Management
