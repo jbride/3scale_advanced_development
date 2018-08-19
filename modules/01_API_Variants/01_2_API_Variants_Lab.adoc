@@ -10,34 +10,14 @@
 
 * Use Red Hat 3scale API Management's gateway to manage SOAP 1.1 based web services
 * Explore two solutions for the management of SOAP based web services:
-** SOAP Policy to automatically associate metrics to SOAP operations
+** SOAP _Policy_ to automatically associate metrics to SOAP operations
 ** Camel route installed in Red Hat JBoss Fuse Integration Services to route a REST request from 3scale API Management's gateway to a SOAP web service endpoint
 * Use 3scale API Management's gateway to connect to OData services
 
-.Prerequisites
-* *Red Hat OpenShift Container Platform administration URL*
-+
-Similar to the pre-req course, you will need a userID/password and the ability to create projects.
-
-* *3scale AMP installation*
-+
-Refer to pre-req courses to learn how to provision a 3scale AMP environment and to determine its URLs and log in credentials
-
-* *Client virtual machine*
-+
-You can continue to  utlize the same client virtual machine that you used in the _API Management Implementation_ and the _API Management Development_ pre-requisite courses.
-
-* `OCP_WILDCARD_DOMAIN` environment variable
-+
-Ensure this remains set in the shell of your client virtual machine
-+
-TIP: To check if your shell still has these environment variables set, run the `echo $OCP_WILDCARD_DOMAIN` command. If the variable is no longer set, return to the _API Management Implementation_ course and follow the steps there to set it again.
-
-* *SOAP-UI* (Recommended)
-+
-It is recommended that you install SOAP-UI on your local laptop.
 
 :numbered:
+
+
 
 == SOAP Service Management
 
@@ -57,6 +37,8 @@ In this lab, you experiment with the following two approaches:
 +
 This Fuse application serves as a RESTful proxy to the backend SOAP service and transforms between SOAP and REST.
 
+
+
 === Deploy SOAP Service to OpenShift
 
 In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale AMP.
@@ -68,8 +50,7 @@ Follow the instructions below.
 
 * In this section you study the `Stores` web service interface and implementation.
 
-.. Open the file ``$HOME/lab/3scale_development_labs/Stores/src/main/resources/wsdl`.
-.. Inspect the `Stores` web service definition:
+.. Open the file `$HOME/lab/3scale_development_labs/Stores/src/main/resources/wsdl/Stores.wsdl`  :
 +
 [source,xml]
 -----
@@ -151,20 +132,18 @@ public class StoresWS implements Stores {
 
 . Deploy the `Stores` web service to OpenShift:
 
-.. At the shell prompt of your client VM, verify that you are using the `jboss` user.
-.. If need be, log into OpenShift environment using the oc utility on your client VM.
 .. Create a new project for your Stores API business service applications:
 +
 -----
-$ oc new-project $OCP_PROJECT_PREFIX-stores-api \
-     --display-name="Stores API" \
+$ oc new-project $OCP_USERNAME-stores-api \
+     --display-name="$OCP_USERNAME Stores API" \
      --description="Stores API SOAP Services"
 -----
 
 .. If you are not already there, change to this new project:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-stores-api
+$ oc project $OCP_USERNAME-stores-api
 -----
 +
 .. Import the `stores-api` template into your OpenShift environment:
@@ -176,7 +155,7 @@ $ oc create -f $HOME/lab/3scale_development_labs/templates/stores-api.json
 .. Create the new application using the `stores-api` template:
 +
 -----
-$ oc new-app --template=stores-soap --param HOSTNAME_HTTP=stores-api-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+$ oc new-app --template=stores-soap --param HOSTNAME_HTTP=stores-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
 .. Wait a few minutes for the SOAP service to be deployed and for pods to be started, and then run this command:
@@ -196,7 +175,7 @@ storesdb-1-6z5lx      1/1       Running     0          12m
 At the command line, view the WSDL exposed by the Stores service:
 +
 -----
-$ curl -v http://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api `/StoresWS?wsdl
+$ curl -v http://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api `/StoresWS?wsdl
 -----
 
 .. Using a browser:
@@ -206,10 +185,12 @@ NOTE:  There is a known bug with the rendering of WSDLs in recent versions of Fi
 ... Execute the following to determine the URL to the WSDL of your new _Stores_ SOAP service:
 +
 -----
-$ echo -en "\n\nhttp://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api `/StoresWS?wsdl\n\n"
+$ echo -en "\n\nhttp://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api `/StoresWS?wsdl\n\n"
 -----
 
 ... In a web browser, navigate to the Stores WSDL using the previously determined URL:
++
+NOTE: You may encounter a blank screen if using Firefox.  If so, switch to Google Chrome.
 +
 image::images/3scale_amp_stores_api_8.png[]
 
@@ -235,7 +216,7 @@ Later in this lab, you'll need routes for your staging and production APIcast ga
 . Verify that you are in the `3scale AMP` project:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+$ oc project $OCP_USERNAME-3scale-amp
 -----
 
 . Create new routes for the Stores API staging and production APIcast:
@@ -243,11 +224,11 @@ $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 $ oc create route edge stores-soap-policy-staging-route \
   --service=apicast-staging \
-  --hostname=stores-soap-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+  --hostname=stores-soap-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 
 $ oc create route edge stores-soap-policy-production-route \
   --service=apicast-production \
-  --hostname=stores-soap-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+  --hostname=stores-soap-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
 TIP: We will be using these routes to be configured as the production and sandbox API endpoints for the Stores SOAP service.
@@ -272,8 +253,8 @@ TIP: We will be using these routes to be configured as the production and sandbo
 * *Description*: `Stores SOAP Application`
 . In the *API* tab, click *Stores SOAP Policy API*, and then click *Integration*.
 * *Private Base URL*: URL to your _stores-soap_ service.
-* *Staging Public Base URL*: URL of the route stores-soap-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
-* *Production Public Base URL*: URL of the route `stores-soap-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+* *Staging Public Base URL*: URL of the route stores-soap-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
+* *Production Public Base URL*: URL of the route `stores-soap-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
 . Configure the Method:
 .. *Friendly name*: StoresWS
 .. *system name*: stores/storesws
@@ -316,7 +297,7 @@ You should now be able to use a HTTP client to send SOAP requests to your backen
 -----
 $ export STORES_SOAP_API_KEY=<stores-soap api key>
 
-$ curl -k "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
+$ curl -k "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
 -----
 
 . The Response should be similar to below:
@@ -380,7 +361,7 @@ $ curl -v -k -X POST \
        --header "Accept: application/soap+xml"  \
        --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
        -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' \
-       "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
+       "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
 
 -----
 
@@ -512,7 +493,7 @@ Management of SOAP 1.2 Web Service is similar to the approach you have taken her
 What you will want to do different is:
 
 . Do not set a _SOAPAction_ header in your HTTP requests.
-. Use the _Content-Type_ header on HTTP requests and set a value for its _action_ parameter 
+. Use the _Content-Type_ header on HTTP requests and set a value for its _action_ parameter
 
 .. The _action_ parameter of the _application/soap+xml_ Content-Type header is specified in link:https://www.w3.org/TR/soap12-part2/#ActionFeature[v1.2 of the SOAP standard]
 
@@ -537,12 +518,12 @@ You also introduced a SOAP policy into your APIcast gateways for gathering of me
 As an alternative to having 3scale manage SOAP services, you could introduce a _mediation_ layer into your architecture that exposes REST and transforms to SOAP.
 An ideal tool for this purpose is JBoss Fuse.
 
-In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier. 
+In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier.
 The REST endpoint is then configured in 3scale API Management Platform as a service.
 
 ==== Deploy `stores fis` application to OpenShift
 
-. If you are not already there, change to the `$OCP_PROJECT_PREFIX-stores-api` project:
+. If you are not already there, change to the `$OCP_USERNAME-stores-api` project:
 
 . Import the `stores-fis` template to your OpenShift environment:
 +
@@ -553,7 +534,7 @@ $ oc create -f $HOME/lab/3scale_development_labs/templates/stores-fis.json
 . Create a new application using the `stores-fis` template:
 +
 -----
-$ oc new-app --template=stores-fis --param ROUTE_HOST=stores-fis-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+$ oc new-app --template=stores-fis --param ROUTE_HOST=stores-fis-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
 . Wait a few minutes for the `fis` service to be deployed and for the pods to be started:
@@ -573,7 +554,7 @@ storesdb-1-6z5lx      1/1       Running     0          1h
 . Click the *Stores-FIS* pod, and then click *Open Java Console*:
 +
 image::images/3scale_amp_stores_api_13.png[]
- 
+
 . Click *Route Diagram*.
 +
 Expect to see all of the Camel routes defined:
@@ -700,7 +681,7 @@ cxf.endpoint.soap = http://stores-soap:8080
 . Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
 +
 -----
-$ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-stores-api`/allstores
+$ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api`/allstores
 
 -----
 
@@ -725,7 +706,7 @@ The REST-SOAP Camel proxy is now correctly deployed, and you can begin to config
 . Verify that you are in the `3scale AMP` project:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+$ oc project $OCP_USERNAME-3scale-amp
 -----
 
 . Create new routes for the Stores API staging and production APIcast:
@@ -733,11 +714,11 @@ $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 $ oc create route edge stores-soap-transformation-staging-route \
   --service=apicast-staging \
-  --hostname=stores-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+  --hostname=stores-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 
 $ oc create route edge stores-soap-transformation-production-route \
   --service=apicast-production \
-  --hostname=stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+  --hostname=stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
 
@@ -761,8 +742,8 @@ $ oc create route edge stores-soap-transformation-production-route \
 * *Description*: `Stores Application`
 . In the *API* tab, click *Stores API*, and then click *Integration*.
 * *Private Base URL*: URL to your JBoss Fuse Camel REST route.
-* *Staging Public Base URL*: Create a new edge secure route in the `3scale_AMP` project to `stores-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
-* *Production Public Base URL*: Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+* *Staging Public Base URL*: Create a new edge secure route in the `3scale_AMP` project to `stores-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
+* *Production Public Base URL*: Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
 . Create an API Test GET request:
 * *API Test GET Request*: `/allstores`
 .  Click *Update and test in the Staging Environment*.
@@ -774,7 +755,7 @@ $ oc create route edge stores-soap-transformation-production-route \
 -----
 $ export STORES_FUSE_API_KEY=<api key to your Stores App>
 
-$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
@@ -783,7 +764,7 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 .. Promote the API to production, test the production URL, and check the response:
 +
 -----
-$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $OCP_PROJECT_PREFIX-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
@@ -812,7 +793,7 @@ IMPORTANT: When executing commands using the `oc` utility, you must be logged in
 . Create a new project for your stock API business service applications:
 +
 -----
-$ oc new-project $OCP_PROJECT_PREFIX-stock-api \
+$ oc new-project $OCP_USERNAME-stock-api \
      --display-name="Stock API" \
      --description="Stock API ODATA Services"
 -----
@@ -820,7 +801,7 @@ $ oc new-project $OCP_PROJECT_PREFIX-stock-api \
 . If you are not already there, change to this new project:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-stock-api
+$ oc project $OCP_USERNAME-stock-api
 -----
 . Import the `stock-api` template to your OpenShift environment:
 +
@@ -844,7 +825,7 @@ $ oc policy add-role-to-user view system:serviceaccount:stock-api:datavirt-servi
 . Create the new application using the `stock-api` template:
 +
 -----
-$ oc new-app --template=stock-api --param HOSTNAME_HTTP=stock-api-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+$ oc new-app --template=stock-api --param HOSTNAME_HTTP=stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 . Test the `stock` API service deployed in your OpenShift environment:
 +
@@ -859,7 +840,7 @@ stockpg-5-j8181       1/1       Running     0          18h
 . Once the API and the database pods are running, test the `odata` service by making a request to the endpoint:
 +
 -----
-$ curl -k http://stock-api-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN/odata4/Stock-API/FederatedStock/stock?$format=JSON
+$ curl -k http://stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN/odata4/Stock-API/FederatedStock/stock?$format=JSON
 -----
 
 * Expect a response like the following:
@@ -878,7 +859,7 @@ Follow the steps in the API Management lab to create secure routes to the `apica
 . Verify that you are in the `3scale AMP` project:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+$ oc project $OCP_USERNAME-3scale-amp
 -----
 +
 . Create new routes for the Stock API staging and production APIcast:
@@ -886,11 +867,11 @@ $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 $ oc create route edge stock-staging-route \
   --service=apicast-staging \
-  --hostname=stock-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+  --hostname=stock-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 
 $ oc create route edge stock-production-route \
   --service=apicast-production \
-  --hostname=stock-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
+  --hostname=stock-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
 === Configure 3scale API Management
@@ -911,8 +892,8 @@ $ oc create route edge stock-production-route \
 * *Description*: `Stock Application`
 . In the *API* tab, click *Stock API* and then click *Integration*:
 * *Private Base URL*: URL to your JBoss Data Virtualization route.
-* *Staging Public Base URL*: Create new edge secure route in `3scale_AMP` project to `stock-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
-* *Production Public Base URL*: Create new route in `3scale_AMP` project to `stock-prod-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+* *Staging Public Base URL*: Create new edge secure route in `3scale_AMP` project to `stock-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
+* *Production Public Base URL*: Create new route in `3scale_AMP` project to `stock-prod-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
 . Create a mapping rule:
 * *Operation*: `GET`
 * *Pattern*: `/odata4/Stock-API/FederatedStock/stock`

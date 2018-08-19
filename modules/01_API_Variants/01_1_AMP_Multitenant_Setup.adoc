@@ -1,0 +1,184 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:linkattrs:
+
+
+== AMP Multitenant Setup
+
+.Goals
+
+* Review of lab assets
+* Orientation to multitenant AMP lab environment
+* Provision APIcast gateways
+
+.Prerequisites
+* Completion of the following courses:
+** link:https://learning.redhat.com/course/view.php?id=739[App Development using RHT OpenShift Container Platform]
+** link:https://learning.redhat.com/course/view.php?id=977[RHT 3scale Implementation]
+** link:https://learning.redhat.com/course/view.php?id=1121[RHT 3scale Development]
+
+
+:numbered:
+
+
+== Lab assets and environment
+
+=== Client virtual machine and lab assets
+.. You can continue to  utilize the same client virtual machine that you used in the API mgmt related pre-requisite courses.
+.. In the client virtual machine, ensure you are using the `jboss` operating system user.
+
+. Recall that the lab assets for this course are version controlled at:  `https://github.com/gpe-mw-training/3scale_development_labs.git`
+. If you are using the client virtual machine provided to you in this course, navigate to :  $HOME/lab/3scale_development_labs
+. Refresh your lab assets:
++
+-----
+
+$  git pull origin master
+-----
+
+=== Red Hat OpenShift Container Platform
+
+. Regarding your OCP environment, your instructor will provide you with the following :
+
+.. REGION
++
+Used to identify the URL of the OCP master node at: `https://master.$REGION.openshift.opentlc.com`
+.. OCP userID and password
+.. The ability to create projects.
+
+. Using both your browser as well as the `oc` utility in the client vm, authenticate into your OCP environment.
+
+=== Environment Variables
+
+
+Open a terminal window and set the following environment variables that will be used throughout the duration of this course.
+
+ifdef::showscript[]
+If student lab environment and 3scale tenants were provisioned using the ocp-workload-rhte-mw-api-mesh ansible role, then student details can be found in:
+
+/tmp/3scale_tenants/user_info_file.txt
+
+endif::showscript[]
+
+-----
+######  Instructor will provide the values to these environment variables #######
+
+$ export REGION=<provided by your instructor>
+$ export OCP_USERNAME=<provided by your instructor>
+$ export OCP_PASSWD=<provided by your instructor>
+$ export API_ADMIN_ACCESS_TOKEN=<provided by your instructor>
+
+
+
+#  Using above variables, copy & paste the following in same terminal #
+
+$ export OCP_WILDCARD_DOMAIN=apps.$REGION.openshift.opentlc.com
+$ export TENANT_NAME=$OCP_USERNAME-3scale
+$ export THREESCALE_PORTAL_ENDPOINT=http://${API_ADMIN_ACCESS_TOKEN}@$system-provider.3scale-mt-adm0.svc.cluster.local:8080
+$ export GW_PROJECT=$OCP_USERNAME-gw
+-----
+
+=== SOAP-UI (Recommended)
+
+It is recommended that you install _SOAP-UI_ on your local laptop.
+
+SOAP-UI can optionally be used during the various labs that have you configure 3scale to manage SOAP based API endpoints.
+
+== 3scale AMP access
+
+
+Your lab environment includes access to a multi-tenant 3scale AMP installation.
+
+For the purpose of this lab, you will serve as the administrator of your own 3scale _tenant_ (aka: _domain_)
+
+. Log into the admin portal of your 3scale AMP environment using the information provided to you by your instructor
+
+. To access the admin portal of your 3scale environment, point to your browser to the output of the following:
++
+-----
+$ echo -en "\n\nhttps://$TENANT_NAME-admin.$OCP_WILDCARD_DOMAIN\n\n"
+-----
+
+. Authenticate using the values of $OCP_USERNAME and $OCP_PASSWD
++
+Your 3scale credentials are the same as your OCP credentials.
+
+
+== APIcast Gateways
+
+In this section of the lab, you will provision staging and production apicast gateways in your own OCP namespace.
+
+Your 3scale AMP multitenant lab environment does come with a set of staging and production apicast gateways.
+It is technically feasible that you could manage your backend services using these gateways in the AMP.
+One practical hinderance however is that these gateways are owned by the 3scale master user and the OCP cluster-admin.
+You don't have the ability to bounce these gateways, nor modify them if need be.
+It also would be difficult to identify your logs while everyone's traffic flows through those gateways.
+
+Your APIcast will retrieve _proxy service_ configurations from the pre-existing 3scale multi-tenant environment using the value of :  _$THREESCALE_PORTAL_ENDPOINT_.
+
+=== Deploy Apicast
+
+. Retrieve Apicast template
++
+-----
+$ curl -o $HOME/lab/3scale-apicast.yml \
+          https://raw.githubusercontent.com/gpe-mw-training/3scale_onpremise_implementation_labs/master/resources/rhte/3scale-apicast.yml
+-----
+
+. Review Apicast template
++
+-----
+$ cat $HOME/lab/3scale-apicast.yml | more
+-----
+
+. Create an OCP namespace for your gateways:
++
+-----
+$ oc new-project $GW_PROJECT \
+     --display-name="$GW_PROJECT" \
+     --description="APICast gateways"
+-----
+
+. Create Apicast staging related resources in OpenShift:
++
+-----
+$ oc new-app \
+     -f $HOME/lab/3scale-apicast.yml \
+     --param THREESCALE_PORTAL_ENDPOINT=$THREESCALE_PORTAL_ENDPOINT \
+     --param APP_NAME=stage-apicast \
+     --param ROUTE_NAME=catalog-stage-apicast-$OCP_USERNAME \
+     --param WILDCARD_DOMAIN=$OCP_WILDCARD_DOMAIN \
+     --param THREESCALE_DEPLOYMENT_ENV=sandbox \
+     --param APICAST_CONFIGURATION_LOADER=lazy \
+     --param APICAST_IMAGE_URL=registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8 \
+     -n $GW_PROJECT > $HOME/lab/stage-apicast_details.txt
+-----
+
+. Create Apicast production related resources in OpenShift:
++
+-----
+$ oc new-app \
+     -f $HOME/lab/3scale-apicast.yml \
+     --param THREESCALE_PORTAL_ENDPOINT=$THREESCALE_PORTAL_ENDPOINT \
+     --param APP_NAME=prod-apicast \
+     --param ROUTE_NAME=catalog-prod-apicast-$OCP_USERNAME \
+     --param WILDCARD_DOMAIN=$OCP_WILDCARD_DOMAIN \
+     --param THREESCALE_DEPLOYMENT_ENV=production \
+     --param APICAST_CONFIGURATION_LOADER=lazy \
+     --param APICAST_IMAGE_URL=registry.access.redhat.com/3scale-amp22/apicast-gateway:1.8 \
+     -n $GW_PROJECT > $HOME/lab/prod-apicast_details.txt
+-----
+
+. Resume the paused deploy objects:
++
+-----
+$ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
+-----
+
+
+=== Configure and Test API Mgmt (Optional)
+
+In this section of the lab, you can optionally smoke test the management of any RESTful service of your choice using your 3scale AMP and APIcast gateways.
+
+As backend services, you can use the same ones (ie:  helloworld _swarm_ or _vertx_ based services) used in the pre-req courses.
