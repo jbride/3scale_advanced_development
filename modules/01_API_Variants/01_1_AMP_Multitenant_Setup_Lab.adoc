@@ -4,7 +4,7 @@
 :linkattrs:
 
 
-== AMP Multitenant Setup
+== Lab Setup
 
 .Goals
 
@@ -21,10 +21,9 @@
 
 :numbered:
 
+== Lab assets
 
-== Lab assets and environment
-
-=== Client virtual machine and lab assets
+=== Client virtual machine
 .. You can continue to  utilize the same client virtual machine that you used in the API mgmt related pre-requisite courses.
 .. In the client virtual machine, ensure you are using the `jboss` operating system user.
 
@@ -37,20 +36,7 @@
 $  git pull origin master
 -----
 
-=== Red Hat OpenShift Container Platform
-
-. Regarding your OCP environment, your instructor will provide you with the following :
-
-.. REGION
-+
-Used to identify the URL of the OCP master node at: `https://master.$REGION.openshift.opentlc.com`
-.. OCP userID and password
-.. The ability to create projects.
-
-. Using both your browser as well as the `oc` utility in the client vm, authenticate into your OCP environment.
-
 === Environment Variables
-
 
 Open a terminal window and set the following environment variables that will be used throughout the duration of this course.
 
@@ -85,8 +71,20 @@ It is recommended that you install _SOAP-UI_ on your local laptop.
 
 SOAP-UI can optionally be used during the various labs that have you configure 3scale to manage SOAP based API endpoints.
 
-== 3scale AMP access
+=== Red Hat OpenShift Container Platform
 
+Using both your browser as well as the `oc` utility in the client vm, authenticate into your OCP environment.
+
+The URL of the master node will be the output of the following:
+
+-----
+$  echo -en "\n\nhttps://master.$REGION.openshift.opentlc.com\n\n"
+-----
+
+As the user credentials, use the values of `$OCP_USERNAME` and `$OCP_PASSWD`
+
+
+=== Multitenant 3scale AMP 
 
 Your lab environment includes access to a multi-tenant 3scale AMP installation.
 
@@ -177,8 +175,9 @@ $ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
 -----
 
 
-=== Configure and Test API Mgmt (Optional)
+=== Configure and Test API Mgmt
 
 In this section of the lab, you can optionally smoke test the management of any RESTful service of your choice using your 3scale AMP and APIcast gateways.
 
-As backend services, you can use the same ones (ie:  helloworld _swarm_ or _vertx_ based services) used in the pre-req courses.
+As backend services, you can use the same ones used in the pre-req courses (ie:  helloworld _swarm_ or _vertx_ based services) .
+Another option is to conduct a smoke test using the _Echo API_ pre-configured with a new AMP tenant..
