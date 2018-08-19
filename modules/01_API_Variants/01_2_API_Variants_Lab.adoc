@@ -4,7 +4,7 @@
 :linkattrs:
 
 
-== SOAP and OData Service Management Introduction Lab
+== SOAP and OData Service Management Lab
 
 .Goals
 
@@ -17,11 +17,7 @@
 
 :numbered:
 
-
-
-== SOAP Service Management
-
-=== Overview
+== Overview
 
 It is often the case that there will be a requirement to manage SOAP based web services in addition to RESTful web services.
 
@@ -30,19 +26,20 @@ It is possible for these SOAP requests to be sent to 3scale's APIcast gateway, f
 
 However, if there is an additional requirement to gather metrics on requests to specific operations exposed by a backend SOAP service, then some additional set-up is needed.
 
-In this lab, you experiment with the following two approaches:
+In this first half of this lab, you experiment with the following two approaches:
 
-. Create custom modifications to Lua and NGINX configuration files to automatically map a REST request to a SOAP back end
+. Utilization of the APIcast _SOAP_ policy
 . REST-to-XML transformations via a Fuse on OpenShift application
 +
 This Fuse application serves as a RESTful proxy to the backend SOAP service and transforms between SOAP and REST.
 
+In the second half of this lab, you manage an _OData_ endpoint exposed by JBoss Data Virtualization.
 
+== SOAP Service Management using APIcast Policy
 
 === Deploy SOAP Service to OpenShift
 
 In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale AMP.
-
 
 Follow the instructions below.
 
@@ -209,32 +206,43 @@ image::images/3scale_amp_stores_api_9.png[]
 +
 image::images/3scale_amp_stores_api_11.png[]
 
-==== Create APIcast Staging and Production Routes
+=== Create APIcast Staging and Production Routes
 
 Later in this lab, you'll need routes for your staging and production APIcast gateways that are used to proxy traffic to your _Stores_ backend SOAP service.
 
-. Verify that you are in the `3scale AMP` project:
+. Verify that you have gateways in the $GW_PROJECT:
 +
 -----
-$ oc project $OCP_USERNAME-3scale-amp
+$ oc get deploy -n $GW_PROJECT
+
+prod-apicast    1         1         1            1           12m
+stage-apicast   1         1         1            1           12m
+
+
+$ oc get service -n $GW_PROJECT
+
+prod-apicast    ClusterIP   172.30.18.254   <none>        8080/TCP,8090/TCP   1h
+stage-apicast   ClusterIP   172.30.47.202   <none>        8080/TCP,8090/TCP   1h
 -----
 
 . Create new routes for the Stores API staging and production APIcast:
 +
 -----
 $ oc create route edge stores-soap-policy-staging-route \
-  --service=apicast-staging \
-  --hostname=stores-soap-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+  --service=stage-apicast \
+  --hostname=stores-soap-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  -n $GW_PROJECT
 
 $ oc create route edge stores-soap-policy-production-route \
-  --service=apicast-production \
-  --hostname=stores-soap-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
+  --service=prod-apicast \
+  --hostname=stores-soap-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  -n $GW_PROJECT
 -----
 
 TIP: We will be using these routes to be configured as the production and sandbox API endpoints for the Stores SOAP service.
 
 
-==== Configure 3scale API Management
+=== Configure 3scale API Management
 
 . Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
 . Create a new service:
@@ -288,7 +296,7 @@ TIP: We will be using these routes to be configured as the production and sandbo
 .  Click *Update and test in the Staging Environment*.
 
 
-==== Test API Managed SOAP service
+=== Test API Managed SOAP service
 
 You should now be able to use a HTTP client to send SOAP requests to your backend SOAP service via the APIcast gateway.
 
@@ -297,7 +305,9 @@ You should now be able to use a HTTP client to send SOAP requests to your backen
 -----
 $ export STORES_SOAP_API_KEY=<stores-soap api key>
 
-$ curl -k "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
+$ curl -k "https://`oc get route stores-soap-policy-staging-route \
+      -o template --template {{.spec.host}} \
+      -n $GW_PROJECT`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
 -----
 
 . The Response should be similar to below:
@@ -510,7 +520,7 @@ What you will want to do different is:
 Now you can use *Promote to Production* to push the custom policies to the Production APIcast gateway. Redeploy the gateway to ensure the latest configuration is updated, and repeat the SOAP requests to production endpoint.
 
 
-=== SOAP Transformation Using Fuse on OpenShift
+== SOAP Transformation Using Fuse on OpenShift
 
 In the previous section of the lab, you observed how 3scale can managed SOAP services.
 You also introduced a SOAP policy into your APIcast gateways for gathering of metrics based on SOAP operations.
