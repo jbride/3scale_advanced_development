@@ -436,7 +436,8 @@ These _SOAPAction_ header fields will now be used by your APIcast to update appr
 
 ==== Custom Configuration to handle SOAP requests
 
-. In the *API* tab, click *Stores SOAP Policy API*, and then click *Integration*.
+. In the *API* tab, click *Stores SOAP Policy API*.
+. Click: `Integration -> edit integration settings`.
 . Expand the *Policies* section.
 . In the *Policy Chain*, click *Add Policy* button and choose *SOAP*.
 +
@@ -740,11 +741,20 @@ $ oc create route edge stores-soap-transformation-production-route \
   --hostname=stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
 
+=== Define Account and User
+
+. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
+. Click *Developers*.
+. Click *Create*.
+. Create a new account with the following credentials:
+* *Username*: `rhbankdev`
+* *Email*: `_Provide unique email address_`
+* *PASSWORD*: `_Provide unique, easy-to-remember password_`
+* *Organization/Group Name*: `RHBank`
+
 
 ==== Configure 3scale API Management
 
-
-. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
 . Create a new service:
 * *Name*: `Stores SOAP Transformation API`
 * *System Name*: `stores-soap-transformation-api`
@@ -760,9 +770,18 @@ $ oc create route edge stores-soap-transformation-production-route \
 * *Name*: `StoresApp`
 * *Description*: `Stores Application`
 . In the *API* tab, click *Stores API*, and then click *Integration*.
-* *Private Base URL*: URL to your JBoss Fuse Camel REST route.
-* *Staging Public Base URL*: Create a new edge secure route in the `3scale_AMP` project to `stores-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
-* *Production Public Base URL*: Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+* *Private Base URL*: 
++
+URL to your JBoss Fuse Camel REST route.
+
+* *Staging Public Base URL*: 
++
+Create a new edge secure route in the `3scale_AMP` project to `stores-staging-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
+
+* *Production Public Base URL*: 
++
+Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+
 . Create an API Test GET request:
 * *API Test GET Request*: `/allstores`
 .  Click *Update and test in the Staging Environment*.
