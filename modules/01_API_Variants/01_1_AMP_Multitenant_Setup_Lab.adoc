@@ -61,7 +61,7 @@ $ export API_ADMIN_ACCESS_TOKEN=<provided by your instructor>
 
 $ export OCP_WILDCARD_DOMAIN=apps.$REGION.openshift.opentlc.com
 $ export TENANT_NAME=$OCP_USERNAME-3scale
-$ export THREESCALE_PORTAL_ENDPOINT=http://${API_ADMIN_ACCESS_TOKEN}@$system-provider.3scale-mt-adm0.svc.cluster.local:8080
+$ export THREESCALE_PORTAL_ENDPOINT=http://${API_ADMIN_ACCESS_TOKEN}@system-provider.3scale-mt-adm0.svc.cluster.local:8080
 $ export GW_PROJECT=$OCP_USERNAME-gw
 -----
 
