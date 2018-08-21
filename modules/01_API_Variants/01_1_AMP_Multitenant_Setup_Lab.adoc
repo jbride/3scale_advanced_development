@@ -60,8 +60,8 @@ $ export API_ADMIN_ACCESS_TOKEN=<provided by your instructor>
 #  Using above variables, copy & paste the following in same terminal #
 
 $ export OCP_WILDCARD_DOMAIN=apps.$REGION.openshift.opentlc.com
-$ export TENANT_NAME=$OCP_USERNAME-3scale
-$ export THREESCALE_PORTAL_ENDPOINT=https://${API_ADMIN_ACCESS_TOKEN}@`oc get route $OCP_USERNAME-3scale-provider --template "{{.spec.host}}" -n 3scale-mt-adm0`
+$ export TENANT_NAME=$OCP_USERNAME-3scale-mt
+$ export THREESCALE_PORTAL_ENDPOINT=https://${API_ADMIN_ACCESS_TOKEN}@`oc get route $TENANT_NAME-provider --template "{{.spec.host}}" -n 3scale-mt-adm0`
 $ export GW_PROJECT=$OCP_USERNAME-gw
 -----
 
