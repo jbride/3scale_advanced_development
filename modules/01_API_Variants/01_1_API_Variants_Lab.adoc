@@ -252,6 +252,22 @@ $ oc create route edge stores-soap-policy-production-route \
 
 TIP: We will be using these routes to be configured as the production and sandbox API endpoints for the Stores SOAP service.
 
+=== Define Account and User
+
+Similar to previous 3scale developer courses, we'll use an organization called:  `RHBank` with  a developer called:  `rhbankdev`.
+
+The following is a refresher for how to create this account.
+
+
+. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
+. Click *Developers*.
+. Click *Create*.
+. Create a new account with the following credentials:
+* *Username*: `rhbankdev`
+* *Email*: `_Provide unique email address_`
+* *PASSWORD*: `_Provide unique, easy-to-remember password_`
+* *Organization/Group Name*: `RHBank`
+
 
 ==== Configure 3scale API Management
 
@@ -740,17 +756,6 @@ $ oc create route edge stores-soap-transformation-production-route \
   --service=apicast-production \
   --hostname=stores-production-apicast-$OCP_PROJECT_PREFIX.$OCP_WILDCARD_DOMAIN
 -----
-
-=== Define Account and User
-
-. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
-. Click *Developers*.
-. Click *Create*.
-. Create a new account with the following credentials:
-* *Username*: `rhbankdev`
-* *Email*: `_Provide unique email address_`
-* *PASSWORD*: `_Provide unique, easy-to-remember password_`
-* *Organization/Group Name*: `RHBank`
 
 
 ==== Configure 3scale API Management
