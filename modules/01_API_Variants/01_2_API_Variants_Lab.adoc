@@ -241,6 +241,21 @@ $ oc create route edge stores-soap-policy-production-route \
 
 TIP: We will be using these routes to be configured as the production and sandbox API endpoints for the Stores SOAP service.
 
+=== Define Account and User
+
+Similar to previous 3scale developer courses, we'll use an organization called:  `RHBank` with  a developer called:  `rhbankdev`.
+
+The following is a refresher for how to create this account.
+
+. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
+. Click *Developers*.
+. Click *Create*.
+. Create a new account with the following credentials:
+* *Username*: `rhbankdev`
+* *Email*: `_Provide unique email address_`
+* *PASSWORD*: `_Provide unique, easy-to-remember password_`
+* *Organization/Group Name*: `RHBank`
+
 
 === Configure 3scale API Management
 
@@ -371,7 +386,7 @@ $ curl -v -k -X POST \
        --header "Accept: application/soap+xml"  \
        --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
        -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' \
-       "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
+       "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
 
 -----
 
@@ -455,11 +470,9 @@ NOTE: The *pattern* should match the *SOAPAction* for each operation. The *metri
 . Click *Submit* to save the changes.
 . Click on *Update & test in Staging Environment*.
 
-. Now redeploy the apicast-staging container in OpenShift by executing the following command from the terminal window where you are logged in to OpenShift AMP project:
-+
------
-$ oc rollout latest dc/apicast-staging
------
+. Now redeploy the apicast-staging pod in OpenShift by simply deleting the existing one.
+Kubernetes will make sure a new one is started.
+
 . Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
 +
 -----
@@ -714,10 +727,10 @@ The REST-SOAP Camel proxy is now correctly deployed, and you can begin to config
 
 . Follow the steps in the API Management lab to create secure routes to the `apicast-staging` and `apicast-production` services for the Stores API.
 
-. Verify that you are in the `3scale AMP` project:
+. Verify that you are in the apicast gateway project:
 +
 -----
-$ oc project $OCP_USERNAME-3scale-amp
+$ oc project $GW_PROJECT
 -----
 
 . Create new routes for the Stores API staging and production APIcast:
@@ -733,17 +746,6 @@ $ oc create route edge stores-soap-transformation-production-route \
   --hostname=stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
   -n $GW_PROJECT
 -----
-
-=== Define Account and User
-
-. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
-. Click *Developers*.
-. Click *Create*.
-. Create a new account with the following credentials:
-* *Username*: `rhbankdev`
-* *Email*: `_Provide unique email address_`
-* *PASSWORD*: `_Provide unique, easy-to-remember password_`
-* *Organization/Group Name*: `RHBank`
 
 
 ==== Configure 3scale API Management
@@ -786,7 +788,7 @@ Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OC
 -----
 $ export STORES_FUSE_API_KEY=<api key to your Stores App>
 
-$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_FUSE_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
@@ -795,7 +797,7 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 .. Promote the API to production, test the production URL, and check the response:
 +
 -----
-$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $OCP_USERNAME-3scale-amp`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_FUSE_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
@@ -887,10 +889,10 @@ $ curl -k http://stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN/odata4/Stock-API/F
 
 Follow the steps in the API Management lab to create secure routes to the `apicast-staging` and `apicast-production` services for the Stock API.
 
-. Verify that you are in the `3scale AMP` project:
+. Verify that you are in the apicast gateway project:
 +
 -----
-$ oc project $OCP_USERNAME-3scale-amp
+$ oc project $GW_PROJECT
 -----
 +
 . Create new routes for the Stock API staging and production APIcast:
