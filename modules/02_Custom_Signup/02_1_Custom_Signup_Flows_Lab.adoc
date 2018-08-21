@@ -101,7 +101,6 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
 . Open the file *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid* and examine the code for the signup:
 .. Service/Application filter
 +
-[source, text]
 ----
             {% for service in provider.services %}
       		<h2> {{ service.name }} </h2>
@@ -113,7 +112,6 @@ NOTE: The above liquid filter iterates through the list of all services for the 
 +
 .. Plan Features/Limits
 +
-[source, text]
 ----
     <div class="col-md-4">
         <article class="panel panel-default">
@@ -156,7 +154,6 @@ NOTE: The above code displays the plan name and features/limits setup for the pl
 +
 .. Signup link
 +
-[source, text]
 ----
                    <a class="btn btn-cta-secondary pull-right" href="{{ urls.signup }}?{{ plan | to_param }}&{{ service.service_plans.first | to_param }}">Signup to plan {{ plan.name }}</a>
 
@@ -176,7 +173,6 @@ image::images/3scale_amp_custom_signup_single_plan.png[]
 . Edit the *Homepage*:
 .. At around line 120, replace _original_app_signup_form_ with _single_app_signup_form_.
 +
-[source, text]
 ....
   <section class="plan">
     {% include 'single_app_signup_form' %}
@@ -240,14 +236,12 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
 . You will notice that the form is quite similar to the *_single_app_signup_form.html.liquid*. The chief points to note are:
 .. The signup form:
 +
-[source, text]
 ----
 <form action="{{ urls.signup }}" method="get">
 ----
 +
 .. checkbox input:
 +
-[source, text]
 ----
 <input type="checkbox" name="plan_ids[]" value="{{ plan.id }}">Signup to {{ plan.name }}</input>
 <input type="hidden" name="plan_ids[]" value="{{ service.service_plans.first.id }}"></input>
@@ -256,7 +250,6 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
 +
 .. A submit button to direct to the Signup form.
 +
-[source, text]
 ----
     <button type="submit" class="btn btn-cta-primary">Signup</a>
 ----
@@ -381,7 +374,6 @@ image::images/3scale_amp_custom_signup_field_plan_6.png[]
 . Add the partial *custom_field_signup_flow* with the contents of the file *~/lab/3scale_development_labs/DevPortal/_custom_field_plans.html.liquid*
 . In the *Homepage*, add the following after line 87 (before the *{% else %}* line.
 +
-[source, text]
 ----
 {% include 'custom_field_signup_form' %}
 ----
@@ -517,14 +509,12 @@ NOTE: Study this file, and understand the liquid logic used in order to present 
 . In the *Homepage* make the following changes:
 .. Remove the reference to following line created in previous lab:
 +
-[source, text]
 ----
  {% include 'custom_field_signup_form' %}
 ----
 +
 . Add the following lines after the *</header>* section:
 +
-[source, text]
 ----
 {% if current_user and current_account.applications.size == 0 %}
 
