@@ -244,7 +244,6 @@ TIP: We will be using these routes to be configured as the production and sandbo
 === Define Account and User
 
 Similar to previous 3scale developer courses, we'll use an organization called:  `RHBank` with  a developer called:  `rhbankdev`.
-
 The following is a refresher for how to create this account.
 
 . Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
@@ -255,7 +254,6 @@ The following is a refresher for how to create this account.
 * *Email*: `_Provide unique email address_`
 * *PASSWORD*: `_Provide unique, easy-to-remember password_`
 * *Organization/Group Name*: `RHBank`
-
 
 === Configure 3scale API Management
 
