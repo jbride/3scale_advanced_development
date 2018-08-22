@@ -17,7 +17,9 @@
 
 :numbered:
 
-== Overview
+== SOAP Management using SOAP Policy
+
+=== Overview
 
 It is often the case that there will be a requirement to manage SOAP based web services in addition to RESTful web services.
 
