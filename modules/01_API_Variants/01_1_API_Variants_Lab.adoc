@@ -39,7 +39,7 @@ It is recommended that you install SOAP-UI on your local laptop.
 
 :numbered:
 
-== SOAP Service Management
+== SOAP Management using SOAP Policy
 
 === Overview
 
@@ -546,7 +546,7 @@ What you will want to do different is:
 Now you can use *Promote to Production* to push the custom policies to the Production APIcast gateway. Redeploy the gateway to ensure the latest configuration is updated, and repeat the SOAP requests to production endpoint.
 
 
-=== SOAP Transformation Using Fuse on OpenShift
+== SOAP Transformation Using Fuse on OpenShift
 
 In the previous section of the lab, you observed how 3scale can managed SOAP services.
 You also introduced a SOAP policy into your APIcast gateways for gathering of metrics based on SOAP operations.
