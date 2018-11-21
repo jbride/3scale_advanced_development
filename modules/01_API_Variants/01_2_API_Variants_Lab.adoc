@@ -37,6 +37,12 @@ This Fuse application serves as a RESTful proxy to the backend SOAP service and 
 
 In the second half of this lab, you manage an _OData_ endpoint exposed by JBoss Data Virtualization.
 
+=== SOAP-UI (Recommended)
+
+It is recommended that you install _SOAP-UI_ on your local laptop.
+
+SOAP-UI can optionally be used in later labs of this course when you configure 3scale to manage SOAP based API endpoints.
+
 == SOAP Service Management using APIcast Policy
 
 === Deploy SOAP Service to OpenShift
