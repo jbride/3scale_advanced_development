@@ -29,7 +29,7 @@ You can clone these lab assets to your local machine as follows:
 -----
 $ mkdir -p $HOME/lab
 
-$  git clone https://github.com/gpe-mw-training/3scale_development_labs.git $HOME/lab/3scale_development_labs.git
+$ git clone https://github.com/gpe-mw-training/3scale_development_labs.git $HOME/lab/3scale_development_labs
 -----
 
 == Environment Variables
@@ -128,7 +128,7 @@ Your lab environment includes access to a multi-tenant 3scale API Manager instal
 
 For the purpose of this lab, you will serve as the administrator of your own 3scale _tenant_ (aka: _domain_)
 
-. To access the admin portal of your 3scale environment, point to your browser to the output of the following:
+. To access the admin portal of your 3scale environment, point your browser to the output of the following:
 +
 -----
 $ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
@@ -175,7 +175,7 @@ These are the API gateways that you will use to manage your backend services for
 . You can get a list of these API gateways by executing the following:
 +
 -----
-$ $ oc get deploy -n $GW_PROJECT
+$ oc get deploy -n $GW_PROJECT
 
 
 NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
