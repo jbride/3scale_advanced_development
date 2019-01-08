@@ -4,13 +4,13 @@
 :linkattrs:
 
 
-== Lab Setup
+== API Manager Lab Setup
 
 .Goals
 
 * Review of lab assets
 * Orientation to multitenant API Manager lab environment
-* Provision APIcast gateways
+* Review  API gateways
 
 .Prerequisites
 * Completion of the following courses:
@@ -20,34 +20,21 @@
 
 :numbered:
 
-== Client tooling
+== Lab Assets
 
-To execute the labs in this course, you will need some client tooling.
-This includes the OpenShift command line utility (`oc`) as well as the course lab asseets.
+The lab assets for this course are version controlled at:  `https://github.com/gpe-mw-training/3scale_development_labs.git`
 
-You can continue to  utilize the same link:https://drive.google.com/file/d/1Ee5h0_YpWcJ0Lt3boBXujsCghcarABFF/view?usp=sharing[client virtual machine] that you used in the API mgmt related pre-requisite courses.
-
-In the client virtual machine, ensure you are using the `jboss` operating system user.
-
-Recall that the lab assets for this course are version controlled at:  `https://github.com/gpe-mw-training/3scale_development_labs.git`
-If you are not using the course client VM, then please clone this repository to the following directory:  $HOME/lab/33scale_development_labs .
-
-Refresh these lab assets by navigating to $HOME/lab/3scale_development_labs and executing:
+You can clone these lab assets to your local machine as follows:
 
 -----
+$ mkdir -p $HOME/lab
 
-$  git pull origin master
+$  git clone https://github.com/gpe-mw-training/3scale_development_labs.git $HOME/lab/3scale_development_labs.git
 -----
 
 == Environment Variables
 
-Open a terminal window and set the following environment variables that will be used throughout the duration of this course.
-
-ifdef::showscript[]
-If student lab environment and 3scale tenants were provisioned using the ocp-workload-rhte-mw-api-mesh ansible role, then student details can be found in:
-
-$HOME/provisioning_output/$OCP_WILDCARD_DOMAIN/$TENANT_HAME/$ocp_amp_admin_username_tenant_info_file_$START_TENANT_$END_TENANT.txt
-endif::showscript[]
+Open a terminal window in your local machine and set the following environment variables that will be used throughout the duration of this course.
 
 -----
 # Modify each of the following based on settings provided by Instructor
@@ -56,17 +43,17 @@ endif::showscript[]
 $ echo "export REGION=<provided by your instructor>" >> ~/.bashrc
 $ echo "export OCP_USERNAME=<provided by your instructor>" >> ~/.bashrc
 $ echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
-$ echo "export API_ADMIN_ACCESS_TOKEN=<provided by your instructor>" >> ~/.bashrc
-
+$ echo "export API_TENANT_USERNAME=<provided by instructor>                               #   Name of tenant admin " >> ~/.bashrc
+$ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                            #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
 
 
 #  Review, copy & paste the following in same terminal #
 
-echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.openshift.opentlc.com" >> ~/.bashrc
-echo "export TENANT_NAME=3scale-mt-amp0" >> ~/.bashrc
-echo "export GW_PROJECT=\$OCP_USERNAME-gw" >> ~/.bashrc
-echo "export THREESCALE_PORTAL_ENDPOINT=https://\$API_ADMIN_ACCESS_TOKEN@\$OCP_USERNAME-\$TENANT_NAME-admin.\$OCP_WILDCARD_DOMAIN" >> ~/.bashrc
-
+echo "export OCP_AMP_ADMIN_ID=api0                                                      #   Name of API Manager administrator " >> ~/.bashrc
+echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where API Manager resides "   >> ~/.bashrc
+echo "export GW_PROJECT=\$OCP_USERNAME-gw                                               #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
+echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
+echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.openshift.opentlc.com                    #   OCP Wildcard DNS" >> ~/.bashrc
 
 
 # Execute the following to enable the variables in your existing shell
@@ -76,15 +63,44 @@ source ~/.bashrc
 
 == Red Hat OpenShift Container Platform
 
-. Using both your browser as well as the `oc` utility in the client vm, authenticate into your OCP environment.
-+
-The URL of the master node will be the output of the following:
+The instructor of this course will have provisioned an OpenShift cluster environment to support this enablement.
+
+All labs for this course will execute in this remote OpenShift cluster environment.
+
+=== OpenShift Web Console
+
+. The OpenShift web console can be accessed by pointing your browser to the following url:
 +
 -----
-$  echo -en "\n\nhttps://master.$REGION.openshift.opentlc.com\n\n"
+$ echo -en "\n\nhttps://master.$REGION.openshift.opentlc.com\n\n"
 -----
 +
-At the login prompt (of both the oc utility and your browser), use the values of `$OCP_USERNAME` and `$OCP_PASSWD`
+At the login prompt, use the values of `$OCP_USERNAME` and `$OCP_PASSWD`
+
+. Determine the version of the OpenShift cluster:
+.. Navigate to question mark icon in the top right of the Web Console and select `About`.
++
+image::images/ocp_version.png[]
+
+=== `oc` utility tooling
+
+The OpenShift `oc` client utility will need to be installed on your host laptop.
+
+The version of the `oc` utility should be of the same major version as the OCP shared cluster environment provisioned by your instructor.
+
+If you do not already have a compatible version of the `oc` utility installed on your host machine, then you can retrieve it by navigating to the following in the OCP Web Console:
+
+. Navigate to the question mark icon in the top right of the Web Console and select: `Command Line Tools`
+. Under `Download oc`, click the `Latest Release` link
+. Doing so will redirect your browser to a page that allows for selection of a specific version for each type of operating system (Linux, OSX, Windows).
+
+Once you've installed the oc utility, log in to Openshift using the oc utility.
+
+----
+$ oc login https://master.$REGION.openshift.opentlc.com -u $OCP_USERNAME -p $OCP_PASSWD
+----
+
+=== OCP Projects
 
 . Once you have authenticated in, you should see two OpenShift projects :
 +
@@ -115,12 +131,13 @@ For the purpose of this lab, you will serve as the administrator of your own 3sc
 . To access the admin portal of your 3scale environment, point to your browser to the output of the following:
 +
 -----
-$ echo -en "\n\nhttps://$OCP_USERNAME-$TENANT_NAME-admin.$OCP_WILDCARD_DOMAIN\n\n"
+$ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
 -----
 
-. Authenticate using the values of $OCP_USERNAME and $OCP_PASSWD
-+
-Your 3scale credentials are the same as your OCP credentials.
+Login credentials are as follows:
+
+. *Username*:  $API_TENANT_USERNAME
+. *Password*:  admin
 
 
 == API Gateways
@@ -132,7 +149,7 @@ Your 3scale API Manager multitenant lab environment does come with a set of asso
 These gateways can be seen by executing the following:
 
 -----
-$ oc get dc -n $TENANT_NAME | grep apicast
+$ oc get dc -n $API_MANAGER_NS | grep apicast
 
 
 apicast-production        1          1         1         config,image(amp-apicast:latest)
@@ -182,12 +199,6 @@ The API Gateway uses the value of _THREESCALE_PORTAL_ENDPOINT_ invoke the API Ma
 $ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
 -----
 
-== Smoke Test
-
-In this section of the lab, you smoke test the management of any RESTful service of your choice using your 3scale API Manager and API gateways.
-
-As backend services, you can use the same ones used in the pre-req courses (ie:  helloworld _swarm_ or _vertx_ based services) .
-Another option is to conduct a smoke test using the _Echo API_ pre-configured with a new API tenant..
 
 ifdef::showscript[]
 endif::showscript[]
