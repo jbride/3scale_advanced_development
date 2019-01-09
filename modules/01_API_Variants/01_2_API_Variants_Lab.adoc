@@ -24,7 +24,7 @@
 It is often the case that there will be a requirement to manage SOAP based web services in addition to RESTful web services.
 
 SOAP requests consist of HTTP POST requests with an XML payload and some additional SOAP specific headers.
-It is possible for these SOAP requests to be sent to 3scale's API gateway, forwarded to your backend SOAP services and reported on to the 3scale AMP without any customizations.
+It is possible for these SOAP requests to be sent to 3scale's API gateway, forwarded to your backend SOAP services and reported on to the 3scale API Manager without any customizations.
 
 However, if there is an additional requirement to gather metrics on requests to specific operations exposed by a backend SOAP service, then some additional set-up is needed.
 
@@ -47,7 +47,7 @@ SOAP-UI can optionally be used in later labs of this course when you configure 3
 
 === Deploy SOAP Service to OpenShift
 
-In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale AMP.
+In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale API manager.
 
 Follow the instructions below.
 
@@ -145,12 +145,6 @@ $ oc new-project $OCP_USERNAME-stores-api \
      --description="Stores API SOAP Services"
 -----
 
-.. If you are not already there, change to this new project:
-+
------
-$ oc project $OCP_USERNAME-stores-api
------
-+
 .. Import the `stores-api` template into your OpenShift environment:
 +
 -----
@@ -175,7 +169,7 @@ storesdb-1-6z5lx      1/1       Running     0          12m
 
 === Test the `Stores` API SOAP service:
 
-.. Using the _curl_ utility:
+. Using the _curl_ utility:
 +
 At the command line, view the WSDL exposed by the Stores service:
 +
@@ -183,7 +177,7 @@ At the command line, view the WSDL exposed by the Stores service:
 $ curl -v http://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api `/StoresWS?wsdl
 -----
 
-.. Using a browser:
+. Using a browser:
 +
 NOTE:  There is a known bug with the rendering of WSDLs in recent versions of Firefox.
 
@@ -200,7 +194,7 @@ NOTE: You may encounter a blank screen if using Firefox.  If so, switch to Googl
 image::images/3scale_amp_stores_api_8.png[]
 
 
-.. Using _wsdlbrowser.com_
+. Using _wsdlbrowser.com_
 
 ... In a new browser tab or window, open the URL link:http://wsdlbrowser.com["http://wsdlbrowser.com"].
 ... Provide the URL of the Stores WSDL and click *Browse*.
@@ -251,43 +245,70 @@ TIP: We will be using these routes to be configured as the production and sandbo
 
 === Define Account and User
 
-Similar to previous 3scale developer courses, we'll use an organization called:  `RHBank` with  a developer called:  `rhbankdev`.
+Similar to what you previously did in the 3scale developer pre-req course, you will use an organization called:  `RHBank` with  a developer called:  `rhbankdev`.
 The following is a refresher for how to create this account.
 
-. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
-. Click *Developers*.
+. In the 3scale Admin Portal, navigate to  *Audience -> Accounts -> Listing*.
 . Click *Create*.
 . Create a new account with the following credentials:
 * *Username*: `rhbankdev`
 * *Email*: `_Provide unique email address_`
 * *PASSWORD*: `_Provide unique, easy-to-remember password_`
-* *Organization/Group Name*: `RHBank`
+* *Organization/Group Name*: `RHBank`
 
-=== Configure 3scale API Management
+=== Define new API
 
-. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
-. Create a new service:
+. In the Admin Portal, create a new service:
 * *Name*: `Stores SOAP Policy API`
 * *System Name*: `stores-soap-policy-api`
 * *Description*: `Stores SOAP Policy API`
-. Create an application plan:
+. Create an application plan for this new _Stores SOAP Policy API_:
 * *Name*: `StoresSOAPBasicPlan`
 * *System Name*: `storesSOAPBasicPlan`
 . Publish the application plan.
-. In the *Developers* tab, select the *RHBank* account.
-. Click *Applications* and then *Create Application*.
-. Fill in the following information:
+
+. Create an application associated with _RHBank_ account and the _StoresSOAPBasicPlan_ as per the following:
 * *Application Plan*: `storesSOAPBasicPlan`
 * *Name*: `StoresSOAPApp`
 * *Description*: `Stores SOAP Application`
-. In the *API* tab, click *Stores SOAP Policy API*, and then click *Integration*.
-* *Private Base URL*: URL to your _stores-soap_ service.
-* *Staging Public Base URL*: URL of the route stores-soap-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
-* *Production Public Base URL*: URL of the route `stores-soap-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
-. Configure the Method:
+
+. *Stores SOAP Policy API* integrations
+* *Private Base URL*:  Populate with the output of the following:
++
+-----
+$ echo -en "\n\nhttp://stores-soap.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
+-----
+
+* *Staging Public Base URL*:  Populate with the output of the following:
++
+-----
+$ echo -en "\n\nhttps://`oc get route stores-soap-policy-staging-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
+-----
+
+* *Production Public Base URL*: Populate with the output of the following:
++
+-----
+$ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
+-----
+
+. Configure a Method to represent the only HTTP resource exposed by the backend SOAP service:
 .. *Friendly name*: StoresWS
 .. *system name*: stores/storesws
 .. *Description*: Stores SOAP Web Service
+
+. Configure Mapping rules:
++
+[options="header"]
+|=======================
+|Verb|Pattern|Increment|Metric or Method
+|`POST`|`/StoresWS`|`1`|`stores/storesws`
+|`GET`|`/StoresWS`|`1`|`hits`
+|=======================
+
+.. The mapping for the _POST_ requests will increment hits on the _StoresWS_ method every time a SOAP request is made to any of the SOAP _operations_ of your backend _Stores_ service.
+.. The mapping for the _GET_ request will increment hits made to resources such as the _Stores_ service's WSDL.
+
+
 . Configure the metrics:
 +
 [options="header"]
@@ -299,22 +320,12 @@ The following is a refresher for how to create this account.
 |`getStore`|`Stores/getStore`|`hits`
 |=======================
 +
-. Configure Mapping rules:
-+
-[options="header"]
-|=======================
-|Verb|Pattern|Increment|Metric or Method
-|`POST`|`/StoresWS`|`1`|`stores/storesws`
-|`GET`|`/StoresWS`|`1`|`hits`
-|=======================
-
-.. The mapping for the _POST_ requests will increment hits on the _StoresWS_ method every time a SOAP request is made to any of the SOAP operations of your backend _Stores_ service.
-.. The mapping for the _GET_ request will increment hits made to resources such as the _Stores_ service's WSDL.
+These metrics correspond to SOAP _operations_ implemented by your backend SOAP service.
 
 . Set an API Test GET request:
 * *API Test GET Request*: `/StoresWS?wsdl`
 
-.  Click *Update and test in the Staging Environment*.
+. Click *Update and test in the Staging Environment*.
 
 
 === Test API Managed SOAP service
@@ -329,59 +340,6 @@ $ export STORES_SOAP_API_KEY=<stores-soap api key>
 $ curl -k "https://`oc get route stores-soap-policy-staging-route \
       -o template --template {{.spec.host}} \
       -n $GW_PROJECT`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
------
-
-. The Response should be similar to below:
-+
------
-<wsdl:definitions xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://service.redhat.com/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:ns1="http://www.rhmart.com/Stores/" name="StoresWSService" targetNamespace="http://service.redhat.com/">
-<wsdl:import location="http://stores-api-sj.apps.na1.openshift.opentlc.com/StoresWS?wsdl=Stores.wsdl" namespace="http://www.rhmart.com/Stores/"></wsdl:import>
-<wsdl:binding name="StoresWSServiceSoapBinding" type="ns1:Stores">
-<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-<wsdl:operation name="createStore">
-<soap:operation soapAction="http://www.rhmart.com/Stores/createStore" style="document"/>
-<wsdl:input name="createStore">
-<soap:body use="literal"/>
-</wsdl:input>
-<wsdl:output name="createStoreResponse">
-<soap:body use="literal"/>
-</wsdl:output>
-</wsdl:operation>
-<wsdl:operation name="deleteStore">
-<soap:operation soapAction="http://www.rhmart.com/Stores/deleteStore" style="document"/>
-<wsdl:input name="deleteStore">
-<soap:body use="literal"/>
-</wsdl:input>
-<wsdl:output name="deleteStoreResponse">
-<soap:body use="literal"/>
-</wsdl:output>
-</wsdl:operation>
-<wsdl:operation name="getStore">
-<soap:operation soapAction="http://www.rhmart.com/Stores/getStore" style="document"/>
-<wsdl:input name="getStore">
-<soap:body use="literal"/>
-</wsdl:input>
-<wsdl:output name="getStoreResponse">
-<soap:body use="literal"/>
-</wsdl:output>
-</wsdl:operation>
-<wsdl:operation name="getAllStores">
-<soap:operation soapAction="http://www.rhmart.com/Stores/getAllStores" style="document"/>
-<wsdl:input name="getAllStores">
-<soap:body use="literal"/>
-</wsdl:input>
-<wsdl:output name="getAllStoresResponse">
-<soap:body use="literal"/>
-</wsdl:output>
-</wsdl:operation>
-</wsdl:binding>
-<wsdl:service name="StoresWSService">
-<wsdl:port binding="tns:StoresWSServiceSoapBinding" name="StoresWSPort">
-<soap:address location="http://stores-api-sj.apps.na1.openshift.opentlc.com/StoresWS"/>
-</wsdl:port>
-</wsdl:service>
-</wsdl:definitions>
-
 -----
 
 . Make a POST request to the _getAllStores_ operation of the _Stores_ Web Service :
@@ -448,8 +406,8 @@ These _SOAPAction_ header fields will now be used by your API gateway to update 
 
 ==== Custom Configuration to handle SOAP requests
 
-. In the *API* tab, click *Stores SOAP Policy API*.
-. Click: `Integration -> edit integration settings`.
+. Navigate to *API:Stores SOAP Policy API -> Integration -> Configuration*.
+. Click: `Integration -> edit APIcast configuration`.
 . Expand the *Policies* section.
 . In the *Policy Chain*, click *Add Policy* button and choose *SOAP*.
 +
@@ -473,17 +431,17 @@ image:images/3scale_amp_stores_soap_policies_order.png[]
 +
 NOTE: The *pattern* should match the *SOAPAction* for each operation. The *metric_system_name* should match the System Name entered for the Metrics of each operation.
 +
-. Click *Submit* to save the changes.
+. Click *Update Policy* to save the changes.
 . Click on *Update & test in Staging Environment*.
 
-. Now redeploy the apicast-staging pod in OpenShift by simply deleting the existing one.
+. Now redeploy the stage-apicast pod in OpenShift by simply deleting the existing one.
 Kubernetes will make sure a new one is started.
 
 . Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
 +
 -----
-$ oc get pods | grep apicast-staging
-apicast-staging-5-49cv1           1/1       Running   0          1m
+$ oc get pods | grep stage-apicast
+stage-apicast-5-49cv1           1/1       Running   0          1m
 -----
 
 ==== Invoke various operations of SOAP service
@@ -537,7 +495,16 @@ What you will want to do different is:
 
 ==== SOAP Requests to Production Endpoint(Bonus)
 
-Now you can use *Promote to Production* to push the custom policies to the Production API gateway. Redeploy the gateway to ensure the latest configuration is updated, and repeat the SOAP requests to production endpoint.
+Now you can use *Promote to Production* to push the custom policies to the Production API gateway. 
+Redeploy the gateway to ensure the latest configuration is updated, and repeat the SOAP requests to production endpoint.
+
+ifdef::showscript[]
+
+-----
+curl -v -k -X POST        --header "Content-Type: application/soap+xml"         --header "Accept: application/soap+xml"         --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores"        -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>'        "https://`oc get route stores-soap-policy-production-route -o template --template {{.spec.host}} -n $GW_PROJECT`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
+-----
+
+endif::showscript[]
 
 
 == SOAP Transformation Using Fuse on OpenShift
@@ -687,14 +654,13 @@ Each of the routes above gets the request, constructs the CXF request message ob
 -----
 
 . Investigate the property that defines the URL to the backend SOAP service
-.. In your virtual machine, navigate to the source code of the project at: $HOME/lab/3scale_development_labs/StoresFIS
 .. Inspect the properties found in the project's _application.properties_ file:
 +
 -----
-cat src/main/resources/application.properties
+cat $HOME/lab/3scale_development_labs/StoresFIS/src/main/resources/application.properties
 -----
-+
-Notice a property called _cxf.endpoint.soap_ is defined:
+
+.. Notice a property called _cxf.endpoint.soap_ is defined:
 +
 -----
 
@@ -731,7 +697,7 @@ The REST-SOAP Camel proxy is now correctly deployed, and you can begin to config
 
 ==== Create API Staging and Production Routes
 
-. Follow the steps in the API Management lab to create secure routes to the `apicast-staging` and `apicast-production` services for the Stores API.
+. Follow the steps in the API Management lab to create secure routes to the `stage-apicast` and `apicast-production` services for the Stores Transformation API.
 
 . Verify that you are in the apicast gateway project:
 +
@@ -743,13 +709,13 @@ $ oc project $GW_PROJECT
 +
 -----
 $ oc create route edge stores-soap-transformation-staging-route \
-  --service=apicast-staging \
-  --hostname=stores-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  --service=stage-apicast \
+  --hostname=stores-trans-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
   -n $GW_PROJECT
 
 $ oc create route edge stores-soap-transformation-production-route \
-  --service=apicast-production \
-  --hostname=stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+  --service=prod-apicast \
+  --hostname=stores-trans-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
   -n $GW_PROJECT
 -----
 
@@ -764,24 +730,30 @@ $ oc create route edge stores-soap-transformation-production-route \
 * *Name*: `StoresPremiumPlan`
 * *System Name*: `storesPremiumPlan`
 . Publish the application plan.
-. In the *Developers* tab, select the *RHBank* account.
-. Click *Applications* and then *Create Application*.
+. Create a new application for the *RHBank* account that is associated with your _StoresPremiumPlan_.
 . Fill in the following information:
 * *Application Plan*: `StoresPremiumPlan`
-* *Name*: `StoresApp`
-* *Description*: `Stores Application`
-. In the *API* tab, click *Stores API*, and then click *Integration*.
+* *Name*: `StoresTransformationApp`
+* *Description*: `Stores Transformation Application`
+
+. *Stores SOAP Transformation API* integrations
 * *Private Base URL*: 
 +
-URL to your JBoss Fuse Camel REST route.
+-----
+$ echo -en "\n\nhttp://stores-fis.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
+-----
 
 * *Staging Public Base URL*: 
 +
-Create a new edge secure route in the `3scale_AMP` project to `stores-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
+-----
+$ echo -en "\n\nhttps://`oc get route stores-soap-transformation-staging-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
+-----
 
 * *Production Public Base URL*: 
 +
-Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+-----
+$ echo -en "\n\nhttps://`oc get route stores-soap-transformation-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
+-----
 
 . Create an API Test GET request:
 * *API Test GET Request*: `/allstores`
@@ -792,9 +764,9 @@ Create a new route in the `3scale_AMP` project to `stores-production-apicast-$OC
 .. Test the API by making a `curl` request to the staging URL, and check the response:
 +
 -----
-$ export STORES_FUSE_API_KEY=<api key to your Stores App>
+$ export STORES_TRANS_API_KEY=<api key to your Stores App>
 
-$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
@@ -803,13 +775,15 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 .. Promote the API to production, test the production URL, and check the response:
 +
 -----
-$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_FUSE_API_KEY"
+$ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
 
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 
 -----
 
 * A Camel route can be used to provide routing for 3scale API Management's gateway to the SOAP web service.
+
+
 
 == OData Service Management
 
@@ -824,7 +798,9 @@ In this section you deploy an OData(Open Data Protocol) service. link:http://www
 
 === Deploy `Stock API` Project to OpenShift
 
-In this section you deploy the Stock API onto a JBoss EAP container running on OpenShift. The stock data exists in two databases: MySQL and PostgreSQL. JBoss Data Virtualization is used to provide data virtualization and present the combined data view as an OData REST service.
+In this section you deploy the Stock API onto a JBoss EAP container running on OpenShift. 
+The stock data exists in two databases: MySQL and PostgreSQL. 
+JBoss Data Virtualization is used to provide data virtualization and present the combined data view as an OData REST service.
 
 IMPORTANT: When executing commands using the `oc` utility, you must be logged in to the master API of your OpenShift Container Platform environment with your `OCP_USER_ID` credentials.
 
@@ -833,15 +809,10 @@ IMPORTANT: When executing commands using the `oc` utility, you must be logged in
 +
 -----
 $ oc new-project $OCP_USERNAME-stock-api \
-     --display-name="Stock API" \
+     --display-name="Stock API ODATA" \
      --description="Stock API ODATA Services"
 -----
 
-. If you are not already there, change to this new project:
-+
------
-$ oc project $OCP_USERNAME-stock-api
------
 . Import the `stock-api` template to your OpenShift environment:
 +
 -----
@@ -866,6 +837,7 @@ $ oc policy add-role-to-user view system:serviceaccount:stock-api:datavirt-servi
 -----
 $ oc new-app --template=stock-api --param HOSTNAME_HTTP=stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
+
 . Test the `stock` API service deployed in your OpenShift environment:
 +
 -----
@@ -879,7 +851,7 @@ stockpg-5-j8181       1/1       Running     0          18h
 . Once the API and the database pods are running, test the `odata` service by making a request to the endpoint:
 +
 -----
-$ curl -k http://stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN/odata4/Stock-API/FederatedStock/stock?$format=JSON
+$ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERNAME-stock-api`/odata4/Stock-API/FederatedStock/stock?$format=JSON
 -----
 
 * Expect a response like the following:
@@ -893,7 +865,7 @@ $ curl -k http://stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN/odata4/Stock-API/F
 
 === Create API Gateway Staging and Production Routes
 
-Follow the steps in the API Management lab to create secure routes to the `apicast-staging` and `apicast-production` services for the Stock API.
+Follow the steps in the API Management lab to create secure routes to the `stage-apicast` and `apicast-production` services for the Stock API.
 
 . Verify that you are in the API gateway project:
 +
@@ -904,37 +876,55 @@ $ oc project $GW_PROJECT
 . Create new routes for the Stock API staging and production API gateway:
 +
 -----
-$ oc create route edge stock-staging-route \
-  --service=apicast-staging \
-  --hostname=stock-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+$ oc create route edge stock-odata-staging-route \
+  --service=stage-apicast \
+  --hostname=stock-odata-staging-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
   -n $GW_PROJECT
 
-$ oc create route edge stock-production-route \
-  --service=apicast-production \
-  --hostname=stock-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
+$ oc create route edge stock-odata-production-route \
+  --service=prod-apicast \
+  --hostname=stock-odata-production-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
   -n $GW_PROJECT
 -----
 
 === Configure 3scale API Management
 
-. Log in to 3scale by Red Hat's Admin Portal with your userID/password credentials.
-. Create a new service:
-* *Name*: `Stock API`
-* *System Name*: `stock-api`
-* *Description*: `Stock API`
+. In the Admin Portal, create a new service:
+* *Name*: `Stock OData API`
+* *System Name*: `stock-odata-api`
+* *Description*: `Stock OData API`
+
 . Create an application plan:
-* *Name*: `StockPremiumPlan`
-* *System Name*: `stockPremiumPlan`
+* *Name*: `StockODataPremiumPlan`
+* *System Name*: `stockODataPremiumPlan`
 . Publish the application plan.
-. In the *Developers* tab, click *RHBank*.
+
+. Create a new application for the *RHBank* account that is associated to the *StockODataPremiumPlan*.
 . Click *Applications* and then click *Create Application*:
-* *Application Plan*: `StockPremiumPlan`
-* *Name*: `StockApp`
-* *Description*: `Stock Application`
-. In the *API* tab, click *Stock API* and then click *Integration*:
-* *Private Base URL*: URL to your JBoss Data Virtualization route.
-* *Staging Public Base URL*: Create new edge secure route in `3scale_AMP` project to `stock-staging-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-staging` service.
-* *Production Public Base URL*: Create new route in `3scale_AMP` project to `stock-prod-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN`, mapped to the `apicast-production` service.
+* *Application Plan*: `StockODataPremiumPlan`
+* *Name*: `StockODataApp`
+* *Description*: `Stock OData Application`
+
+. *Stock OData API* integrations
+* *Private Base URL*: 
++
+-----
+$ echo -en "\n\nhttp://stock-api.$OCP_USERNAME-stock-api.svc.cluster.local:8080\n"
+-----
+
+* *Staging Public Base URL*: 
++
+-----
+$ echo -en "\n\nhttps://`oc get route stock-odata-staging-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
+-----
+
+* *Production Public Base URL*: 
++
+-----
+$ echo -en "\n\nhttps://`oc get route stock-odata-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
+-----
+
+
 . Create a mapping rule:
 * *Operation*: `GET`
 * *Pattern*: `/odata4/Stock-API/FederatedStock/stock`
@@ -965,3 +955,10 @@ Subsequently, you'll want to execute the following:
 <wsdl:import location="https://stores-soap-staging-apicast-jb.apps.dev39.openshift.opentlc.com/StoresWS?wsdl=Stores.wsdl&amp;user_key=4fab352901d3badef8cbe9e05eab1271" namespace="http://www.rhmart.com/Stores/">
 -----
 . Create a new SOAP project in SOAP-UI by referencing this downloaded and modified local wsdl.
+
+
+ifdef::showscript[]
+
+oc edit is fis-java-openshift -n openshift
+
+endif::showscript[]
