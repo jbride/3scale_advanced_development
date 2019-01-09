@@ -6,7 +6,8 @@
 
 == Custom Signup Flows Lab
 
-In this lab you create custom signup flows for managing Developer signups for APIs managed through 3scale. A few scenarios covered are single application,  multiple application signups, group membership flows.
+In this lab you create custom signup flows for managing various signup approaches for API consumers of your APIs managed through 3scale. 
+Several signup scenario flows are covered in this lab to include: _single application sign-up_,  _multiple application signups_, and _group membership_.
 
 .Goals
 * Create API documentation for the Products API application
@@ -24,31 +25,40 @@ https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flo
 
 In this lab, we will be following the 4 examples discussed in the blog and adapt it to the services and APIs managed here.
 
+The sign-up flow that you (as an API Provider) select and implement in your production environment to onboard API Consumers is a function of several considerations.   
+These considerations include the following:
+
+. Are API services available to all API consumers or should they be made available per group ?
+. Should any of your API services be made available to non-registered API consumers ?
+. Are there different application plans for each service ?
+
+
 == Save Original Signup Flow as a _Partial_
 
 === Overview
 
-The out-of-the-box _Homepage_ found in the 3scale _Content Management System_ (CMS) includes a very simple sign-up flow embedded in it.
+The out-of-the-box _Homepage_ found in the 3scale _Content Management System_ (CMS) (and gets rendered to API consumers in the Developer Portal) includes a very simple sign-up flow embedded in it.
 
 In this section of the lab, you extract that embedded sign-up flow and save it as a _Partial_.
 You then reference that new partial in your _Homepage_.
 
 Because you are just moving the original sign-up flow logic from being buried in the _Homepage_ to being a referenced _partial_, no change to the look and feel of your Developer Portal is to be expected.
 
-In subsequent sections of this lab, you will implement more sophisticated sign-up flows that are also implemented as _partials_ .
+In later sections of this lab, you will implement more sophisticated sign-up flows that are also implemented as _partials_ .
 All of your sign-up flows can easily be swapped in and out of the Developer Portal homepage simply by changing the reference to the desired partial.
 
-You will then be able to compare and contrast their features and behavior.
+You will then be able to compare and contrast the features and behavior of each of these partials.
 
 === Procedure
 
-. From the 3scale Admin Portal, click the _Developer Portal_ link in the top toolbar to navigate to the CMS.
-. Observe default look-n-feel of Developer Portal homepage
-.. At the top of the CMS, click: _Visit Developer Portal_
-.. Make note of the default look-n-feel of the Developer Portal along with its focus on the _Echo API_.
+. From the 3scale Admin Portal, navigate to _Audience -> Developer Portal_.  Doing so will expand links related to the CMS.
+. In the left panel, click: `Content`.  Observe the default look-n-feel of the CMS homepage.
+. In the left panel, click: _Visit Portal_
++
+Make note of the default look-n-feel of the Developer Portal along with its focus on the _Echo API_.
 
-. Navigate to: *My -> Root -> Homepage*:
-. Cut out lines 119 - 182 from the _Homepage_.
+. In the CMS, navigate to: *My -> Root -> Homepage*:
+. Cut out lines 119 - 182 from the _Homepage_.  Save the change.
 . From the blue drop-down selection at the top-right, click _New Partial_.
 +
 image::images/click_new_partial.png[]
@@ -70,11 +80,24 @@ image::images/reference_original_partial.png[]
 
 . Publish both the changes.
 +
-Toward the top of the CMS, click _Drafts_ and then "Publish All"
+In the left panel, click _Drafts_ and then "Publish All"
 +
 image::images/3scale_amp_custom_signup_single_plan_2.png[]
 
-. Click on *Visit Developer Portal* again and ensure nothing has changed.
+. Click on *Developer Portal* again and ensure nothing has changed.
+
+. Answer the following questions:
+
+.. Why is only one API service being displayed in the Developer Portal ?
+.. What is the _system_name_ of that API service ?
+
+ifdef::showscript[]
+
+. {% for plan in provider.services.api.application_plans %}
+. api
+
+endif::showscript[]
+
 
 == Single Application Signup flow
 
@@ -163,7 +186,7 @@ NOTE: This section shows the link to redirect to the signup form for the chosen 
 +
 . Add this partial to the developer portal.
 .. click on *New Partial*
-.. Provide System name* as *single_app_signup_form*
+.. Provide System name as:  *single_app_signup_form*
 .. Copy the contents of the file *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid* into the text field.
 .. Click on *Create Partial*.
 .. Confirm that the partial shows up in the menu list of partials.
@@ -187,11 +210,11 @@ NOTE: The include ensures the content of the partial is included to be displayed
 +
 image::images/3scale_amp_custom_signup_single_plan_2.png[]
 +
-. Now click on *Visit Developer Portal* and ensure the Homepage now displays the Products service as well.
+. Now click on *Visit Developer Portal* and ensure the Homepage now displays all API services and application plans created in previous labs:
 +
 image::images/3scale_amp_custom_signup_single_plan_3.png[]
 +
-. Now sign up using the form by clicking on the *Signup for ProductsBasicPlan*.
+. Now sign up using the form by clicking on one of the plans.
 +
 Notice that you are only allowed to select the link to a single application plan at a time.
 
@@ -233,7 +256,7 @@ image::images/3scale_amp_custom_signup_multi_plan.png[]
 The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid*.
 
 . Open the file *~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid* and examine the code for the signup:
-. You will notice that the form is quite similar to the *_single_app_signup_form.html.liquid*. The chief points to note are:
+. You will notice that the form is quite similar to the *_single_app_signup_form.html.liquid*. Specific to this _partial_, of interest is the following:
 .. The signup form:
 +
 ----
@@ -258,9 +281,6 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
 .. System name* : *multi_app_signup_form*
 .. Copy the contents of the file *~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid* and click on *Create Partial*.
 . Ensure the partial shows up in the menu.
-+
-image::images/3scale_amp_custom_signup_multi_plan_2.png[]
-+
 . Edit the *Homepage* and change the include section to use the *multi_app_signup_form* instead of *single_app_signup_form*.
 . Now save and *Publish* the changes.
 . Click on *Visit Developer Portal* and notice the home page now has the multiple signup form, with a checkbox for each application plan.
@@ -268,12 +288,12 @@ image::images/3scale_amp_custom_signup_multi_plan_2.png[]
 image::images/3scale_amp_custom_signup_multi_plan_3.png[]
 +
 . Try to signup for 2 different applications (e.g API Unlimited and ProductsBasicPlan).
-. In the signup form, provide the right email address and user details.
+. In the signup form, provide an appropriate email address and user details.
+. Click on the link in the confirmation email and login.
+. Login as the new user and notice the ability to view all registered Application and Keys created for those chosen applications.
 +
-image::images/3scale_amp_custom_signup_multi_plan_4.png[]
-+
-. Now click on the link in the confirmation email and login.
-. Login as the new user and notice the Application and Keys created for the chosen applications.
+image::images/apps_and_creds.png[]
+
 . Finally, in the admin portal click on the *Developers* tab, check that the Account & user are created.
 +
 image::images/3scale_amp_custom_signup_multi_plan_5.png[]
