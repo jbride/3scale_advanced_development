@@ -481,7 +481,7 @@ image::images/3scale_amp_custom_signup_field_plan_13.png[]
 
 === Test the Custom field flow for *Internal* access
 
-Now repeat the steps from the above section to create a user with *internal* access, and ensure that you can subscribe the user to the *StoresSOAPBasicPlan*.
+Repeat the steps from the above section to create a user with *internal* access, and ensure that you can subscribe the user to the *StoresSOAPBasicPlan*.
 
 
 
@@ -495,49 +495,64 @@ Now repeat the steps from the above section to create a user with *internal* acc
 
 Group Membership flow is especially useful when you want to control the access to Services, and not just the application plans.
 If you want to create sections of content that users can only access when they have the correct permissions then you should use this flow.
+
+
+Our usecase for this lab will be similar to the last lab on _custom field signup_. 
+Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *private* or *external*.
+In this manner, the service will only be seen by the users who belong to the particular group.
+This way, we can restrict even the ability to view services that are not available to specific users.
+
 To subscribe to any API a user must have signed up to create an account first.
 Therefore, the Services and Plans are only visible to users once they have an Account.
 You should assign the appropriate Group Membership once the Account has been created.
 
+=== Enable Service Plans
+This _Group Membership Flow_ relies on the enablement of _Service Plans_.
 
-Our usecase for this lab will be similar to the last lab on custom field signup. Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *private* or *external* so that service will only be seen by the users who belong to the particular group.
-This way, we can restrict even the ability to view the services that are not available for the users.
-
-=== Set up Service Plan
-
-. Login to the Admin Portal and navigate to the *Settings* tab.
+. As an API provider, login to the Admin Portal and navigate to the following to enable _Service Plans_:  `Audience -> Accounts -> Settings -> Usage Rules`
 . Check the box for *Service Plans*.
 . Click on *Update Settings*.
 +
 image::images/3scale_amp_group_member_signup_plan.png[]
+
+. Enablement of _Service Plans_ subsequently has the affect of making the following visible in the Admin Portal:
+
+.. `<any API> -> Overview -> Published Service Plans`
 +
-. Click on *APIs* tab and choose *Stores -> Service Plans*.
-. Unselect the *default* plan in the *Default Plan* dropbox.
+image::images/published_service_plans.png[]
+
+.. `Audience -> Accounts -> Subscriptions`
++
+image::images/list_ss.png[]
+
+
+=== Modify Default Service Plan of Stores SOAP Policy API
+
+. As an API provider, navigate to the _Subscriptions -> Service Plans_ section of the *Stores SOAP Policy API*. 
+. Ensure that the *Default Plan* text box is empty.
 +
 image::images/3scale_amp_group_member_signup_plan_2.png[]
-+
+
 . Click on the *Default* service plan.
 . Click on *New Feature* link.
 . Add the following values:
 .. *Name* : external feature
 .. *System name* : serviceplan/external
 .. *Description* : This is the external service plan.
-. Click on *Save*.
-+
-image::images/3scale_amp_group_member_signup_plan_3.png[]
-+
-. Click the *x* under *Enabled?* to enable the feature.
+. Save and then click the *x* under *Enabled?* to enable the feature.
 +
 image::images/3scale_amp_group_member_signup_plan_4.png[]
-+
-. Now, for the *StoresSOAP* service, similar to above deselect the *Default Plan* dropbox.
-. For the *StoresSOAP* service, create a new feature for the *Default* service plan:
-.. *Name* : private feature
-.. *System name* : serviceplan/private
-.. *Description* : This is the private service plan.
-. Save and enable the service feature.
-+
-image::images/3scale_amp_group_member_signup_plan_5.png[]
+
+=== Modify Default Service Plan of Stores SOAP Transformation API
+
+Similar to what you just previously did, create a new feature on the *Default* service plan of your _Stores SOAP Transformation API_
+This new feature should have the following attributes:
+
+. *Name* : private feature
+. *System name* : serviceplan/private
+. *Description* : This is the private service plan.
+
+Also, ensure that a default service plan is de-selected from this API.
 
 === Create New Section in Developer Portal
 
