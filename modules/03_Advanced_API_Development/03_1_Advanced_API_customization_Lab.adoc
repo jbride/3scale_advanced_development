@@ -1,0 +1,271 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:linkattrs:
+
+
+== Apicast Customization Lab
+
+In this lab you learn about APIcast gateway customizations. You study two popular standard plugins available in AMP and learn about using these in a policy chain to manage the API gateway behaviour.
+
+.Goals
+* Create custom policy in Apicast gateway for logging
+* Create custom policy in Apicast gateway for Header Modification
+* Create custom configuration in NGINX gateway for echoing request headers
+
+
+
+:numbered:
+
+== Policy Chain for Logging
+
+In this section, you set up a policy to provide detailed access logs in the Apicast gateway for each request. This is a standard policy plugin available in AMP and can be configured directly in the service configuration.
+
+=== Configurate the Logging Policy
+
+. In 3scale management portal, navigate to the *SOAP Stores Transformation API* integration.
+. Click on *configuration*.
+. Scroll down to *Policies* section and click on *Add Policy*.
++
+image::images/3scale_custom_policy_add.png[]
+
+. Select the *Logging* policy.
+. Click on the positioning arrows on right to move the Logging policy before the *3scale Apicast* policy in the policy chain.
++
+image::images/3scale_custom_policy_chain_order.png[]
+
+. Click on the *Logging* policy to expand.
+. Ensure the policy is *Enabled*, and click on checkbox to select *enable_access_logs*.
++
+image::images/3scale_custom_policy_logging_details.png[]
+
+. Click on *Update Policy*.
+. Scroll down and click on *Update and test in Staging Environment*.
+. Now redeploy the stage-apicast pod in OpenShift by simply deleting the existing one. Kubernetes will make sure a new one is started.
+. Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
+
+=== Test the Logging Policy
+
+. Send a *curl* request to the staging URL:
++
+----
+$ export STORES_TRANS_API_KEY=<api key to your Stores App>
+
+$ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
+
+{"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
+----
+
+. Now check the logs of the *stage-apicast* pod and notice that the log has details of the request:
++
+----
+$ oc logs -f po/<stage-apicast-pod>
+
+----
+
+. You should see multiple logs related to the request.
++
+----
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] configuration_store.lua:124: store(): added service 7 configuration with hosts: user1-swarm-prod-apicast.apps.8d2d.openshift.opentlc.com, user1-swarm-stage-apicast.apps.8d2d.openshift.opentlc.com ttl: 300, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] configuration_store.lua:124: store(): added service 8 configuration with hosts: stores-soap-prod-user1.apps.8d2d.openshift.opentlc.com, stores-soap-staging-user1.apps.8d2d.openshift.opentlc.com ttl: 300, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] configuration_store.lua:124: store(): added service 9 configuration with hosts: stores-trans-prod-apicast-user1.apps.8d2d.openshift.opentlc.com, stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com ttl: 300, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] proxy.lua:81: output_debug_headers(): usage: usage%5Bhits%5D=1 credentials: user_key=aa35a0672913effeb77df946404e3830, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] proxy.lua:148: apicast cache miss key: 9:aa35a0672913effeb77df946404e3830:usage%5Bhits%5D=1 value: nil, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] balancer.lua:108: set_current_peer(): balancer set peer 172.30.241.10:3000 ok: true err: nil while connecting to upstream, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", subrequest: "/transactions/authrep.xml", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] backend_client.lua:139: call_backend_transaction(): backend client uri: http://backend-listener.3scale-mt-api0:3000/transactions/authrep.xml?service_token=bec56f680e8deefbad84535ef4f7d1d72e4688f75626dda9b4813d59bc6a3b84&service_id=9&usage%5Bhits%5D=1&user_key=aa35a0672913effeb77df946404e3830 ok: true status: 200 body:  error: nil while sending to client, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] cache_handler.lua:43: cache_handler(): apicast cache write key: 9:aa35a0672913effeb77df946404e3830:usage%5Bhits%5D=1, ttl: nil while sending to client, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] balancer.lua:108: set_current_peer(): balancer set peer 3.121.61.119:80 ok: true err: nil while connecting to upstream, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-fis-user1.apps.8d2d.openshift.opentlc.com"
+2019/01/10 22:47:58 [info] 22#22: *22 [lua] proxy.lua:331: [async] skipping after action, no cached key while sending to client, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", upstream: "http://3.121.61.119:80/allstores?user_key=aa35a0672913effeb77df946404e3830", host: "stores-fis-user1.apps.8d2d.openshift.opentlc.com"
+[10/Jan/2019:22:47:58 +0000] stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com:8080 10.1.2.1:42032 "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1" 503 3143 (0.895) 0
+2019/01/10 22:47:58 [info] 22#22: *22 client 10.1.2.1 closed keepalive connection (104: Connection reset by peer)
+
+----
+
+. Now remove the policy *Logging*, update the staging environment and redeploy the apicast-stage pod.
++
+image::images/3scale_custom_policy_logging_remove.png[]
+
+. Send the request again and observe that the logs are now recording minimal information regarding the request.
+
+== Policy Chain for `IP Control`
+
+== Custom Configuration for `Echo Headers`
+
+You might need to inject a custom NGNIX configuration into the gateway--for example, to add another server block to handle some routing. 
+
+This configuration does not override the existing configuration. 
+
+Similar to the custom module, a custom configuration can be used to inherit the standard configuration and extend it.
+
+== Echo Custom Configuration
+
+In this section you create a custom configuration to provide more a verbose response to client by echoing all the request headers in the response, along with the API response.
+
+The configuration is link:https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf[here^].
+
+. Examine the code for the `log` function:
++
+[source,text]
+-----
+server {
+  listen 8080;
+  server_name echo;
+
+  location / {
+    echo $echo_client_request_headers;
+  }
+
+}
+-----
+
+==== Deploy Custom Configuration on OpenShift
+
+. Copy the `echo.conf` file locally:
++
+[source,text]
+-----
+$ curl -o echo.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf
+-----
+
+. Verify that you are logged in to OpenShift with your login credentials from the terminal.
+. Verify that you are using the `3scale AMP` project:
++
+[source,text]
+-----
+$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+-----
+
+. Create a configuration map in the OpenShift project, making sure to provide the correct path to the `echo.conf` file:
++
+[source,text]
+-----
+$ oc create configmap echo-conf --from-file=./echo.conf
+-----
+
+. Create a volume for the container, and mount it to the appropriate path:
++
+[source,text]
+-----
+$ oc set volume dc/apicast-staging --add --name=echo-conf --mount-path /opt/app-root/app/sites.d/echo.conf --source='{"configMap":{"name":"echo-conf","items":[{"key":"echo.conf","path":"echo.conf"}]}}'
+-----
+
+. The `oc volume` command does not support adding subpaths, so you need to apply a patch:
++
+[source,text]
+-----
+$ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/1/subPath", "value":"echo.conf"}]'
+-----
+* The `apicast-staging` pod redeploys automatically.
+
+. Wait for the pod to be in a running state.
+
+=== Test Custom Configuration
+
+. Open a terminal and connect via RSH to the `apicast-staging` pod:
++
+[source,text]
+-----
+$ oc rsh <your apicast pod>
+-----
+
+* Substitute the name of your `apicast-staging` pod.
+
+. Send a request to port 8080 of `localhost`:
++
+[source,text]
+-----
+sh-4.2$ curl localhost:8080 -H 'Host: echo' -X 'POST'
+-----
+
+* Expect a response similar to the following:
++
+[source,text]
+-----
+POST / HTTP/1.1
+Host: echo
+User-Agent: curl/7.49.1
+Accept: */*
+-----
+
+== CORS Headers
+
+Cross-Origin Resource Sharing (CORS) is a mechanism that uses additional HTTP headers to let a user agent gain permission to access selected resources from a server on a different origin (domain) from the site currently in use. A user agent makes a cross-origin HTTP request when it requests a resource from a different domain, protocol, or port from the one on which the current document originated.
+
+In this section you add CORS handling to APIcast.
+
+Two files&#8212;`cors.lua` and `cors.conf`&#8212;configure CORS for NGINX.
+
+. Examine the `cors.lua` file link:https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/cors/cors.lua[here^].
+
+. Examine the `cors.conf` file link:https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/cors/cors.conf[here^].
+
+
+=== Deploy CORS Custom Module and Configuration to OpenShift
+
+. Copy the `cors.lua` and `cors.conf` files locally:
++
+[source,text]
+-----
+$ curl -o cors.lua https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/cors/cors.lua
+$ curl -o cors.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/cors/cors.conf
+-----
+
+. Verify that you are logged in to OpenShift with your login credentials from the terminal.
+. Verify that you are using the `3scale AMP` project:
++
+[source,text]
+-----
+$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+-----
+
+. Create a configuration map in the OpenShift project, making sure to provide the correct path to the `cors.lua` and `cors.conf` files:
++
+[source,text]
+-----
+$ oc create configmap apicast-cors --from-file=./cors.lua
+$ oc create configmap cors-conf --from-file=./cors.conf
+-----
+
+. Create a volume for the container, and mount them to the appropriate path:
++
+[source,text]
+-----
+$ oc set volume dc/apicast-staging --add --name=apicast-cors --mount-path /opt/app-root/src/src/cors.lua --source='{"configMap":{"name":"apicast-cors","items":[{"key":"cors.lua","path":"cors.lua"}]}}'
+$ oc set volume dc/apicast-staging --add --name=cors-conf --mount-path /opt/app-root/src/apicast.d/cors.conf --source='{"configMap":{"name":"cors-conf","items":[{"key":"cors.conf","path":"cors.conf"}]}}'
+-----
+
+. The `oc volume` command does not support adding subpaths, so you need to apply a patch:
++
+[source,text]
+-----
+$ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/2/subPath", "value":"cors.lua"},{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/3/subPath", "value":"cors.conf"}]'
+-----
+
+. Set the environment variable `APICAST_MODULE`:
++
+[source,text]
+-----
+$ oc env dc/apicast-staging APICAST_MODULE=cors
+-----
+* The `apicast-staging` pod redeploys automatically.
+
+. Wait for the pod to be in running state before continuing.
+
+=== Test a CORS Request
+
+. Send a `curl` request to the staging API endpoint using a CORS header:
++
+[source,text]
+-----
+$ curl -v -k https://api-sj-3scale-apicast-staging.apps.dev.openshift.opentlc.com:443/?user_key=c29ee601788b80ea9b2239b2f736ee27  -H "Origin: http://example.com"   -H "Access-Control-Request-Method: GET"   -H "Access-Control-Request-Headers: X-Requested-With"
+-----
+
+. Verify that the response contains the headers for handling CORS requests:
++
+[source,text]
+-----
+< Access-Control-Allow-Credentials: true
+< Access-Control-Allow-Methods: GET
+< Access-Control-Allow-Origin: http://example.com
+< Access-Control-Max-Age: 1728000
+-----
