@@ -945,7 +945,6 @@ You won't be able to simply supply SOAP-UI with a valid URL (with API key) to yo
 SOAP-UI will pull down that initial wsdl, parse it for the value of <wsdl:import location= />  attribute and error out because the value of the location attribute is not complete".  It is missing your API key.
 
 Subsequently, you'll want to execute the following:
-
 . Use curl to retrieve a copy of your wsdl and save that copy to disk
 . Using a text editor, change the value of the <wsdl:import location="" /> attribute to a valid URL to your wsdl.
 .. You will want to url encode the ampersand character in the URL

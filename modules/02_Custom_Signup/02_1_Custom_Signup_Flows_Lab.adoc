@@ -49,6 +49,8 @@ All of your sign-up flows can easily be swapped in and out of the Developer Port
 
 You will then be able to compare and contrast the features and behavior of each of these partials.
 
+
+
 === Procedure
 
 . From the 3scale Admin Portal, navigate to _Audience -> Developer Portal_.  Doing so will expand links related to the CMS.
@@ -99,6 +101,8 @@ ifdef::showscript[]
 endif::showscript[]
 
 
+
+
 == Single Application Signup flow
 
 === Overview
@@ -131,7 +135,8 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
             {% for plan in service.application_plans%}
 ----
 +
-NOTE: The above liquid filter iterates through the list of all services for the provider, and then further iterates through all the application plans. Thus, this filter allows you to display a list of all services along with the service plans.
+NOTE: The above liquid filter iterates through the list of all services for the provider, and then further iterates through all the application plans. 
+Thus, this filter allows you to display a list of all services along with the service plans.
 +
 .. Plan Features/Limits
 +
@@ -209,8 +214,11 @@ NOTE: The include ensures the content of the partial is included to be displayed
 . Publish both the changes.
 +
 image::images/3scale_amp_custom_signup_single_plan_2.png[]
-+
-. Now click on *Visit Developer Portal* and ensure the Homepage now displays all API services and application plans created in previous labs:
+
+
+=== Test
+. Navigate to the Developer Portal and ensure you are currently logged out.
+. Verify that the Homepage now displays all API services and application plans created in previous labs:
 +
 image::images/3scale_amp_custom_signup_single_plan_3.png[]
 +
@@ -235,6 +243,9 @@ image::images/3scale_amp_custom_signup_single_plan_6.png[]
 +
 image::images/3scale_amp_custom_signup_single_plan_7.png[]
 
+
+
+
 == Multiple Application Signup Flow
 
 === Overview
@@ -243,7 +254,6 @@ The multiple application signup flow allows users to signup for multiple service
 It does so by providing a _partial_ that renders a multi-select check box HTML form in the Developer Portal.
 
 In addition, the *Multiple Applications* feature needs to be enabled in the Developer Portal.
-
 
 === Procedure
 
@@ -283,7 +293,10 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
 . Ensure the partial shows up in the menu.
 . Edit the *Homepage* and change the include section to use the *multi_app_signup_form* instead of *single_app_signup_form*.
 . Now save and *Publish* the changes.
-. Click on *Visit Developer Portal* and notice the home page now has the multiple signup form, with a checkbox for each application plan.
+
+=== Test
+. Navigate to the Developer Portal and ensure you are currently logged out.
+. Notice the home page now has the multiple signup form, with a checkbox for each application plan.
 +
 image::images/3scale_amp_custom_signup_multi_plan_3.png[]
 +
@@ -298,47 +311,50 @@ image::images/apps_and_creds.png[]
 +
 image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 +
-NOTE: Note that if there are any services with default application plans, then a default application is created for the account created using the signup form. In order to prevent this, do NOT mark any application plan as default in the service specification.
+NOTE: Note that if there are any services with default application plans, then a default application is created for the account created using the signup form. 
+In order to prevent this, do NOT mark any application plan as default in the service specification.
+
+
+
+
 
 == Custom Field Flow
 
 === Overview
 
-This flow is used to control the services a user can see and subscribe. A typical usecase is if there are multiple application plans each with different access (e.g a different plan for internal developers and another for external developers). This field can be combined with signup flows including using *Account Approval* so that an admin can view and approve the user to a particular service.
+With this flow, a custom _field_ on the API consumer accounts is used to control the services those API consumers can see and subscribe to. 
 
-NOTE: Please attempt this lab after completing the labs in Module 4.
+A typical usecase is if there are multiple application plans each with different access (e.g a different plan for internal developers and another for external developers). 
+This field can be combined with the *Account Approval* feature so that an admin can view and approve the user to a particular service.
 
-In the below use case, we will take the scenario of using the _Stores_ related APIs. 
-
-In previous labs, you have created 2 different _Stores_ related APIs: 
+In this sign-up flow use case, we will utilize two of the _Stores_ related APIs that you have created in previous labs.
 
 . *Stores SOAP Policy API*
 +
 Manages SOAP services and introduces a custom SOAP policy to track metrics per SOAP operation.
 +
-We can make this *internal* and only available to developers who are signed up as internal users. 
+In this scenario, we will make this *internal* and only available to API consumers who are signed up as _internal_ users. 
 
 . *Stores SOAP Transformation API*
 +
 Uses JBoss Fuse as a REST to SOAP XML mediation layer.
 +
-This endpoint could be used by *public* users. 
+In this scenario, this endpoint could be made available to API consumers who are signed up as _public_ users. 
 +
-This could be our way to ensure proper integration using the right endpoints for different types of users. 
+We will also restrict *public* users to have an Account Approval required, so that before they could access the Stores Transformation API, an admin user will approve their request.
 
-Signup to these APIs will be available only after the users are registered and sign in to the Developer Portal. 
-We will also restrict *public* users to have an Account Approval required, so that before they could access the Stores API, an admin user will approve their request.
 
-The below steps are required to accomplish this scenario.
+The below steps are required to accomplish this _Custom Field Flow_.
 
-=== Set up custom field
+=== Set up custom field on *Accounts*
 
-. Open the Admin Portal and navigate to the *Settings* tab.
-. *Click on *Field Definitions*.
-+
-image::images/3scale_amp_custom_signup_field_plan.png[]
-+
+Let's start by defining the custom field on the API consumer *Accounts* object.
+
+. Open the Admin Portal and navigate to: *Audience -> Accounts -> Fields Definitions* tab.
 . Click on the *Create* link in the Account field.
++
+image::images/account_field_create.png[]
+
 . Enter the following values:
 .. *Name*: access
 .. *Label*: access
@@ -346,23 +362,33 @@ image::images/3scale_amp_custom_signup_field_plan.png[]
 .. *Choices*: internal, public
 +
 image::images/3scale_amp_custom_signup_field_plan_2.png[]
-+
-. Check that the field is successfully added to the Account object.
+
+... Note that the field could be made *Required* so that any user signup will contain this field. 
+Another usecase is to make it a *Hidden* field, and have a simple javascript provide its value (e.g depending on user's email address). 
+This field can also be made *Read Only* such that it cannot be changed by the API consumers, only by the API provider tenant admin.
+... In our scenario, we leave all of these options unchecked so that upon sign-up, the user can see this field and optionally decide whether to gain access to either an _internal_ or _public_ API.
+
+. Click `Create`, and check that the field is successfully added to the Account object.
 +
 image::images/3scale_amp_custom_signup_field_plan_3.png[]
-+
-NOTE: Note that the field could be made a *Required* field so that any user signup will contain this field. Another usecase is to make it a *Hidden* field, and have a simple javascript provide this value (e.g depending on user's email address). This field can also be a Read Only field which cannot be changed by the developers, only by the admin.
 
-=== Changes to Application Plans
 
-. Navigate to the *API* tab in the admin portal.
-. Click on the *StoresSOAPBasicPlan* Application Plan of the *StoresSOAP* API.
-. Click on *Settings* link for the StoresSOAP API, and select *default* plan, and check the link for *Developers can select a plan when creating a new application*.
+=== Changes to APIs and Application Plans
+
+In this section, a custom _feature_ will be defined for two of your API services:  _Stores SOAP Policy API_ and _Stores Transformation API_.
+
+The values (_internal_ and _public_ ) of these _features_ correspond to the values of the previously created _field_ defined for all API consumer _accounts_.
+
+==== Stores SOAP Policy API
+
+. Navigate to the  *Settings* for the Stores SOAP Policy API, and select *default* plan, enable the option: *Developers can select a plan when creating a new application*.
 +
 image::images/3scale_amp_custom_signup_field_plan_10.png[]
 +
 . Click on *Update Service*.
-. Create a new *Feature* with following values:
+
+. Navigate to the _StoresSOAPBasicPlan_ Application Plan of the *Stores SOAP Policy API*.
+. Create a *New Feature* with following values:
 .. *Name* : internal
 .. *System name* : internal
 .. *Description* : This Plan is intended for internal users.
@@ -371,39 +397,58 @@ image::images/3scale_amp_custom_signup_field_plan_10.png[]
 image::images/3scale_amp_custom_signup_field_plan_4.png[]
 +
 . Click on the *x* under *Enabled?* to enable the feature.
-. Now select the *StoresPremiumPlan* of the *Stores* API.
+
+==== Stores Transformation API
+
+. For the *default* plan of the _Stores Transformation API_, enable the option:  *Developers can select a plan when creating a new application*.
+. Navigate to the *StoresPremiumPlan* of the *Stores SOAP Transformation API*.
 . Select the checkbox for *Application require approval?*
-. Click on *Update Application plan*.
-+
-image::images/3scale_amp_custom_signup_field_plan_5.png[]
-+
-. Navigate to *Application Plans* and click on *New feature* link.
-. Enter the following values:
+. Create a new feature for this plan with the following values:
 .. *Name* : public
 .. *System name* : public
 .. *Description* : This Plan is intended for public users.
-. Click on *Save*
-. Click on the *x* under *Enabled?* to enable the feature.
-+
-image::images/3scale_amp_custom_signup_field_plan_6.png[]
-+
-. Click on *Settings* link for the Stores API, and select *default* plan, and check the link for *Developers can select a plan when creating a new application*.
+. After saving the new feature, enable it.
+ 
 
 === Developer Portal changes
 
-. Add the partial *custom_field_signup_flow* with the contents of the file *~/lab/3scale_development_labs/DevPortal/_custom_field_plans.html.liquid*
-. In the *Homepage*, add the following after line 87 (before the *{% else %}* line.
+Two _partials_ will be be specified in the _Homepage_.
+
+The first new partial renders in the Dev Portal for unauthenticated users.
+The second new partial renders in the Dev Portal only after the API consumer has registered a new account and authenticated in.
+
+. Add the partial *unauthenticated_noplan_signup_form* with the contents of the file: *~/lab/3scale_development_labs/DevPortal/_unauthenticated_noplan_signup_form.html.liquid*
+. In the *Homepage*, modify the include statement at around line 123 
++
+----
+{% include 'unauthenticated_noplan_signup_form' %}
+----
++
+This partial is rendered for unauthenticated users.
+Notice that is simply provides a link to the registration page.
+
+
+. Add the partial *custom_field_signup_form* with the contents of the file *~/lab/3scale_development_labs/DevPortal/_custom_field_plans.html.liquid*
+. In the *Homepage*, add the following after line 87 (before the *{% else %}* line).
 +
 ----
 {% include 'custom_field_signup_form' %}
 ----
++
+This partial is rendered for authenticated API consumers.
+Notice that the partial contains logic to iterate through the list of services and application plans.
+It  then offers to the API consumer the ability to register for only those plans available as per the custom account field .
+
 . Save and publish all the changes.
 
 === Test the Custom Field flow for *Public* access
 
-. Now click on *Visit Developer Portal*.
-. Do not select any of the plans, scroll to the bottom of the page and click on *sign up* button.
-. Provide a new user details (with a valid email address).
+. Navigate to the Developer Portal and ensure you are currently logged out.
+. Click the link provided by your _unauthenticated_noplan_signup_form_:
++
+image::images/noplan_signup.png[]
+
+. Provide new user details (with a valid email address).
 . Select *ACCESS* to be *public*.
 . Click on *Sign up*.
 +
@@ -414,7 +459,7 @@ image::images/3scale_amp_custom_signup_field_plan_7.png[]
 image::images/3scale_amp_custom_signup_field_plan_8.png[]
 +
 NOTE: Note that even if no application is selected during signup, the *default* plans for each service are created for each account.
-+
+
 . Now activate the user by clicking on the activation link in the email.
 . Login as the new user created to the Developer Portal.
 . Note the Homepage after sign-in shows the *public* plan for the user to subscribe.
@@ -422,26 +467,27 @@ NOTE: Note that even if no application is selected during signup, the *default* 
 image::images/3scale_amp_custom_signup_field_plan_9.png[]
 +
 . Click on *Signup to plan StoresPremiumPlan* link.
-. Provide the details:
-.. *Name* : RHBank8 Stores API
-.. *Description* : RHBank8 Stores API Plan
-+
-image::images/3scale_amp_custom_signup_field_plan_11.png[]
-+
-. Click on *Create Application*.
+. Provide a name and descrption for the new plan and then click: *Create Application*
+
 . Note the success page shows the application *Pending Approval*.
 +
 image::images/3scale_amp_custom_signup_field_plan_12.png[]
-+
-. Now in the Admin Portal, navigate to the *Developers*, select the Account and click on the Application created for Stores API.
-. Notice the Application State.
+
+. As the API provider, navigate in the Admin Portal to the newly created application and notice its current status of: _pending_.
 . Click on *Accept* to accept the application.
 +
 image::images/3scale_amp_custom_signup_field_plan_13.png[]
 
+
 === Test the Custom field flow for *Internal* access
 
 Now repeat the steps from the above section to create a user with *internal* access, and ensure that you can subscribe the user to the *StoresSOAPBasicPlan*.
+
+
+
+
+
+
 
 == Group Membership Flow
 
