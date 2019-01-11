@@ -10,7 +10,7 @@
 
 
 
-* User 3scale Service Discovery to discover to OData service running on OpenShift
+* Use 3scale Service Discovery to discover an OData service running on OpenShift
 * Use 3scale API Management's gateway to connect to OData services
 
 :numbered:
@@ -95,14 +95,16 @@ $ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERN
 * The REST `odata` service is now correctly deployed, and you can now begin to configure the API gateway to use this REST endpoint to communicate with the service.
 
 
-=== Introduction to Service Discovery of 3scale
+== 3scale Service Discovery 
 
-In order for any OpenShift service to be discoverable by 3scale AMP running on the same OpenShift cluster, the `default` service account of 3scale AMP namespace needs view access to the cluster. This has already been provisioned for you by the administrator.
+In order for any OpenShift service to be discoverable by 3scale API Manager running on the same OpenShift cluster, the `default` service account of the 3scale API Manager namespace needs view access to the cluster. 
+
+In your lab environment, this has already been provisioned for you by the administrator.
 For details on the new Service Discovery feature of 3scale, please refer to this document: https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/service_discovery/index
 
 === Set up OData Service for Discovery
 
-. Edit the service *i-apitosqlenrich* in the OpenShift project *user$seq-fuse*.
+. Edit the service *stock-api* in the OpenShift project *$OCP_USERNAME-stock-api*.
 +
 ----
 oc edit svc stock-api
@@ -126,7 +128,7 @@ oc edit svc stock-api
 
 . Save the changes.
 
-=== Create API Gateway Staging and Production Routes
+== Create API Gateway Staging and Production Routes
 
 Follow the steps in the API Management lab to create secure routes to the `stage-apicast` and `apicast-production` services for the Stock API.
 
@@ -150,9 +152,9 @@ $ oc create route edge stock-odata-production-route \
   -n $GW_PROJECT
 -----
 
-=== Configure 3scale API Management
+== Configure 3scale API Management
 
-==== Discovery
+=== Discovery
 
 . From the 3scale Admin console home page, click on *New API*.
 . Select *Import from OpenShift*
