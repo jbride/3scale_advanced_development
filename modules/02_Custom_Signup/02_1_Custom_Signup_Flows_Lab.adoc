@@ -512,7 +512,7 @@ Our use case for this lab will be similar to the last lab on _custom field signu
 However, instead of relying on _features_ of application plans for *internal* and *public* user signup, we will rely on _features_ of _Service Plans_ to restrict sign-up to API services.
 
 Specifically in this use case, APIs will be designated (via a _feature_ of their default Service Plans) as either *external* or *private*.
-In this manner, API consumers who have been assigned to an *external* group by the API provider will only have the ability to sign-up for application plans from an "external* API.
+In this manner, API consumers who have been assigned to an *external* group by the API provider will only have the ability to sign-up for application plans from an *external* API.
 Similarly, API consumers who have been assigned to a *private* group by the API provider will only have the ability to sign-up for applications plans from a *private* API.
 
 We will need a mechanism to allow an API provider to specify the type (*external* or *private*)  of newly registered API consumer accounts.
@@ -580,12 +580,12 @@ image::images/advanced_features.png[]
 
 === Create New Sections in Developer Portal
 
-HTML _sections_ are a grouping of content and should appear as an entry in an outline of a page.
+HTML _sections_ are a grouping of content and should appear as an entry in an outline of an HTML page.
 
 Beyond this basic HTML functionality, 3scale overloads the use of HTML sections.
 Specifically, 3scale also maintains a listing of HTML sections that an API consumer of an account is affiliated with.
 
-It's this latter capability that facilitates the  _Group Membership Signup Flow_.
+It's this latter capability of *Sections* that facilitates the _Group Membership Signup Flow_.
 
 . Navigate to *Audience -> Developer Portal -> Content*
 . Click on the *New Section* from the *New Page* drop down in the top right corner.
