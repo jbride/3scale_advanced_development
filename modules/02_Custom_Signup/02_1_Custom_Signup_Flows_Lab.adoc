@@ -413,7 +413,7 @@ image::images/3scale_amp_custom_signup_field_plan_4.png[]
 ==== Stores Transformation API
 
 . For the *default* plan of the _Stores Transformation API_, enable the option:  *Developers can select a plan when creating a new application*.
-. Navigate to the *StoresPremiumPlan* of the *Stores SOAP Transformation API*.
+. Navigate to the *StoresTransPremiumPlan* of the *Stores SOAP Transformation API*.
 . Select the checkbox for *Application require approval?*
 . Create a new feature for this plan with the following values:
 .. *Name* : public
@@ -478,7 +478,7 @@ NOTE: Note that even if no application is selected during signup, new _applicati
 +
 image::images/3scale_amp_custom_signup_field_plan_9.png[]
 +
-. Click on *Signup to plan StoresPremiumPlan* link.
+. Click on *Signup to plan StoresTransPremiumPlan* link.
 . Provide a name and descrption for the new plan and then click: *Create Application*
 
 . Note the success page shows the application *Pending Approval*.
@@ -510,13 +510,9 @@ If you want to create sections of content that users can only access when they h
 
 
 Our usecase for this lab will be similar to the last lab on _custom field signup_. 
-Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *private* or *external*.
-In this manner, the service will only be seen by the users who belong to the particular group.
+Instead of relying on application plans for *internal* and *public* user signup, we will restrict the service itself to be either *external* or *private*.
+In this manner, the service will only be seen by the users who belong to a particular group.
 This way, we can restrict even the ability to view services that are not available to specific users.
-
-To subscribe to any API a user must have signed up to create an account first.
-Therefore, the Services and Plans are only visible to users once they have an Account.
-You should assign the appropriate Group Membership once the Account has been created.
 
 === Enable Service Plans
 This _Group Membership Flow_ relies on the enablement of _Service Plans_.
@@ -592,7 +588,7 @@ image::images/3scale_amp_group_member_signup_plan_6.png[]
 image::images/3scale_amp_group_member_signup_plan_8.png[]
 
 . Create another new group *Private* and assign the *private* section.
-. Confirm that both groups are created and right sections assigned.
+. Confirm that both groups are created and correct sections assigned.
 +
 image::images/3scale_amp_group_member_signup_plan_9.png[]
 
@@ -630,11 +626,16 @@ Do so by copying contents from file *~/lab/3scale_development_labs/DevPortal/_gr
 {% endif %}
 ----
 +
-NOTE: This liquid code ensures that if the user has a private section (e.g is part of the group, then the section is presented to the user. Otherwise, the custom field signup form from previous lab is presented.
+NOTE: This liquid code ensures that if the user has a private section (e.g is part of a group) then the section is presented to the user. Otherwise, the custom field signup form from previous lab is presented.
 +
 . Publish all the changes in the Developer Portal.
 
 === Test the Group Membership flow for *external* access
+
+To subscribe to any API, an API consumer must have signed up to create an account first.
+Therefore, the Services and Plans are only visible to API consumers once they have an Account.
+
+The API provider will assign the appropriate Group Membership once the Account has been created.
 
 ==== New User Registration
 . Navigate to the Developer Portal and ensure you are currently logged out.
@@ -664,21 +665,23 @@ image::images/3scale_amp_group_member_signup_plan_13.png[]
 image::images/3scale_amp_group_member_signup_plan_14.png[]
 
 
-==== API Consumer: Select group
+==== API Consumer: Subscribe to Service
 
 . In a new browser window, login with the user credentials to the Developer Portal.
-. Note the Homepage after sign-in shows the *Pick a group plan* section for the user to subscribe.
+. Note the Homepage after sign-in :
 +
 image::images/3scale_amp_group_member_signup_plan_15.png[]
 
-. Click on *Subscribe to the Stores service* link.
-. Notice that the *Services* page shows the user subscribed to the *Default* service for the Stores API.
+. Click on *Subscribe to the Stores SOAP Policy API service* link.
+. Notice that the *Services* page shows the user subscribed to the *Default* service for the Stores SOAP Policy API.
 +
 image::images/3scale_amp_group_member_signup_plan_16.png[]
 +
-NOTE: You can also edit the *Services - Index* page to only show the subscribed services, or the remove the link for the service subscriptions for the other services, so that the user can only see the services he is already subscribed to. This is left as an exercise.
-+
-. Click on the *Applications* menu item.
+NOTE: You can also edit the *Services - Index* page to only show the subscribed services, or remove the link for the service subscriptions for the other services, so that the user can only see the services he is already subscribed to. This is left as an exercise.
+
+==== Select and Approve Application
+
+. As the API Consumer, click on the *Applications* menu item.
 +
 image::images/3scale_amp_group_member_signup_plan_17.png[]
 +
@@ -691,7 +694,7 @@ image::images/3scale_amp_custom_signup_field_plan_11.png[]
 +
 . Click on *Create Application*.
 
-. Now in the Admin Portal, navigate to the *Developers*, select the Account and click on the Application created for Stores API.
+. As the API provider, navigate to the account in the Admin Portal and click on the Application created for _Stores SOAP Policy API_.
 . Notice the Application State.
 . Click on *Accept* to accept the application.
 +
@@ -699,7 +702,7 @@ image::images/3scale_amp_group_member_signup_plan_18.png[]
 +
 . Run a test request with the user key to confirm the application access is working correctly.
 
-=== Test the Custom field flow for *Internal* access
+=== Test the Group Membership  flow for *Internal* access
 
 Now repeat the steps from the above section to create a user with *private* group membership, and ensure that you can subscribe the user to the *Stores SOAP API service*.
 

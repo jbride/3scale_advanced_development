@@ -727,12 +727,12 @@ $ oc create route edge stores-soap-transformation-production-route \
 * *System Name*: `stores-soap-transformation-api`
 * *Description*: `Stores SOAP Transformation API`
 . Create an application plan:
-* *Name*: `StoresPremiumPlan`
-* *System Name*: `storesPremiumPlan`
+* *Name*: `StoresTransPremiumPlan`
+* *System Name*: `storesTransPremiumPlan`
 . Publish the application plan.
-. Create a new application for the *RHBank* account that is associated with your _StoresPremiumPlan_.
+. Create a new application for the *RHBank* account that is associated with your _StoresTransPremiumPlan_.
 . Fill in the following information:
-* *Application Plan*: `StoresPremiumPlan`
+* *Application Plan*: `StoresTransPremiumPlan`
 * *Name*: `StoresTransformationApp`
 * *Description*: `Stores Transformation Application`
 
