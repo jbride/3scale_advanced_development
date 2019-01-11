@@ -373,6 +373,18 @@ This field can also be made *Read Only* such that it cannot be changed by the AP
 image::images/3scale_amp_custom_signup_field_plan_3.png[]
 
 
+
+=== Enable Account Approval
+It is possible to require that an API provider approve and activate all accounts initiated by API consumers.
+
+Please enable this feature now by executing the following:
+
+. As an API provider, navigate to the following in the Admin Portal: `Audience -> Accounts -> Usage Rules -> Signup`
+. Click the checkbox: `Account approval required`
+. Click `Update Settings`
+
+This feature will be used in both this custom signup flow as well as the next one introduced in this lab:  _Group Membership Signup_.
+
 === Changes to APIs and Application Plans
 
 In this section, a custom _feature_ will be defined for two of your API services:  _Stores SOAP Policy API_ and _Stores Transformation API_.
@@ -458,7 +470,7 @@ image::images/3scale_amp_custom_signup_field_plan_7.png[]
 +
 image::images/3scale_amp_custom_signup_field_plan_8.png[]
 +
-NOTE: Note that even if no application is selected during signup, the *default* plans for each service are created for each account.
+NOTE: Note that even if no application is selected during signup, new _applications_ (derived from the *default* application plan) for each service are created for each account.
 
 . Now activate the user by clicking on the activation link in the email.
 . Login as the new user created to the Developer Portal.
@@ -510,8 +522,7 @@ You should assign the appropriate Group Membership once the Account has been cre
 This _Group Membership Flow_ relies on the enablement of _Service Plans_.
 
 . As an API provider, login to the Admin Portal and navigate to the following to enable _Service Plans_:  `Audience -> Accounts -> Settings -> Usage Rules`
-. Check the box for *Service Plans*.
-. Click on *Update Settings*.
+. Check the box for *Service Plans* and then click: *Update Settings*.
 +
 image::images/3scale_amp_group_member_signup_plan.png[]
 
@@ -545,7 +556,7 @@ image::images/3scale_amp_group_member_signup_plan_4.png[]
 
 === Modify Default Service Plan of Stores SOAP Transformation API
 
-Similar to what you just previously did, create a new feature on the *Default* service plan of your _Stores SOAP Transformation API_
+Similar to what you just previously did, create a new feature on the *Default* service plan of your _Stores SOAP Transformation API_.
 This new feature should have the following attributes:
 
 . *Name* : private feature
@@ -554,28 +565,32 @@ This new feature should have the following attributes:
 
 Also, ensure that a default service plan is de-selected from this API.
 
-=== Create New Section in Developer Portal
+=== Create New Sections in Developer Portal
 
 . Navigate to the *Developer Portal* tab of the admin portal.
 . Click on the *New Section* from the *New Page* drop down.
 . Enter the following values:
 .. *Title*: external
 .. *Public*: uncheck the box
-.. *Parent*: Root
+.. *Parent*: .Root
 .. *Partial Path*: /external
 . Click on *Create Section*.
 +
 image::images/3scale_amp_group_member_signup_plan_6.png[]
-+
-. Create another *New Section* for *private*, as follows:
-+
-image::images/3scale_amp_group_member_signup_plan_7.png[]
-+
-. Click on *Groups* tab.
+
+. Create another *New Section* for *private* with the following values:
+.. *Title*: private 
+.. *Public*: uncheck the box
+.. *Parent*: .Root
+.. *Partial Path*: /private
+
+=== Create New Groups in Developer Portal
+
+. From the left panel of the CMS, click: *Groups*
 . Create a new group *External* and assign the *external* section.
 +
 image::images/3scale_amp_group_member_signup_plan_8.png[]
-+
+
 . Create another new group *Private* and assign the *private* section.
 . Confirm that both groups are created and right sections assigned.
 +
@@ -583,31 +598,33 @@ image::images/3scale_amp_group_member_signup_plan_9.png[]
 
 === Add *Group Membership Flow* to Developer Portal
 
-. In the Developer Portal, add a new partial *group_member_signup_form*, copying contents from file */home/jboss/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid*
+. Study the contents of the file: *~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid*
 +
-NOTE: Study this file, and understand the liquid logic used in order to present the user with the correct signup form depending on their group membership.
+Understand the liquid logic used in order to present the user with the correct signup form depending on their group membership.
+
+. Via the CMS, add a new partial *group_member_signup_form* to the Dev Portal *Homepage*.
 +
-. In the *Homepage* make the following changes:
-.. Remove the reference to following line created in previous lab:
+Do so by copying contents from file *~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid* to your new partial
+
+. Navigate to the CMS and in the *Homepage* make the following changes:
+.. Remove the reference to following line (at about line 88) created in the previous section of this lab:
 +
 ----
  {% include 'custom_field_signup_form' %}
 ----
-+
-. Add the following lines after the *</header>* section:
+
+..  Replace that line with the following:
 +
 ----
 {% if current_user and current_account.applications.size == 0 %}
 
   {% if current_user.sections.size > 0 %}
 
-
-  {% include 'group_member_signup_form' %}
+    {% include 'group_member_signup_form' %}
 
   {% else %}
 
-
-  {% include 'custom_field_signup_form' %}
+    {% include 'custom_field_signup_form' %}
 
   {% endif %}
 {% endif %}
@@ -619,37 +636,41 @@ NOTE: This liquid code ensures that if the user has a private section (e.g is pa
 
 === Test the Group Membership flow for *external* access
 
-. Now click on *Visit Developer Portal*.
-. Do not select any of the plans, scroll to the bottom of the page and click on *sign up* button.
-. Provide a new user details (with a valid email address).
+==== New User Registration
+. Navigate to the Developer Portal and ensure you are currently logged out.
+. Click the link provided by your _unauthenticated_noplan_signup_form_.
+. In the sign-up form, provide a new user details (with a valid email address).
 . Ignore the *ACCESS* parameter.
 . Click on *Sign up*.
-+
-image::images/3scale_amp_group_member_signup_plan_10.png[]
-+
+
+==== API Provider: Active new account and assign group membership
 . Navigate to the *Developers* tabs and note the new account is created.
 +
 image::images/3scale_amp_group_member_signup_plan_11.png[]
 +
 NOTE: Note that the account created does not have any service subscriptions or applications associated with it.
-+
-. Now activate the user by clicking on the *Activate* link in the Developers page.
+The reason for this is that you previously set blank the value of the _Default Service Plan_.
+
+. Activate the user by clicking on the *Activate* link in the Accounts listing.
 +
 image::images/3scale_amp_group_member_signup_plan_12.png[]
-+
+
 . Click on *Group Memberships* breadcrumb in the Account details page.
 +
 image::images/3scale_amp_group_member_signup_plan_13.png[]
-+
+
 . Assign the Group *External* to the user and Save.
 +
 image::images/3scale_amp_group_member_signup_plan_14.png[]
-+
+
+
+==== API Consumer: Select group
+
 . In a new browser window, login with the user credentials to the Developer Portal.
 . Note the Homepage after sign-in shows the *Pick a group plan* section for the user to subscribe.
 +
 image::images/3scale_amp_group_member_signup_plan_15.png[]
-+
+
 . Click on *Subscribe to the Stores service* link.
 . Notice that the *Services* page shows the user subscribed to the *Default* service for the Stores API.
 +
