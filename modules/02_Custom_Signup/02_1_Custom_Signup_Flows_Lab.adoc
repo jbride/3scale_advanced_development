@@ -663,6 +663,10 @@ image::images/3scale_amp_group_member_signup_plan_13.png[]
 . Assign the Group *External* to the user and Save.
 +
 image::images/3scale_amp_group_member_signup_plan_14.png[]
++
+NOTE:  This step associates a list of _sections_ to the API consumers of this account.
+This is done so via the _group_ (created previously) of _sections_.
+This becomes important in the _group_membership_plans_ partial where the _sections_ associated with a user are compared with the _features_ of the API (via the APIs _service plans_).
 
 
 ==== API Consumer: Subscribe to Service
