@@ -518,7 +518,7 @@ An ideal tool for this purpose is JBoss Fuse.
 In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier.
 The REST endpoint is then configured in 3scale API Management Platform as a service.
 
-==== Deploy `stores fis` application to OpenShift
+=== Deploy `stores fis` application to OpenShift
 
 . If you are not already there, change to the `$OCP_USERNAME-stores-api` project:
 
@@ -544,7 +544,7 @@ stores-soap-1-jnjrb   1/1       Running     0          1h
 storesdb-1-6z5lx      1/1       Running     0          1h
 -----
 
-==== Examine the Fuse Mediation Layer:
+=== Examine the Fuse Mediation Layer:
 
 . Log in to the OpenShift administration console from a web browser using your login credentials.
 . Navigate to the `Stores API` project.
@@ -672,7 +672,7 @@ cxf.endpoint.soap = http://stores-soap:8080
 
 -----
 
-==== Test the Camel REST route:
+=== Test the Camel REST route:
 
 . Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
 +
@@ -691,11 +691,11 @@ $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n 
 The REST-SOAP Camel proxy is now correctly deployed, and you can begin to configure the API gateway to use this REST endpoint to communicate with the SOAP web service.
 
 
-==== Use Swagger Tool to Import Documents (Optional)
+=== Use Swagger Tool to Import Documents (Optional)
 
 * Follow the steps in the previous lab to import the API documents into 3scale API Management.
 
-==== Create API Staging and Production Routes
+=== Create API Staging and Production Routes
 
 . Follow the steps in the API Management lab to create secure routes to the `stage-apicast` and `apicast-production` services for the Stores Transformation API.
 
@@ -720,7 +720,7 @@ $ oc create route edge stores-soap-transformation-production-route \
 -----
 
 
-==== Configure 3scale API Management
+=== Configure 3scale API Management
 
 . Create a new service:
 * *Name*: `Stores SOAP Transformation API`
