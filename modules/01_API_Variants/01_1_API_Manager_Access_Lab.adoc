@@ -41,15 +41,15 @@ Open a terminal window in your local machine and set the following environment v
 # Afterwards, exeecute each of the modified commands in your shell:
 
 $ echo "export REGION=<provided by your instructor>" >> ~/.bashrc
+$ echo "export OCP_AMP_ADMIN_ID=<provided by your instructor>                          #   Name of API Manager administrator " >> ~/.bashrc
 $ echo "export OCP_USERNAME=<provided by your instructor>" >> ~/.bashrc
 $ echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
-$ echo "export API_TENANT_USERNAME=<provided by instructor>                               #   Name of tenant admin " >> ~/.bashrc
-$ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                            #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
+$ echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
+$ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                         #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
 
 
 #  Review, copy & paste the following in same terminal #
 
-echo "export OCP_AMP_ADMIN_ID=api0                                                      #   Name of API Manager administrator " >> ~/.bashrc
 echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where API Manager resides "   >> ~/.bashrc
 echo "export GW_PROJECT=\$OCP_USERNAME-gw                                               #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
 echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
