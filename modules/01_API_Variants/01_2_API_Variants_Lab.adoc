@@ -272,6 +272,21 @@ The following is a refresher for how to create this account.
 * *Name*: `StoresSOAPApp`
 * *Description*: `Stores SOAP Application`
 
+. Configure the metrics:
+.. Navigate to: `API:Stores SOAP Policy API -> Integration -> Methods & Metrics`
+.. Click `New Metric` and populate the form for each of the following :
++
+[options="header"]
+|=======================
+|Metric|System Name|Unit
+|`getAllStores`|`Stores/getAllStores`|`hits`
+|`createStore`|`Stores/createStore`|`hits`
+|`deleteStore`|`Stores/deleteStore`|`hits`
+|`getStore`|`Stores/getStore`|`hits`
+|=======================
++
+These metrics correspond to SOAP _operations_ implemented by your backend SOAP service.
+
 . *Stores SOAP Policy API* integrations
 * *Private Base URL*:  Populate with the output of the following:
 +
@@ -308,19 +323,6 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --temp
 .. The mapping for the _POST_ requests will increment hits on the _StoresWS_ method every time a SOAP request is made to any of the SOAP _operations_ of your backend _Stores_ service.
 .. The mapping for the _GET_ request will increment hits made to resources such as the _Stores_ service's WSDL.
 
-
-. Configure the metrics:
-+
-[options="header"]
-|=======================
-|Metric|System Name|Unit
-|`getAllStores`|`Stores/getAllStores`|`hits`
-|`createStore`|`Stores/createStore`|`hits`
-|`deleteStore`|`Stores/deleteStore`|`hits`
-|`getStore`|`Stores/getStore`|`hits`
-|=======================
-+
-These metrics correspond to SOAP _operations_ implemented by your backend SOAP service.
 
 . Set an API Test GET request:
 * *API Test GET Request*: `/StoresWS?wsdl`
@@ -690,11 +692,6 @@ $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n 
 
 The REST-SOAP Camel proxy is now correctly deployed, and you can begin to configure the API gateway to use this REST endpoint to communicate with the SOAP web service.
 
-
-=== Use Swagger Tool to Import Documents (Optional)
-
-* Follow the steps in the previous lab to import the API documents into 3scale API Management.
-
 === Create API Staging and Production Routes
 
 . Follow the steps in the API Management lab to create secure routes to the `stage-apicast` and `apicast-production` services for the Stores Transformation API.
@@ -782,6 +779,28 @@ $ curl -v -k "https://`oc get route stores-soap-transformation-production-route 
 -----
 
 * A Camel route can be used to provide routing for 3scale API Management's gateway to the SOAP web service.
+
+== Appendix
+
+=== SOAP UI Related Hints
+
+When creating a SOAP based project in SOAP-UI, you'll need to provide the wsdl to your Store service.
+This can be a bit problematic.
+
+You won't be able to simply supply SOAP-UI with a valid URL (with API key) to your Store service WSDL.
+SOAP-UI will pull down that initial wsdl, parse it for the value of <wsdl:import location= />  attribute and error out because the value of the location attribute is not complete".  It is missing your API key.
+
+Subsequently, you'll want to execute the following:
+
+. Use curl to retrieve a copy of your wsdl and save that copy to disk
+. Using a text editor, change the value of the <wsdl:import location="" /> attribute to a valid URL to your wsdl.
+.. You will want to url encode the ampersand character in the URL
+.. Example as follows:
++
+-----
+<wsdl:import location="https://stores-soap-staging-apicast-jb.apps.dev39.openshift.opentlc.com/StoresWS?wsdl=Stores.wsdl&amp;user_key=4fab352901d3badef8cbe9e05eab1271" namespace="http://www.rhmart.com/Stores/">
+-----
+. Create a new SOAP project in SOAP-UI by referencing this downloaded and modified local wsdl.
 
 
 ifdef::showscript[]
