@@ -53,8 +53,12 @@ $ oc create -f $HOME/lab/3scale_development_labs/templates/stock-api.json
 . Add the `datasources` environment variable secret to the project:
 +
 -----
-$ oc secret new datavirt-app-config $HOME/lab/3scale_development_labs/Stock/datasources.env
+$ oc create secret generic \
+                   datavirt-app-config \
+                   --from-file=$HOME/lab/3scale_development_labs/Stock/datasources.env
 -----
++
+Notice that the _datasources.env_ includes all of the needed configurations to define JDBC based _Datasource_ pools to both the MySQL and PostgreSQL databases.
 
 . Create a new service account for the `datavirt` user and provide view access:
 +
@@ -69,10 +73,11 @@ $ oc policy add-role-to-user view system:serviceaccount:$OCP_USERNAME-stock-api:
 $ oc new-app --template=stock-api --param HOSTNAME_HTTP=stock-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
-. Test the `stock` API service deployed in your OpenShift environment:
+. Wait until all pods have successfully deployed:
 +
 -----
 $ oc get pods
+
 NAME                  READY     STATUS      RESTARTS   AGE
 stock-api-2-34b7h     1/1       Running     0          16h
 stockmysql-3-3g5v9    1/1       Running     0          18h
