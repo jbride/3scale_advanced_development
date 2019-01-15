@@ -4,14 +4,14 @@
 :linkattrs:
 
 
-== SOAP and OData Service Management Lab
+== Discovery of OData Service Lab
 
 .Goals
 
 
 
-* Use 3scale Service Discovery to discover an OData service running on OpenShift
 * Use 3scale API Management's gateway to connect to OData services
+* Use 3scale Service Discovery to discover an OData service running on OpenShift
 
 :numbered:
 
@@ -102,9 +102,16 @@ $ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERN
 
 == 3scale Service Discovery 
 
-In order for any OpenShift service to be discoverable by 3scale API Manager running on the same OpenShift cluster, the `default` service account of the 3scale API Manager namespace needs view access to the cluster. 
+In order for any OpenShift service to be discoverable by 3scale API Manager running on the same OpenShift cluster, the `default` service account of the 3scale API Manager namespace needs view access to the entire cluster. 
 
-In your lab environment, this has already been provisioned for you by the administrator.
+This configuration is executed by the OpenShift cluster administrator.
+In your lab environment, this has already been done for you using a command similar to the following:
+
+-----
+oc adm policy add-cluster-role-to-user view system:serviceaccount:3scale-mt-api0:default
+-----
+
+
 For details on the new Service Discovery feature of 3scale, please refer to this document: https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/service_discovery/index
 
 === Set up OData Service for Discovery
@@ -159,7 +166,8 @@ $ oc create route edge stock-odata-production-route \
 
 == Configure 3scale API Management
 
-=== Discovery
+
+=== API Discovery
 
 . From the 3scale Admin console home page, click on *New API*.
 . Select *Import from OpenShift*
@@ -175,6 +183,8 @@ image::images/3scale_amp_stock_api_discovery_list.png[]
 
 . Click on *Integrate this API*.
 
+
+=== Additional Configurations
 . Create an application plan:
 * *Name*: `StockODataPremiumPlan`
 * *System Name*: `stockODataPremiumPlan`
