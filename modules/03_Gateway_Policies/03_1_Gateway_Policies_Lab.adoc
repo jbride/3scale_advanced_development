@@ -11,7 +11,7 @@ In this lab you learn about APIcast gateway customizations. You study two popula
 .Goals
 * Create custom policy in Apicast gateway for Logging
 * Create custom policy in Apicast gateway for IP Check
-* Create custom configuration in NGINX gateway for echoing request headers
+
 
 
 
@@ -172,100 +172,4 @@ IP address not allowed
 
 . After completion of this lab, remove the *IP Check* policy so that it does not impact the rest of the labs.
 
-== Custom Configuration for `Echo Headers`
 
-At some point, you may need to inject a custom NGNIX configuration into API gateway--for example, to add another _server_ block to handle some routing. 
-
-This additional configuration does not need to override the existing configuration. 
-
-In this section of the lab, you create a custom NGinx configuration to provide a more verbose response to a client request.
-Specifically, the additional custom configuration that you apply to your gateway will echo all the request headers back to the response.
-
-The configuration is link:https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf[here^].
-
-. Examine the code for the `log` function:
-+
------
-server {
-  listen 8080;
-  server_name echo;
-
-  location / {
-    echo $echo_client_request_headers;
-  }
-
-}
------
-
-=== Deploy Custom Configuration on OpenShift
-
-. Copy the `echo.conf` file locally:
-+
------
-$ curl -o $HOME/lab/echo.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf
------
-
-. Switch to the $GW_PROJECT:
-+
------
-$ oc project $GW_PROJECT
------
-
-. Create a configuration map in the OpenShift project, making sure to provide the correct path to the `echo.conf` file:
-+
------
-$ oc create configmap echo-conf --from-file=$HOME/lab/echo.conf
------
-
-. Create a volume for the pod, and mount it to the appropriate path:
-+
------
-$ oc set volume \
-         deploy/stage-apicast \
-         --add \
-         --name=echo-conf \
-         --mount-path /opt/app-root/app/sites.d/echo.conf \
-         --source='{"configMap":{"name":"echo-conf","items":[{"key":"echo.conf","path":"echo.conf"}]}}'
------
-
-. The `oc volume` command does not support adding subpaths, so you need to apply a patch:
-+
------
-$ oc patch deploy/stage-apicast \
-           --type=json \
-           -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/1/subPath", "value":"echo.conf"}]'
------
-
-* The `stage-apicast` pod redeploys automatically.
-
-. Wait for the pod to be in a running state.
-
-=== Test Custom Configuration
-
-. Open a terminal and connect via RSH to the `stage-apicast` pod:
-+
------
-$ oc rsh <your apicast pod>
------
-
-* Substitute the name of your `stage-apicast` pod.
-
-. Send a request with a custom header to port 8080 of `localhost`:
-+
------
-sh-4.2$ curl localhost:8080 -H 'Host: echo' -X 'POST'
------
-
-* Expect a response similar to the following:
-+
------
-POST / HTTP/1.1
-Host: echo
-User-Agent: curl/7.49.1
-Accept: */*
------
-+
-Notice the response includes the original custom header sent in the request.
-
-
------
