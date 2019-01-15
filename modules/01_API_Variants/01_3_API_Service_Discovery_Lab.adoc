@@ -103,13 +103,16 @@ $ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERN
 == 3scale Service Discovery 
 
 In order for any OpenShift service to be discoverable by 3scale API Manager running on the same OpenShift cluster, the `default` service account of the 3scale API Manager namespace needs view access to the entire cluster. 
-
 This configuration is executed by the OpenShift cluster administrator.
-In your lab environment, this has already been done for you using a command similar to the following:
+
+In your lab environment, this has already been done for you.
+[blue]#For informational purposes only, the command used by the cluster admin is as follows:#
 
 -----
 oc adm policy add-cluster-role-to-user view system:serviceaccount:3scale-mt-api0:default
 -----
+
+NOTE:  You do not need to execute the above command.
 
 
 For details on the new Service Discovery feature of 3scale, please refer to this document: https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/service_discovery/index
