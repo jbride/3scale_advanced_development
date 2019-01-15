@@ -22,7 +22,7 @@ In this lab you learn about APIcast gateway customizations. You study two popula
 In this section, you set up a policy to provide detailed access logs in the Apicast gateway for each request. 
 This is a standard policy plugin available in the API Manager and can be configured directly in the service configuration.
 
-=== Configurate the Logging Policy
+=== Configure the Logging Policy
 
 . In 3scale management portal, navigate to the *SOAP Stores Transformation API* integration.
 . Click on *configuration*.
@@ -89,7 +89,7 @@ $ oc logs -f po/<stage-apicast-pod>
 +
 image::images/3scale_custom_policy_logging_remove.png[]
 
-. Send the request again and observe that the logs are now recording lesser information regarding the request.
+. Send the request again and observe that the logs are now recording less information regarding that request.
 +
 ----
 2019/01/11 14:15:09 [info] 22#22: *63 [lua] proxy.lua:81: output_debug_headers(): usage: usage%5Bhits%5D=1 credentials: user_key=aa35a0672913effeb77df946404e3830, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
@@ -108,7 +108,7 @@ image::images/3scale_custom_policy_logging_remove.png[]
 In this section, you set up a policy to accept or deny a request based on the request IP. 
 This is a standard policy plugin available in the API Manager and can be configured directly in the service configuration.
 
-=== Configurate the Logging Policy
+=== Configure the _IP Check_ Policy
 
 . In 3scale management portal, navigate to the *SOAP Stores Transformation API* integration.
 . Click on *configuration*.
@@ -146,17 +146,22 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 IP address not allowed
 ----
 
-. Now modify the *IP Check* policy to use the public IP address of your laptop from which you are running the curl request.
-. Update the staging environment and redeploy the apicast-stage pod.
+. Now modify the *IP Check* policy to use the *public* IP address of your laptop from which you are running the curl request.
++
+Make sure to specify the public IP address, not an internal IP address.
+
+. Update the staging environment and redeploy the apicast stage pod.
 . Now you should notice that the response is received:
 +
 ----
 $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
+
+
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 ----
 
 . Now change the *IP Check* policy to *Block the IPs included in the list* for your public IP.
-. Update the staging environment and redeploy the apicast-stage pod.
+. Update the staging environment and redeploy the apicast stage pod.
 . Test the request again and notice that you receive the following response:
 +
 ----
@@ -169,14 +174,12 @@ IP address not allowed
 
 == Custom Configuration for `Echo Headers`
 
-You might need to inject a custom NGNIX configuration into the gateway--for example, to add another server block to handle some routing. 
+At some point, you may need to inject a custom NGNIX configuration into API gateway--for example, to add another _server_ block to handle some routing. 
 
-This configuration does not override the existing configuration. 
+This additional configuration does not need to override the existing configuration. 
 
-Similar to the custom module, a custom configuration can be used to inherit the standard configuration and extend it.
-
-
-In this section you create a custom configuration to provide more a verbose response to client by echoing all the request headers in the response, along with the API response.
+In this section of the lab, you create a custom NGinx configuration to provide a more verbose response to a client request.
+Specifically, the additional custom configuration that you apply to your gateway will echo all the request headers back to the response.
 
 The configuration is link:https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf[here^].
 
@@ -194,53 +197,60 @@ server {
 }
 -----
 
-==== Deploy Custom Configuration on OpenShift
+=== Deploy Custom Configuration on OpenShift
 
 . Copy the `echo.conf` file locally:
 +
 -----
-$ curl -o echo.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf
+$ curl -o $HOME/lab/echo.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf
 -----
 
-. Verify that you are logged in to OpenShift with your login credentials from the terminal.
-. Verify that you are using the `3scale AMP` project:
+. Switch to the $GW_PROJECT:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-3scale-amp
+$ oc project $GW_PROJECT
 -----
 
 . Create a configuration map in the OpenShift project, making sure to provide the correct path to the `echo.conf` file:
 +
 -----
-$ oc create configmap echo-conf --from-file=./echo.conf
+$ oc create configmap echo-conf --from-file=$HOME/lab/echo.conf
 -----
 
-. Create a volume for the container, and mount it to the appropriate path:
+. Create a volume for the pod, and mount it to the appropriate path:
 +
 -----
-$ oc set volume dc/apicast-staging --add --name=echo-conf --mount-path /opt/app-root/app/sites.d/echo.conf --source='{"configMap":{"name":"echo-conf","items":[{"key":"echo.conf","path":"echo.conf"}]}}'
+$ oc set volume \
+         deploy/stage-apicast \
+         --add \
+         --name=echo-conf \
+         --mount-path /opt/app-root/app/sites.d/echo.conf \
+         --source='{"configMap":{"name":"echo-conf","items":[{"key":"echo.conf","path":"echo.conf"}]}}'
 -----
 
 . The `oc volume` command does not support adding subpaths, so you need to apply a patch:
 +
 -----
-$ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/1/subPath", "value":"echo.conf"}]'
+$ oc patch deploy/stage-apicast \
+           --type=json \
+           -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/1/subPath", "value":"echo.conf"}]'
 -----
-* The `apicast-staging` pod redeploys automatically.
+
+* The `stage-apicast` pod redeploys automatically.
 
 . Wait for the pod to be in a running state.
 
 === Test Custom Configuration
 
-. Open a terminal and connect via RSH to the `apicast-staging` pod:
+. Open a terminal and connect via RSH to the `stage-apicast` pod:
 +
 -----
 $ oc rsh <your apicast pod>
 -----
 
-* Substitute the name of your `apicast-staging` pod.
+* Substitute the name of your `stage-apicast` pod.
 
-. Send a request to port 8080 of `localhost`:
+. Send a request with a custom header to port 8080 of `localhost`:
 +
 -----
 sh-4.2$ curl localhost:8080 -H 'Host: echo' -X 'POST'
@@ -254,6 +264,8 @@ Host: echo
 User-Agent: curl/7.49.1
 Accept: */*
 -----
++
+Notice the response includes the original custom header sent in the request.
 
 
 -----

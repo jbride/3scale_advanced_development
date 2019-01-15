@@ -40,12 +40,12 @@ Open a terminal window in your local machine and set the following environment v
 # Modify each of the following based on settings provided by Instructor
 # Afterwards, exeecute each of the modified commands in your shell:
 
-$ echo "export REGION=<provided by your instructor>" >> ~/.bashrc
-$ echo "export OCP_AMP_ADMIN_ID=<provided by your instructor>                          #   Name of API Manager administrator " >> ~/.bashrc
-$ echo "export OCP_USERNAME=<provided by your instructor>" >> ~/.bashrc
-$ echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
-$ echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
-$ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                         #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
+echo "export REGION=<provided by your instructor>" >> ~/.bashrc
+echo "export OCP_AMP_ADMIN_ID=<provided by your instructor>                          #   Name of API Manager administrator " >> ~/.bashrc
+echo "export OCP_USERNAME=<provided by your instructor>" >> ~/.bashrc
+echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
+echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
+echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                         #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
 
 
 #  Review, copy & paste the following in same terminal #
