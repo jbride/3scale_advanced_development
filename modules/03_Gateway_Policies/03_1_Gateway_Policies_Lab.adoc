@@ -182,7 +182,6 @@ The configuration is link:https://raw.githubusercontent.com/3scale/apicast/3.1-s
 
 . Examine the code for the `log` function:
 +
-[source,text]
 -----
 server {
   listen 8080;
@@ -199,7 +198,6 @@ server {
 
 . Copy the `echo.conf` file locally:
 +
-[source,text]
 -----
 $ curl -o echo.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/examples/custom-config/echo.conf
 -----
@@ -207,28 +205,24 @@ $ curl -o echo.conf https://raw.githubusercontent.com/3scale/apicast/3.1-stable/
 . Verify that you are logged in to OpenShift with your login credentials from the terminal.
 . Verify that you are using the `3scale AMP` project:
 +
-[source,text]
 -----
 $ oc project $OCP_PROJECT_PREFIX-3scale-amp
 -----
 
 . Create a configuration map in the OpenShift project, making sure to provide the correct path to the `echo.conf` file:
 +
-[source,text]
 -----
 $ oc create configmap echo-conf --from-file=./echo.conf
 -----
 
 . Create a volume for the container, and mount it to the appropriate path:
 +
-[source,text]
 -----
 $ oc set volume dc/apicast-staging --add --name=echo-conf --mount-path /opt/app-root/app/sites.d/echo.conf --source='{"configMap":{"name":"echo-conf","items":[{"key":"echo.conf","path":"echo.conf"}]}}'
 -----
 
 . The `oc volume` command does not support adding subpaths, so you need to apply a patch:
 +
-[source,text]
 -----
 $ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/template/spec/containers/0/volumeMounts/1/subPath", "value":"echo.conf"}]'
 -----
@@ -240,7 +234,6 @@ $ oc patch dc/apicast-staging --type=json -p '[{"op": "add", "path": "/spec/temp
 
 . Open a terminal and connect via RSH to the `apicast-staging` pod:
 +
-[source,text]
 -----
 $ oc rsh <your apicast pod>
 -----
@@ -249,14 +242,12 @@ $ oc rsh <your apicast pod>
 
 . Send a request to port 8080 of `localhost`:
 +
-[source,text]
 -----
 sh-4.2$ curl localhost:8080 -H 'Host: echo' -X 'POST'
 -----
 
 * Expect a response similar to the following:
 +
-[source,text]
 -----
 POST / HTTP/1.1
 Host: echo
