@@ -6,7 +6,7 @@
 
 == Apicast Customization Lab
 
-In this lab you learn about APIcast gateway customizations. You study two popular standard plugins available in AMP and learn about using these in a policy chain to manage the API gateway behaviour.
+In this lab you learn about APIcast gateway customizations. You study two popular standard plugins available in the API Manager and learn about using these in a policy chain to manage the API gateway behaviour.
 
 .Goals
 * Create custom policy in Apicast gateway for Logging
@@ -19,7 +19,8 @@ In this lab you learn about APIcast gateway customizations. You study two popula
 
 == Policy Chain for Logging
 
-In this section, you set up a policy to provide detailed access logs in the Apicast gateway for each request. This is a standard policy plugin available in AMP and can be configured directly in the service configuration.
+In this section, you set up a policy to provide detailed access logs in the Apicast gateway for each request. 
+This is a standard policy plugin available in the API Manager and can be configured directly in the service configuration.
 
 === Configurate the Logging Policy
 
@@ -104,7 +105,8 @@ image::images/3scale_custom_policy_logging_remove.png[]
 
 == Policy Chain for `IP Check`
 
-In this section, you set up a policy to accept or deny a request based on the request IP. This is a standard policy plugin available in AMP and can be configured directly in the service configuration.
+In this section, you set up a policy to accept or deny a request based on the request IP. 
+This is a standard policy plugin available in the API Manager and can be configured directly in the service configuration.
 
 === Configurate the Logging Policy
 
