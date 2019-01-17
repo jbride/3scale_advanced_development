@@ -162,17 +162,19 @@ TIP: You can use the Swagger API docs to understand the methods & mappings requi
 . Once the API services are exposed on the APICast gateway, the API backend routes should not have a publicly available URL that could be accessed directly.
 . Production API route URLs should be provided to the management for testing.
 
-== Additional Notes
+== Homework Submittal
 
-To submit the assignment for grading, please upload a README file with the following information:
+. You submit your homework via one of the following:
+.. link:https://docs.google.com/document/d/1nxlvAOlSdNs3-y8AkmDjnc8vtCH9rJdI5zbN9deCK50/edit[Red Hat LMS^] if you are a Red Hat employee
+.. link:https://partner.redhat.com[Red Hat Connect^] if you are a business partner
 
-. 3scale Admin Portal URL, admin userid/password
-. 3scale Developer Portal URL & signup page
-. Sample *curl* requests for each service at the *production* endpoint.
-. Any design considerations for each section describing your choices.
-. Any additional points/information relating to the assignment that you would like to share.
-. Any time limits (e.g environment expiry date) after which the solution is inaccessible for testing.
+. To submit the assignment for grading, please upload a README file with the following information:
+
+.. 3scale Admin Portal URL, admin userid/password
+.. 3scale Developer Portal URL & signup page
+.. Sample *curl* requests for each service at the *production* endpoint.
+.. Any design considerations for each section describing your choices.
+.. Any additional points/information relating to the assignment that you would like to share.
+.. Any time limits (e.g environment expiry date) after which the solution is inaccessible for testing.
 +
 NOTE: Please have the lab environment accessible for upto 1 week after submission, to enable grader to access the URLs for grading.
-
-
