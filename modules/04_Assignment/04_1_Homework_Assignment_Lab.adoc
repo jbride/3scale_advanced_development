@@ -9,7 +9,7 @@
 * Assess hands-on proficiency with Red Hat 3scale Development topics.
 
 .Expectations
-* Assignments take approximately 8 - 10 hours to complete.
+* Assignments take approximately 6 - 8 hours to complete.
 * Assignments are an individual effort--complete the assignment without collaboration.
 * Assignments should simulate a challenge typically encountered in a Red Hat consulting engagement.
 ** Assignment requirements are intentionally vague.
@@ -139,7 +139,7 @@ TIP: You can use the Swagger API docs to understand the methods & mappings requi
 
 . Both the services *Inventory* & *Catalog* should be managed separately. 
 . Each service should have a *basic* plan and a *premium* plan so that *_WebRetail Inc._* can provide differentiated plans to users.
-. *basic* plan  should not have the ability to invoke CRUD operations on the services. 
+. *basic* plan  should not have the ability to invoke Create, Update or Delete operations on the services. It should be allowed only READ access.
 * *premium* plan should not have impose any restrictions.
 * *basic* plan users should be limited to only *5* API requests per hour for each service.
 . Metrics should be set up such that usage details can be viewed for each method separately.
@@ -157,8 +157,8 @@ TIP: You can use the Swagger API docs to understand the methods & mappings requi
 === API Gateway
 
 . The API Gateway should be co-located with the services in the same OpenShift Project to reduce latency.
-. API Gateway should expose separate routes for each service, so that management can micro-manage the availability of each service separately.
-. API Gateway should expose *HTTP* endpoints to the APIs.
+. API Gateway should expose separate routes for each service.
+. API Gateway should expose *HTTPS* endpoints to the APIs.
 . Once the API services are exposed on the APICast gateway, the API backend routes should not have a publicly available URL that could be accessed directly.
 . Production API route URLs should be provided to the management for testing.
 
