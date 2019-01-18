@@ -60,52 +60,73 @@ You will need to deploy the *Catalog* & *Inventory* services in your OpenShift p
 Below are the steps:
 
 . Open a terminal window and login to your OCP admin console.
+
 . Create a new project for your Products API business service applications:
 +
 -----
-$ oc new-project $OCP_PROJECT_PREFIX-coolstore \
+$ oc new-project $OCP_USERNAME-coolstore \
      --display-name="CoolStore API" \
      --description="CoolStore API Business Services"
 -----
-+
-. If you are not already there, change to this new project:
+
+. Create a configmap for the catalog service:
 +
 -----
-$ oc project $OCP_PROJECT_PREFIX-coolstore
+$ mkdir -p $HOME/lab
+
+$ echo "
+catalog.http.port: 8080
+connection_string: mongodb://catalog-mongodb:27017
+db_name: catalogdb
+username: mongo
+password: mongo" > $HOME/lab/app-config.yaml
+
+
+$ oc create configmap app-config --from-file=$HOME/lab/app-config.yaml -n $OCP_USERNAME-coolstore
 -----
+
+. Allow default SA to read configmap deployed in namespace
 +
+-----
+$ oc policy add-role-to-user view -z default -n $OCP_USERNAME-coolstore
+-----
+
 . Import the `coolstore` template to your OpenShift environment:
 +
 -----
-$ oc create -f ~/lab/3scale_development_labs/CoolStore/coolstore-template.yml
+$ oc create -f https://raw.githubusercontent.com/gpe-mw-training/3scale_development_labs/master/CoolStore/coolstore-catalog-mongodb-persistent.yaml -n $OCP_USERNAME-coolstore
 -----
-+
+
 . Create a new application using the `coolstore` template:
 +
 -----
-$ oc new-app --template=coolstore
+$ oc new-app \
+        --template=coolstore-catalog-mongodb \
+        -p CATALOG_DB_USERNAME=mongo \
+        -p CATALOG_DB_PASSWORD=mongo \
+        -n $OCP_USERNAME-coolstore
 -----
-+
-. Expose the *Inventory* & *Catalog* routes:
-+
------
-$ oc create route edge inventory-route --service=inventory
-$ oc create route edge catalog-route --service=catalog
------
-+ 
-. Wait for a couple of minutes for the deployments to complete. The inventory & catalog service & database pods should be running.
+
+
+. Wait about 1 minute for the mongodb to start and then resume the catalog-service from its paused state
 +
 -----
 $ oc get pods
-NAME                           READY     STATUS      RESTARTS   AGE
-catalog-2-k9vnq                1/1       Running     0          22h
-catalog-mongodb-1-bfw7n        1/1       Running     0          5d
-inventory-1-q9b7k              1/1       Running     0          5d
-inventory-postgresql-1-r2jpj   1/1       Running     0          5d
+NAME                      READY     STATUS    RESTARTS   AGE
+catalog-mongodb-1-zlsjx   1/1       Running   0          50s
 
+$  oc rollout resume deploy/catalog-service -n $OCP_USERNAME-coolstore
 -----
 
+
 === Explore the APIs
+
+. Smoke test the APIs
+.. Catalog service:
++
+-----
+$ curl -k http://`oc get route -n $OCP_USERNAME-coolstore  catalog-unsecured --template {{.spec.host}}`/products
+-----
 
 Notice that the Swagger spec is provided for both APIs. You can use the Swagger editor (http://editor.swagger.io/) to explore the APIs.
 
