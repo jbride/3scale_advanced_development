@@ -59,6 +59,8 @@ You will need to deploy the *Catalog* & *Inventory* services in your OpenShift p
 
 Below are the steps:
 
+==== Catalog Service
+
 . Open a terminal window and login to your OCP admin console.
 
 . Create a new project for your Products API business service applications:
@@ -74,6 +76,8 @@ $ oc new-project $OCP_USERNAME-coolstore \
 -----
 $ mkdir -p $HOME/lab
 
+
+
 $ echo "
 catalog.http.port: 8080
 connection_string: mongodb://catalog-mongodb:27017
@@ -82,8 +86,11 @@ username: mongo
 password: mongo" > $HOME/lab/app-config.yaml
 
 
+
+
 $ oc create configmap app-config --from-file=$HOME/lab/app-config.yaml -n $OCP_USERNAME-coolstore
 -----
+
 
 . Allow default SA to read configmap deployed in namespace
 +
@@ -91,7 +98,7 @@ $ oc create configmap app-config --from-file=$HOME/lab/app-config.yaml -n $OCP_U
 $ oc policy add-role-to-user view -z default -n $OCP_USERNAME-coolstore
 -----
 
-. Import the `coolstore` template to your OpenShift environment:
+. Import the `catalog` template to your OpenShift environment:
 +
 -----
 $ oc create -f https://raw.githubusercontent.com/gpe-mw-training/3scale_development_labs/master/CoolStore/coolstore-catalog-mongodb-persistent.yaml -n $OCP_USERNAME-coolstore
@@ -118,26 +125,86 @@ catalog-mongodb-1-zlsjx   1/1       Running   0          50s
 $  oc rollout resume deploy/catalog-service -n $OCP_USERNAME-coolstore
 -----
 
+. Smoke test the catalog service APIs
+.. OAS Documentation:
++
+-----
+$ curl -k http://`oc get route -n $OCP_USERNAME-coolstore  catalog-unsecured --template {{.spec.host}}`/docs/coolstore-catalog-microservice-swagger.yaml
+-----
 
-=== Explore the APIs
-
-. Smoke test the APIs
-.. Catalog service:
+.. Products resources:
 +
 -----
 $ curl -k http://`oc get route -n $OCP_USERNAME-coolstore  catalog-unsecured --template {{.spec.host}}`/products
 -----
 
-Notice that the Swagger spec is provided for both APIs. You can use the Swagger editor (http://editor.swagger.io/) to explore the APIs.
 
-.Catalog API
-image::coolstore_catalog_api_methods.png[]
+==== Inventory Service
+
+Optional:  The source code of the Inventory Service is available link:https://github.com/gpe-mw-training/cnd_thorntail_experienced/tree/api-mgmt-inventory-service[here] if interested in reviewing it.
+
+. Create a configmap for the catalog service:
++
+-----
+$ echo "
+swarm:
+  datasources:
+    data-sources:
+      InventoryDS:
+        driver-name: postgresql
+        connection-url: jdbc:postgresql://inventory-postgresql:5432/inventorydb
+        user-name: jboss
+        password: jboss"  >  $HOME/lab/inventory-config.yaml
 
 
-.Inventory API
-image::coolstore_inventory_api_methods.png[]
+$ oc create configmap inventory-config --from-file=$HOME/lab/inventory-config.yaml -n $OCP_USERNAME-coolstore
+-----
 
-The following are the valid product ids seeded for this POC:
+. Import the `inventory` template to your OpenShift environment:
++
+-----
+$ oc create -f https://raw.githubusercontent.com/gpe-mw-training/3scale_development_labs/master/CoolStore/coolstore-inventory-persistent.yaml -n $OCP_USERNAME-coolstore
+-----
+
+. Create a new `inventory` application :
++
+-----
+$ oc new-app \
+    --template=coolstore-inventory-postgresql \
+    -p INVENTORY_SERVICE_NAME=inventory-service \
+    -p INVENTORY_DB_USERNAME=jboss \
+    -p INVENTORY_DB_PASSWORD=jboss \
+    -p INVENTORY_DB_NAME=inventorydb
+-----
+
+
+. Wait about 1 minute for the postgresql to start and then resume the inventory-service from its paused state
++
+-----
+$ oc get pods
+
+.....
+
+inventory-postgresql-1-rn96s           1/1       Running            0         50s 
+
+
+
+
+$ oc rollout resume deploy/inventory-service -n $OCP_USERNAME-coolstore
+-----
+
+. Smoke test the catalog service APIs
+.. OAS Documentation:
+-----
+$ curl -k -X GET http://`oc get route -n $OCP_USERNAME-coolstore  inventory-unsecured --template {{.spec.host}}`/swagger.json | python -m json.tool
+-----
+
+.. Inventory resource:
+-----
+$ curl -k -X GET http://`oc get route -n $OCP_USERNAME-coolstore  inventory-unsecured --template {{.spec.host}}`/inventory/165613 | python -m json.tool
+-----
+
+... The following are the valid product ids seeded for this POC:
 
 * 329299
 * 329199
@@ -147,7 +214,20 @@ The following are the valid product ids seeded for this POC:
 * 444435
 * 444436
 
-You can try sample requests for the Catalog & Inventory APIs using the above product ids.
+... You can try sample requests for the Catalog & Inventory APIs using the above product ids.
+
+
+
+=== Explore the APIs
+
+Notice that the Swagger spec is provided for both APIs. You can use the Swagger editor (http://editor.swagger.io/) to explore the APIs.
+
+.Catalog API
+image::coolstore_catalog_api_methods.png[]
+
+.Inventory API
+image::coolstore_inventory_api_methods.png[]
+
 
 TIP: You can use the Swagger API docs to understand the methods & mappings required to be set up for the APIs in 3scale.
 
