@@ -222,16 +222,10 @@ $ curl -k -X GET http://`oc get route -n $OCP_USERNAME-coolstore  inventory-unse
 
 === Explore the APIs
 
-Notice that the Swagger spec is provided for both APIs. You can use the Swagger editor (http://editor.swagger.io/) to explore the APIs.
+Notice that the Swagger spec is provided for both APIs. 
 
-.Catalog API
-image::coolstore_catalog_api_methods.png[]
+You can use the Swagger editor (http://editor.swagger.io/) to explore the methods & mappings available to be set up for the APIs in 3scale.
 
-.Inventory API
-image::coolstore_inventory_api_methods.png[]
-
-
-TIP: You can use the Swagger API docs to understand the methods & mappings required to be set up for the APIs in 3scale.
 
 
 == POC Requirements
