@@ -195,16 +195,18 @@ $ oc rollout resume deploy/inventory-service -n $OCP_USERNAME-coolstore
 
 . Smoke test the catalog service APIs
 .. OAS Documentation:
++
 -----
 $ curl -k -X GET http://`oc get route -n $OCP_USERNAME-coolstore  inventory-unsecured --template {{.spec.host}}`/swagger.json | python -m json.tool
 -----
 
 .. Inventory resource:
++
 -----
 $ curl -k -X GET http://`oc get route -n $OCP_USERNAME-coolstore  inventory-unsecured --template {{.spec.host}}`/inventory/165613 | python -m json.tool
 -----
 
-... The following are the valid product ids seeded for this POC:
+... The following are the valid product IDs seeded for this POC:
 
 * 329299
 * 329199
