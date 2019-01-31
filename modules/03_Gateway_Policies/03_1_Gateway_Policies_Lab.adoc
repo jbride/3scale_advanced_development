@@ -1,54 +1,56 @@
 :scrollbar:
-:data-uri:
+:noaudio:
 :toc2:
 :linkattrs:
 
 
-== Apicast Customization Lab
+== APIcast Customization Lab
 
-In this lab you learn about APIcast gateway customizations. You study two popular standard plugins available in the API Manager and learn about using these in a policy chain to manage the API gateway behaviour.
+In this lab you learn about APIcast gateway customizations. You study two popular standard plug-ins available in 3scale API Management and learn about using them in a policy chain to manage the API gateway's behavior.
 
 .Goals
-* Create custom policy in Apicast gateway for Logging
-* Create custom policy in Apicast gateway for IP Check
+* Create a custom `Logging` policy in an APIcast gateway
+* Create a custom `IP check` policy in an APIcast gateway
 
 
 
 
 :numbered:
 
-== Policy Chain for Logging
+== Policy Chain for `Logging`
 
-In this section, you set up a policy to provide detailed access logs in the Apicast gateway for each request. 
-This is a standard policy plugin available in the API Manager and can be configured directly in the service configuration.
+In this section, you set up a policy to provide detailed access logs in the APIcast gateway for each request.
+This is a standard policy plug-in available in 3scale API Management that can be configured directly in the service configuration.
 
-=== Configure the Logging Policy
+=== Configure `Logging` Policy
 
-. In 3scale management portal, navigate to the *SOAP Stores Transformation API* integration.
-. Click on *configuration*.
-. Scroll down to *Policies* section and click on *Add Policy*.
+. In the Admin Portal, navigate to the `SOAP Stores Transformation API` integration.
+. Click *Configuration*.
+. Scroll down to the *Policies* section and click *Add Policy*:
 +
 image::images/3scale_custom_policy_add.png[]
 
-. Select the *Logging* policy.
-. Click on the positioning arrows on right to move the Logging policy before the *3scale Apicast* policy in the policy chain.
+. Select `Logging`.
+. Click the positioning arrows on the right to move the `Logging` policy above the `3scale APIcast` policy in the policy chain:
 +
 image::images/3scale_custom_policy_chain_order.png[]
 
-. Click on the *Logging* policy to expand.
-. Ensure the policy is *Enabled*, and click on checkbox to select *enable_access_logs*.
+. Click the `Logging` policy to expand it.
+. Make sure that the policy is *Enabled* and check the *enable_access_logs* box:
 +
 image::images/3scale_custom_policy_logging_details.png[]
 
-. Click on *Update Policy*.
-. Scroll down and click on *Update and test in Staging Environment*.
-. Now redeploy the stage-apicast pod in OpenShift by simply deleting the existing one. Kubernetes will make sure a new one is started.
-. Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
+. Click *Update Policy*.
+. Scroll down and click *Update and test in Staging Environment*.
+. Redeploy the `stage-apicast` pod in OpenShift by deleting the existing one.
+* Kubernetes automatically starts a new one.
+. Wait a couple of minutes for the deployment to complete and the pod to be in the `Running` state.
 
-=== Test the Logging Policy
+=== Test `Logging` Policy
 
-. Send a *curl* request to the staging URL:
+. Send a `curl` request to the staging URL:
 +
+[source,texinfo]
 ----
 $ export STORES_TRANS_API_KEY=<api key to your Stores App>
 
@@ -57,15 +59,17 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 ----
 
-. Now check the logs of the *stage-apicast* pod and notice that the log has details of the request:
+. Check the `stage-apicast` pod logs:
 +
+[source,sh]
 ----
 $ oc logs -f po/<stage-apicast-pod>
 
 ----
 
-. You should see multiple logs related to the request.
+* Expect to see multiple logs related to the request:
 +
+[source,texinfo]
 ----
 2019/01/11 14:24:37 [info] 21#21: *61 [lua] configuration_loader.lua:213: rewrite(): lazy loading configuration for: stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
 2019/01/11 14:24:37 [info] 21#21: *61 [lua] remote_v2.lua:181: call(): could not get configuration for service 3: invalid status: 404 (Not Found), client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
@@ -85,12 +89,13 @@ $ oc logs -f po/<stage-apicast-pod>
 
 ----
 
-. Now remove the policy *Logging*, update the staging environment and redeploy the apicast-stage pod.
+. Remove the `Logging` policy, update the staging environment, and redeploy the `stage-apicast` pod:
 +
 image::images/3scale_custom_policy_logging_remove.png[]
 
-. Send the request again and observe that the logs are now recording less information regarding that request.
+. Send the request again and observe that the logs are now recording less information regarding that request:
 +
+[source,texinfo]
 ----
 2019/01/11 14:15:09 [info] 22#22: *63 [lua] proxy.lua:81: output_debug_headers(): usage: usage%5Bhits%5D=1 credentials: user_key=aa35a0672913effeb77df946404e3830, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
 2019/01/11 14:15:09 [info] 22#22: *63 [lua] proxy.lua:148: apicast cache miss key: 9:aa35a0672913effeb77df946404e3830:usage%5Bhits%5D=1 value: nil, client: 10.1.2.1, server: _, request: "GET /allstores?user_key=aa35a0672913effeb77df946404e3830 HTTP/1.1", host: "stores-trans-staging-apicast-user1.apps.8d2d.openshift.opentlc.com"
@@ -103,35 +108,36 @@ image::images/3scale_custom_policy_logging_remove.png[]
 2019/01/11 14:15:09 [info] 22#22: *63 client 10.1.2.1 closed keepalive connection (104: Connection reset by peer)
 ----
 
-== Policy Chain for `IP Check`
+== Policy Chain for `IP check`
 
-In this section, you set up a policy to accept or deny a request based on the request IP. 
-This is a standard policy plugin available in the API Manager and can be configured directly in the service configuration.
+In this section, you set up a policy to accept or deny a request based on the request's IP address.
+This is a standard policy plug-in available in 3scale API Management that can be configured directly in the service configuration.
 
-=== Configure the _IP Check_ Policy
+=== Configure `IP check` Policy
 
-. In 3scale management portal, navigate to the *SOAP Stores Transformation API* integration.
-. Click on *configuration*.
-. Scroll down to *Policies* section and click on *Add Policy*.
+. In the Admin Portal, navigate to the `SOAP Stores Transformation API` integration.
+. Click *Configuration*.
+. Scroll down to the *Policies* section and click *Add Policy*:
 +
 image::images/3scale_custom_policy_add.png[]
 
-. Select *IP Check* policy.
-. As in previous section, move the *IP Check* policy ahead of the *3scale APIcast* policy.
-. Click on *IP Check* to expand the policy.
-. Add a new IP in the list *127.0.0.1*.
-. *check_type* should be *Allow only the IPs included in the list*.	
+. Select `IP check`.
+. As in the previous section, move the `IP check` policy above the `3scale APIcast` policy.
+. Click `IP check` to expand the policy.
+. Add `127.0.0.1` as a new IP address in the list.
+. Make sure *check_type* is set as *Allow only the IPs included in the list*:
 +
 image::images/3scale_custom_policy_ipcheck_details.png[]
 
-. Click on *Update Policy*.
-. Scroll down and click on *Update and test in Staging Environment*.
-. Now redeploy the stage-apicast pod in OpenShift by simply deleting the existing one. Kubernetes will make sure a new one is started.
-. Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
+. Click *Update Policy*.
+. Scroll down and click *Update and test in Staging Environment*.
+. Redeploy the `stage-apicast` pod in OpenShift by deleting the existing one.
+* Kubernetes automatically starts a new one.
+. Wait a couple of minutes for the deployment to complete and the pod to be in the `Running` state.
 
-=== Test the Logging Policy
+=== Test `IP check` Policy
 
-. Send a *curl* request to the staging URL:
+. Send a `curl` request to the staging URL:
 +
 ----
 $ export STORES_TRANS_API_KEY=<api key to your Stores App>
@@ -139,20 +145,21 @@ $ export STORES_TRANS_API_KEY=<api key to your Stores App>
 $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
 
 ----
-
-. The response should be as follows:
 +
+.Expected Response
+[source,texinfo]
 ----
 IP address not allowed
 ----
 
-. Now modify the *IP Check* policy to use the *public* IP address of your laptop from which you are running the curl request.
+. Modify the `IP check` policy to use the public IP address of the laptop from which you are running the `curl` request.
 +
-Make sure to specify the public IP address, not an internal IP address.
+IMPORTANT: Make sure to specify the public IP address, not an internal IP address.
 
-. Update the staging environment and redeploy the apicast stage pod.
-. Now you should notice that the response is received:
+. Update the staging environment and redeploy the `stage-apicast` pod.
+. Test the request again and verify that the response is now received:
 +
+[source,texinfo]
 ----
 $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
 
@@ -160,16 +167,15 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}
 ----
 
-. Now change the *IP Check* policy to *Block the IPs included in the list* for your public IP.
-. Update the staging environment and redeploy the apicast stage pod.
-. Test the request again and notice that you receive the following response:
+. Change the `IP check` policy to *Block the IPs included in the list* for your public IP address.
+. Update the staging environment and redeploy the `stage-apicast` pod.
+. Test the request again and verify that you receive the following response:
 +
+[source,texinfo]
 ----
 $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
 IP address not allowed
 
 ----
 
-. After completion of this lab, remove the *IP Check* policy so that it does not impact the rest of the labs.
-
-
+. When you are done with this lab, remove the `IP check` policy so that it does not affect the remaining labs.
