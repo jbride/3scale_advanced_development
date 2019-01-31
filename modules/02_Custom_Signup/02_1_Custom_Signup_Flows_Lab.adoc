@@ -1,75 +1,71 @@
 :scrollbar:
-:data-uri:
+
 :toc2:
 :linkattrs:
 
 
 == Custom Signup Flows Lab
 
-In this lab you create custom signup flows for managing various signup approaches for API consumers of your APIs managed through 3scale. 
-Several signup scenario flows are covered in this lab to include: _single application sign-up_,  _multiple application signups_, and _group membership_.
+In this lab, you create custom signup flows to manage various signup approaches for the API consumers of your Red Hat 3scale-managed APIs.
+Several signup flows are covered in this lab, including single application signups, multiple application signups, and group membership flows.
 
 .Goals
-* Create API documentation for the Products API application
+* Create API documentation for the `Products` API application
 * Integrate the API documentation with 3scale API Management
-* Create a custom development portal
-* Create a client application to call the Products API
+* Create a custom Developer Portal
+* Create a client application to call the `Products` API
 
 :numbered:
 
 == Introduction
 
-Please read this excellent article from Kevin Price on 3scale signup and signup flows.
+First, read this excellent article from Kevin Price on link:https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flows/["3scale Developer Portal signup flows"].
 
-https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flows/
+In this lab, you follow the four examples discussed in the blog article and adapt them to the services and APIs managed here.
 
-In this lab, we will be following the 4 examples discussed in the blog and adapt it to the services and APIs managed here.
+The signup flow that you, as an API provider, select and implement in your production environment to onboard API consumers is a function of several considerations, including the following:
 
-The sign-up flow that you (as an API Provider) select and implement in your production environment to onboard API Consumers is a function of several considerations.   
-These considerations include the following:
-
-. Are API services available to all API consumers or should they be made available per group ?
-. Should any of your API services be made available to non-registered API consumers ?
-. Are there different application plans for each service ?
+* Are API services available to all API consumers or should they be made available via a group?
+* Should any of your API services be made available to non-registered API consumers?
+* Are there different application plans for each service?
 
 
-== Save Original Signup Flow as a _Partial_
+== Save Original Signup Flow as Partial
 
 === Overview
 
-The out-of-the-box _Homepage_ found in the 3scale _Content Management System_ (CMS) (and gets rendered to API consumers in the Developer Portal) includes a very simple sign-up flow embedded in it.
+The out-of-the-box Homepage in the 3scale Content Management System (CMS), which gets rendered to API consumers in the Developer Portal, has a very simple signup flow embedded in it.
 
-In this section of the lab, you extract that embedded sign-up flow and save it as a _Partial_.
-You then reference that new partial in your _Homepage_.
+In this section of the lab, you extract that embedded signup flow and save it as a _partial_.
+You then reference that new partial in your homepage.
 
-Because you are just moving the original sign-up flow logic from being buried in the _Homepage_ to being a referenced _partial_, no change to the look and feel of your Developer Portal is to be expected.
+Because you are simply moving the original signup flow logic from the Homepage to a referenced partial, you can expect to see no changes to the look and feel of your Developer Portal.
 
-In later sections of this lab, you will implement more sophisticated sign-up flows that are also implemented as _partials_ .
-All of your sign-up flows can easily be swapped in and out of the Developer Portal homepage simply by changing the reference to the desired partial.
-
-You will then be able to compare and contrast the features and behavior of each of these partials.
-
+In subsequent sections of this lab, you implement more sophisticated signup flows that are also implemented as partials.
+All of your signup flows can easily be swapped in and out of the Developer Portal Homepage simply by changing the reference to the desired partial.
+You can then compare and contrast their features and behaviors.
 
 
-=== Procedure
 
-. From the 3scale Admin Portal, navigate to _Audience -> Developer Portal_.  Doing so will expand links related to the CMS.
-. In the left panel, click: `Content`.  Observe the default look-n-feel of the CMS homepage.
-. In the left panel, click: _Visit Portal_
+=== Create Partial
+
+. From the Admin Portal, navigate to *Audience -> Developer Portal*. This expands options related to the CMS.
+. In the left-hand panel, click *Content* and observe the default look and feel of the CMS homepage.
+. In the left-hand panel, click *Visit Portal*.
 +
-Make note of the default look-n-feel of the Developer Portal along with its focus on the _Echo API_.
+* Make note of the default look and feel of the Developer Portal along with its focus on the _Echo API_.
 
-. In the CMS, navigate to: *My -> Root -> Homepage*:
-. Cut out lines 119 - 182 from the _Homepage_.  Save the change.
-. From the blue drop-down selection at the top-right, click _New Partial_.
+. In the CMS, navigate to *My -> Root -> Homepage*.
+. In the text editor, cut lines 119 through 182 and save the change.
+. From the *New Page* list at the top right, select *New Partial*:
 +
 image::images/click_new_partial.png[]
 
-. Set the _System name_ of the New partial as: _original_app_signup_form_ .
-. Paste was previously deleted from the Homepage into the the large text box of your new _original_app_signup_form_ partial.
-. Click:  Create Partial
-. Return back to the Homepage and enter the following at line 119:
+. Enter `original_app_signup_form` as the *System name*.
+. Paste the contents you cut from the *Homepage* into the text box and click *Create Partial*.
+. Return to the *Homepage* text editor and enter the following at line 119:
 +
+[source,texinfo]
 -----
 <section class="plan">
     {% include 'original_app_signup_form' %}
@@ -78,56 +74,55 @@ image::images/click_new_partial.png[]
 +
 image::images/reference_original_partial.png[]
 
-.. Save the _Homepage_ file.
+. Save the changes.
 
-. Publish both the changes.
-+
-In the left panel, click _Drafts_ and then "Publish All"
+. Publish both changes by clicking *Drafts* in the left-hand panel, then *Publish All*:
 +
 image::images/3scale_amp_custom_signup_single_plan_2.png[]
 
-. Click on *Developer Portal* again and ensure nothing has changed.
+. Click *Visit Portal* again and make sure nothing has changed.
++
+****
+*Questions*:
 
-. Answer the following questions:
-
-.. Why is only one API service being displayed in the Developer Portal ?
-.. What is the _system_name_ of that API service ?
-
+* Why is only one API service being displayed in the Developer Portal?
+* What is the `system_name` of that API service?
+****
 ifdef::showscript[]
 
-. {% for plan in provider.services.api.application_plans %}
-. api
+* {% for plan in provider.services.api.application_plans %}
+* api
 
 endif::showscript[]
 
 
 
 
-== Single Application Signup flow
+== Single Application Signup Flow
 
 === Overview
 
 This is the simplest signup flow.
-It only allows a subscription to a single Service and Application Plan upon account creation.
+It allows a subscription to a single service and application plan upon account creation.
 
-This signup flow is actually very similar to the original sign-up flow you saved as a _partial_ in the previous section of this lab.
+This signup flow is actually very similar to the original signup flow you saved as a partial in the previous section of this lab.
 
-The only difference between this signup flow and the original is :
+The only differences between this signup flow and the original are:
 
-. The original partial is focused specifically on the sample _Echo_ API that comes out of the box with a fresh install of the product.
-. This _single-app_ sign up flow used in this section iterates through the application plans of all services from the provider account.
+* The original partial is focused specifically on the sample `Echo` API that comes with a fresh installation of the product.
+* The `single-app` signup flow used in this section iterates through the application plans of all of the services from the provider account.
+The API consumer is allowed to sign up for one of the many application plans displayed.
+
+** You do not need to enable any special features in the Developer Portal to use this flow.
+
+The signup flow is provided in the `~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid` partial.
+
+=== Create Single Application Signup Flow
+
+. Open the `~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid` file and examine the code for the signup flow:
+* Service/Application filter:
 +
-The API consumer is allowed to sign-up for 1 of the possible many application plans displayed.
-
-You do not need to enable any special features in the 3scale Developer portal to use this flow.
-
-The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid*.
-
-=== Procedure
-
-. Open the file *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid* and examine the code for the signup:
-.. Service/Application filter
-+
+[source,texinfo]
 ----
             {% for service in provider.services %}
       		<h2> {{ service.name }} </h2>
@@ -135,11 +130,12 @@ The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPor
             {% for plan in service.application_plans%}
 ----
 +
-NOTE: The above liquid filter iterates through the list of all services for the provider, and then further iterates through all the application plans. 
+** The above liquid filter iterates through the list of all services for the provider, and then further iterates through all of the application plans.
 Thus, this filter allows you to display a list of all services along with the service plans.
+
+* Plan features/limits:
 +
-.. Plan Features/Limits
-+
+[source,texinfo]
 ----
     <div class="col-md-4">
         <article class="panel panel-default">
@@ -177,30 +173,30 @@ Thus, this filter allows you to display a list of all services along with the se
                 </div>
             </div>
 ----
+** This code displays the plan name and the features and limits that are set up for the plan.
+
+* Signup link:
 +
-NOTE: The above code displays the plan name and features/limits setup for the plan.
-+
-.. Signup link
-+
+[source,texinfo]
 ----
                    <a class="btn btn-cta-secondary pull-right" href="{{ urls.signup }}?{{ plan | to_param }}&{{ service.service_plans.first | to_param }}">Signup to plan {{ plan.name }}</a>
 
 ----
-+
-NOTE: This section shows the link to redirect to the signup form for the chosen plan and service.
-+
-. Add this partial to the developer portal.
-.. click on *New Partial*
-.. Provide System name as:  *single_app_signup_form*
-.. Copy the contents of the file *~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid* into the text field.
-.. Click on *Create Partial*.
-.. Confirm that the partial shows up in the menu list of partials.
+** This section shows the link that redirects to the signup form for the chosen plan and service.
+
+. Add this partial to the Developer Portal:
+.. From the *New Page* list at the top right, select *New Partial*.
+.. Enter `single_app_signup_form` as the *System name*.
+.. Copy and paste the contents of the `~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid` file into the text editor.
+.. Click *Create Partial*.
+.. Confirm that the partial shows up in the *Partials* list:
 +
 image::images/3scale_amp_custom_signup_single_plan.png[]
 
-. Edit the *Homepage*:
-.. At around line 120, replace _original_app_signup_form_ with _single_app_signup_form_.
+. Edit the Homepage:
+.. Near line 120, replace `original_app_signup_form` with `single_app_signup_form`:
 +
+[source,texinfo]
 ....
   <section class="plan">
     {% include 'single_app_signup_form' %}
@@ -208,38 +204,38 @@ image::images/3scale_amp_custom_signup_single_plan.png[]
 {% endif %}
 ....
 +
-NOTE: The include ensures the content of the partial is included to be displayed in the Homepage.
-+
-.. Save the file.
-. Publish both the changes.
+NOTE: The `include` section ensures that the content of the partial is displayed on the Homepage.
+
+. Save the file.
+. Publish both of the changes:
 +
 image::images/3scale_amp_custom_signup_single_plan_2.png[]
 
 
 === Test
-. Navigate to the Developer Portal and ensure you are currently logged out.
-. Verify that the Homepage now displays all API services and application plans created in previous labs:
+. Navigate to the *Developer Portal* and make sure you are currently logged out.
+. Verify that the Homepage now displays all of the API services and application plans that you created in the previous labs:
 +
 image::images/3scale_amp_custom_signup_single_plan_3.png[]
-+
-. Now sign up using the form by clicking on one of the plans.
-+
-Notice that you are only allowed to select the link to a single application plan at a time.
 
-. Fill up the form with a new user details and a valid email address.
+. Sign up by clicking the signup link for one of the plans.
+
+* Note that you are only allowed to select the link for one application plan at a time.
+
+. Complete the form with details about a new user, including a valid email address:
 +
 image::images/3scale_amp_custom_signup_single_plan_4.png[]
-+
-. Once signup is successful, you will get a Success page.
+
+* Once your signup is successful, expect to see a success message:
 +
 image::images/3scale_amp_custom_signup_single_plan_5.png[]
-+
-. Look for the email to the email address provided.
+
+. Look for the email at the email address you provided:
 +
 image::images/3scale_amp_custom_signup_single_plan_6.png[]
-+
-. Click on the *activate your account* link and sign in with the username/password used to create the account.
-. Finally, in the admin portal click on the *Developers* tab, check that the Account & user are created.
+
+. Click the link to activate your account and sign in with the username and password you used in creating the account.
+. In the Admin Portal, navigate to *Audience -> Accounts* and verify that the account and user were created:
 +
 image::images/3scale_amp_custom_signup_single_plan_7.png[]
 
@@ -249,69 +245,74 @@ image::images/3scale_amp_custom_signup_single_plan_7.png[]
 == Multiple Application Signup Flow
 
 === Overview
-The multiple application signup flow allows users to signup for multiple services (and the associated application plans) at the same time.
-
-It does so by providing a _partial_ that renders a multi-select check box HTML form in the Developer Portal.
+The multiple application signup flow allows users to sign up for multiple services (and their associated application plans) at the same time.
+It does so by providing a partial that renders a multiple-selection check-box HTML form in the Developer Portal.
 
 In addition, the *Multiple Applications* feature needs to be enabled in the Developer Portal.
 
-=== Procedure
+=== Create Multiple Application Signup Flow
 
-. Login to the admin portal using your credentials and navigate to *Developer Portal*.
-. Click on *Feature Visibility*.
-. Ensure that the *Multiple Applications* feature is *_visible_*.
+. Log in to the Admin Portal and navigate to *Developer Portal*.
+. Click *Feature Visibility*.
+. Confirm that the *Multiple Applications* feature is marked *Visible*:
 +
 image::images/3scale_amp_custom_signup_multi_plan.png[]
-
-The signup flow is provided in the partial *~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid*.
-
-. Open the file *~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid* and examine the code for the signup:
-. You will notice that the form is quite similar to the *_single_app_signup_form.html.liquid*. Specific to this _partial_, of interest is the following:
-.. The signup form:
 +
+[NOTE]
+====
+The signup flow is provided in the `~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid` partial.
+====
+
+. Open the `~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid` file and examine the code for the signup.
+* Note that the form is very similar to the `_single_app_signup_form.html.liquid` form.
+. Observe the following key points:
+* The signup form:
++
+[source,texinfo]
 ----
 <form action="{{ urls.signup }}" method="get">
 ----
+
+* The check box input:
 +
-.. checkbox input:
-+
+[source,texinfo]
 ----
 <input type="checkbox" name="plan_ids[]" value="{{ plan.id }}">Signup to {{ plan.name }}</input>
 <input type="hidden" name="plan_ids[]" value="{{ service.service_plans.first.id }}"></input>
 
 ----
+
+* A "Submit" button that directs to the signup form:
 +
-.. A submit button to direct to the Signup form.
-+
+[source,texinfo]
 ----
     <button type="submit" class="btn btn-cta-primary">Signup</a>
 ----
-+
-. Upload the partial to the Developer Portal.
-.. System name* : *multi_app_signup_form*
-.. Copy the contents of the file *~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid* and click on *Create Partial*.
-. Ensure the partial shows up in the menu.
-. Edit the *Homepage* and change the include section to use the *multi_app_signup_form* instead of *single_app_signup_form*.
-. Now save and *Publish* the changes.
+. Upload the partial to the Developer Portal:
+.. Enter `multi_app_signup_form` as the *System name*.
+.. Copy and paste the contents of the `~/lab/3scale_development_labs/DevPortal/_multiple_app_signup_form.html.liquid` file into the text editor and click *Create Partial*.
+. Make sure that the partial shows up in the menu.
+. Edit the *Homepage* and change the `include` section to use `multi_app_signup_form` instead of `single_app_signup_form`.
+. Save and publish the changes.
 
 === Test
-. Navigate to the Developer Portal and ensure you are currently logged out.
-. Notice the home page now has the multiple signup form, with a checkbox for each application plan.
+. Navigate to the *Developer Portal* and make sure you are currently logged out.
+. Confirm that the Homepage now has the multiple signup form, with a check box for each application plan:
 +
 image::images/3scale_amp_custom_signup_multi_plan_3.png[]
-+
-. Try to signup for 2 different applications (e.g API Unlimited and ProductsBasicPlan).
-. In the signup form, provide an appropriate email address and user details.
-. Click on the link in the confirmation email and login.
-. Login as the new user and notice the ability to view all registered Application and Keys created for those chosen applications.
+
+. Attempt to sign up for two different applications, such as *StoresTransPremiumPlan* and *StockODataPremiumPlan*.
+. Complete the form with details about a new user, including a valid email address.
+. Click the link in the confirmation email and log in as the new user.
+* Note that you can see all of the registered applications and the keys that were created for those applications:
 +
 image::images/apps_and_creds.png[]
 
-. Finally, in the admin portal click on the *Developers* tab, check that the Account & user are created.
+. In the Admin Portal, navigate to *Audience -> Accounts* and verify that the account and user were created:
 +
 image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 +
-NOTE: Note that if there are any services with default application plans, then a default application is created for the account created using the signup form. 
+TIP: If there are any services with default application plans, a default application is created for the account that was created using the signup form.
 In order to prevent this, do NOT mark any application plan as default in the service specification.
 
 
@@ -322,324 +323,309 @@ In order to prevent this, do NOT mark any application plan as default in the ser
 
 === Overview
 
-With this flow, a custom _field_ on the API consumer accounts is used to control the services those API consumers can see and subscribe to. 
+This flow uses a custom field on the API consumer accounts is used to control which services those API consumers can see and subscribe to.
 
-A typical usecase is if there are multiple application plans each with different access (e.g a different plan for internal developers and another for external developers). 
-This field can be combined with the *Account Approval* feature so that an admin can view and approve the user to a particular service.
+A typical use case is one in which there are multiple application plans, each with different access--for example, one plan for internal developers and another for external developers.
+This field can be combined with signup flows that include the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
 
-In this sign-up flow use case, we will utilize two of the _Stores_ related APIs that you have created in previous labs.
+In this use case, you utilize two of the `Stores`-related APIs that you created in previous labs.
 
-. *Stores SOAP Policy API*
-+
-Manages SOAP services and introduces a custom SOAP policy to track metrics per SOAP operation.
-+
-In this scenario, we will make this *internal* and only available to API consumers who are signed up as _internal_ users. 
+* *Stores SOAP Policy API*: Manages SOAP services and introduces a custom SOAP policy to track metrics for each SOAP operation.
+** In this scenario, you make this _internal_ and available only to API consumers who are signed up as internal users.
 
-. *Stores SOAP Transformation API*
-+
-Uses JBoss Fuse as a REST to SOAP XML mediation layer.
-+
-In this scenario, this endpoint could be made available to API consumers who are signed up as _public_ users. 
-+
-We will also restrict *public* users to have an Account Approval required, so that before they could access the Stores Transformation API, an admin user will approve their request.
+* *Stores SOAP Transformation API*: Uses Red Hat Fuse as a REST-to-SOAP XML mediation layer.
+** In this scenario, you make this endpoint available to API consumers who are signed up as _public_ users.
+** You further restrict public users by requiring account approval by an administrator before they can access the `Stores` API.
 
 
-The below steps are required to accomplish this _Custom Field Flow_.
+=== Set Up Custom Field on Accounts
 
-=== Set up custom field on *Accounts*
+You start by defining the custom field on the API consumer's Accounts object.
 
-Let's start by defining the custom field on the API consumer *Accounts* object.
-
-. Open the Admin Portal and navigate to: *Audience -> Accounts -> Fields Definitions* tab.
-. Click on the *Create* link in the Account field.
+. Open the Admin Portal and navigate to *Audience -> Accounts -> Fields Definitions*.
+. Click *Create* to the right of *Account*:
 +
 image::images/account_field_create.png[]
 
 . Enter the following values:
-.. *Name*: access
-.. *Label*: access
-.. Do not check any of the *Required*, *Hidden* or *Read Only*.
-.. *Choices*: internal, public
+* *Name*: `access`
+* *Label*: `access`
+* Leave the *Required*, *Hidden*, and *Read only* boxes unchecked.
+* *Choices*: `internal, public`
 +
 image::images/3scale_amp_custom_signup_field_plan_2.png[]
++
+[NOTE]
+====
+You can make the field a *Required* field so that any user signup flow contains this field.
+Another use case is to make it a *Hidden* field with simple JavaScript code providing this value--for example, based on the user's email address.
+You can also make this field a *Read Only* field that only an API provider tenant administrator can change.
 
-... Note that the field could be made *Required* so that any user signup will contain this field. 
-Another usecase is to make it a *Hidden* field, and have a simple javascript provide its value (e.g depending on user's email address). 
-This field can also be made *Read Only* such that it cannot be changed by the API consumers, only by the API provider tenant admin.
-... In our scenario, we leave all of these options unchecked so that upon sign-up, the user can see this field and optionally decide whether to gain access to either an _internal_ or _public_ API.
-
-. Click `Create`, and check that the field is successfully added to the Account object.
+In this scenario, you leave all of these options unchecked so that upon signup, the user can see this field and optionally decide whether to gain access to the internal or public API.
+====
+. Click *Create* and verify that the field is successfully added to the Account object:
 +
 image::images/3scale_amp_custom_signup_field_plan_3.png[]
 
 
 
 === Enable Account Approval
-It is possible to require that an API provider approve and activate all accounts initiated by API consumers.
+It is possible to require that an API provider approves and activates all accounts initiated by API consumers.
+In this section, you enable this feature.
 
-Please enable this feature now by executing the following:
+. In the Admin Portal, as an API provider, navigate to *Audience -> Accounts -> Usage Rules -> Signup*.
+. Check the *Account approval required* box.
+. Click *Update Settings*.
 
-. As an API provider, navigate to the following in the Admin Portal: `Audience -> Accounts -> Usage Rules -> Signup`
-. Click the checkbox: `Account approval required`
-. Click `Update Settings`
+This feature is used in both this custom signup flow and the group membership signup flow introduced later in this lab.
 
-This feature will be used in both this custom signup flow as well as the next one introduced in this lab:  _Group Membership Signup_.
+=== Modify APIs and Application Plans
 
-=== Changes to APIs and Application Plans
+In this section, you define a custom feature for two of your API services: `Stores SOAP Policy API` and `Stores SOAP Transformation API`.
 
-In this section, a custom _feature_ will be defined for two of your API services:  _Stores SOAP Policy API_ and _Stores Transformation API_.
+The values (`internal` and `public`) of these features correspond to the values of the field you previously defined for all API consumer accounts.
 
-The values (_internal_ and _public_ ) of these _features_ correspond to the values of the previously created _field_ defined for all API consumer _accounts_.
+==== Modify Stores SOAP Policy API
 
-==== Stores SOAP Policy API
-
-. Navigate to the  *Settings* for the Stores SOAP Policy API, and select *default* plan, enable the option: *Developers can select a plan when creating a new application*.
+. Navigate to *Settings* for the `Stores SOAP Policy API`, select *Default* for the *Default plan*, and check the *Developers can select a plan when creating a new application* box:
 +
 image::images/3scale_amp_custom_signup_field_plan_10.png[]
-+
-. Click on *Update Service*.
 
-. Navigate to the _StoresSOAPBasicPlan_ Application Plan of the *Stores SOAP Policy API*.
-. Create a *New Feature* with following values:
-.. *Name* : internal
-.. *System name* : internal
-.. *Description* : This Plan is intended for internal users.
-. Click on *Save*
+. Click *Update Service*.
+
+. Navigate to the `StoresSOAPBasicPlan` application plan of the `Stores SOAP Policy API`.
+. Create a new *Feature* with the following values:
+* *Name*: `internal`
+* *System name*: `internal`
+* *Description*: `This Plan is intended for internal users.`
 +
 image::images/3scale_amp_custom_signup_field_plan_4.png[]
+. Click *Save*.
+
+. Click the *x* in the *Enabled?* column to enable the feature.
+
+==== Modify Stores SOAP Transformation API
+
+. For the *Default plan* of the `Stores SOAP Transformation API`, enable the *Developers can select a plan when creating a new application* option.
+. Navigate to the `StoresTransPremiumPlan` of the `Stores SOAP Transformation API`.
+. Check the *Application requires approval?* box.
+. Create a new *Feature* for this plan with the following values:
+* *Name*: `public`
+* *System name*: `public`
+* *Description*: `This Plan is intended for public users.`
+. Save the new feature, then enable it.
+
+
+=== Make Developer Portal Changes
+
+In this section, you specify two partials in the Homepage.
+The first new partial renders in the Developer Portal for unauthenticated users.
+The second new partial renders in the Developer Portal only after the API consumer has registered a new account and authenticated in.
+
+. Add the `unauthenticated_noplan_signup_form` partial using the contents of the `~/lab/3scale_development_labs/DevPortal/_unauthenticated_noplan_signup_form.html.liquid` file.
+. In the *Homepage*, modify the `include` statement near line 123:
 +
-. Click on the *x* under *Enabled?* to enable the feature.
-
-==== Stores Transformation API
-
-. For the *default* plan of the _Stores Transformation API_, enable the option:  *Developers can select a plan when creating a new application*.
-. Navigate to the *StoresTransPremiumPlan* of the *Stores SOAP Transformation API*.
-. Select the checkbox for *Application require approval?*
-. Create a new feature for this plan with the following values:
-.. *Name* : public
-.. *System name* : public
-.. *Description* : This Plan is intended for public users.
-. After saving the new feature, enable it.
- 
-
-=== Developer Portal changes
-
-Two _partials_ will be be specified in the _Homepage_.
-
-The first new partial renders in the Dev Portal for unauthenticated users.
-The second new partial renders in the Dev Portal only after the API consumer has registered a new account and authenticated in.
-
-. Add the partial *unauthenticated_noplan_signup_form* with the contents of the file: *~/lab/3scale_development_labs/DevPortal/_unauthenticated_noplan_signup_form.html.liquid*
-. In the *Homepage*, modify the include statement at around line 123 
-+
+[source,texinfo]
 ----
 {% include 'unauthenticated_noplan_signup_form' %}
 ----
-+
-This partial is rendered for unauthenticated users.
-Notice that is simply provides a link to the registration page.
+
+* This partial is rendered for unauthenticated users.
+Note that it simply provides a link to the registration page.
 
 
-. Add the partial *custom_field_signup_form* with the contents of the file *~/lab/3scale_development_labs/DevPortal/_custom_field_plans.html.liquid*
-. In the *Homepage*, add the following after line 87 (before the *{% else %}* line).
+. Add the `custom_field_signup_form` partial using the contents of the `~/lab/3scale_development_labs/DevPortal/_custom_field_plans.html.liquid` file.
+. In the *Homepage*, add the following after line 87 and before the `{% else %}` line:
 +
+[source,texinfo]
 ----
 {% include 'custom_field_signup_form' %}
 ----
-+
-This partial is rendered for authenticated API consumers.
-Notice that the partial contains logic to iterate through the list of services and application plans.
-It  then offers to the API consumer the ability to register for only those plans available as per the custom account field .
 
-. Save and publish all the changes.
+* This partial is rendered for authenticated API consumers.
+Note that it contains logic to iterate through the list of services and application plans and then offers the API consumer the ability to register for only those plans available per the custom account field.
 
-=== Test the Custom Field flow for *Public* access
+. Save and publish all of the changes.
 
-. Navigate to the Developer Portal and ensure you are currently logged out.
-. Click the link provided by your _unauthenticated_noplan_signup_form_:
+=== Test Custom Field Flow for Public Access
+
+. Navigate to the *Developer Portal* and make sure you are currently logged out.
+. Click the link provided by `unauthenticated_noplan_signup_form`:
 +
 image::images/noplan_signup.png[]
 
-. Provide new user details (with a valid email address).
-. Select *ACCESS* to be *public*.
-. Click on *Sign up*.
+. Complete the form with details about a new user, including a valid email address.
+. For *ACCESS*, select `public`.
+. Click *Sign up*:
 +
 image::images/3scale_amp_custom_signup_field_plan_7.png[]
-+
-. Navigate to the *Developers* tabs and note the new account is created.
+
+. In the Admin Portal, navigate to *Audience -> Accounts* and verify that the account and user were created:
 +
 image::images/3scale_amp_custom_signup_field_plan_8.png[]
 +
-NOTE: Note that even if no application is selected during signup, new _applications_ (derived from the *default* application plan) for each service are created for each account.
+NOTE: Even if no application is selected during signup, the default plans for each service are created for each account.
 
-. Now activate the user by clicking on the activation link in the email.
-. Login as the new user created to the Developer Portal.
-. Note the Homepage after sign-in shows the *public* plan for the user to subscribe.
+. Activate the user by clicking the activation link in the email.
+. Log in to the Developer Portal as the new user and note that the Homepage now displays the *PUBLIC* plan for the user to subscribe to:
 +
 image::images/3scale_amp_custom_signup_field_plan_9.png[]
-+
-. Click on *Signup to plan StoresTransPremiumPlan* link.
-. Provide a name and descrption for the new plan and then click: *Create Application*
 
-. Note the success page shows the application *Pending Approval*.
+. Click *Signup to plan StoresTransPremiumPlan*, provide a name and description for the new plan, and click *Create Application*.
+
+* Note that the *Pending* status notification indicates that the application is awaiting approval:
 +
 image::images/3scale_amp_custom_signup_field_plan_12.png[]
 
-. As the API provider, navigate in the Admin Portal to the newly created application and notice its current status of: _pending_.
-. Click on *Accept* to accept the application.
+. In the Admin Portal, as the API provider, navigate to the newly created application and note its current *State* of `Pending`.
+. Click *Accept* to accept the application:
 +
 image::images/3scale_amp_custom_signup_field_plan_13.png[]
 
 
-=== Test the Custom field flow for *Internal* access
+=== Test Custom Field Flow for Internal Access
 
-Repeat the steps from the above section to create a user with *internal* access, and ensure that you can subscribe the user to the *StoresSOAPBasicPlan*.
-
-
+For this test, repeat the steps from the previous section to create a user with `internal` access, and make sure that you can subscribe the user to the `StoresSOAPBasicPlan` plan.
 
 
 
 
 
-== Group Membership Flow
+
+
+== Group Membership Signup Flow
 
 === Overview
 
-Group Membership flow is especially useful when you want to control the access to Services and not just the application plans.
-If you want to specify _sections_ of HTML content that API consumers can only access when they have the correct permissions then you should use this flow.
+Group membership signup flow is especially useful when you want to control access to the services as well as the application plans.
+If you want to specify _sections_ of HTML content that API consumers can access only when they have the correct permissions, this is the flow to use.
 
-Our use case for this lab will be similar to the last lab on _custom field signup_. 
-However, instead of relying on _features_ of application plans for *internal* and *public* user signup, we will rely on _features_ of _Service Plans_ to restrict sign-up to API services.
+The use case for this exercise is similar to the previous exercise on custom field signup.
+Instead of relying on application plans for `internal` and `public` user signup, you rely on service plan features to restrict signups to API services.
 
-Specifically in this use case, APIs will be designated (via a _feature_ of their default Service Plans) as either *external* or *private*.
-In this manner, API consumers who have been assigned to an *external* group by the API provider will only have the ability to sign-up for application plans from an *external* API.
-Similarly, API consumers who have been assigned to a *private* group by the API provider will only have the ability to sign-up for applications plans from a *private* API.
+Specifically in this use case, APIs are designated--via a feature of their default service plans--as either `external` or `private`.
+In this manner, API consumers who are assigned to an `external` group by the API provider can only sign up for application plans from an `external` API.
+Similarly, API consumers who are assigned to a `private` group by the API provider can only sign up for application plans from a `private` API.
 
-We will need a mechanism to allow an API provider to specify the type (*external* or *private*)  of newly registered API consumer accounts.
-The mechanism used will be *Groups* and *Sections*.
+You need a mechanism to allow an API provider to specify the type (`external` or `private`) of newly registered API consumer accounts.
+You use *Groups* and *Sections* for this.
 
 === Enable Service Plans
-This _Group Membership Flow_ relies on the enablement of _Service Plans_.
+To set up this group membership signup flow, you need to enable service plans.
 
-. As an API provider, login to the Admin Portal and navigate to the following to enable _Service Plans_:  `Audience -> Accounts -> Settings -> Usage Rules`
-. Check the box for *Service Plans* and then click: *Update Settings*.
+. As an API provider, log in to the Admin Portal and navigate to *Audience -> Accounts -> Settings -> Usage Rules*.
+. Check the *Service Plans* box and click *Update Settings*:
 +
 image::images/3scale_amp_group_member_signup_plan.png[]
 
-. Enablement of _Service Plans_ subsequently has the affect of making the following visible in the Admin Portal:
+* Enabling service plans makes the following features visible in the Admin Portal:
 
-.. `<any API> -> Overview -> Published Service Plans`
+** *<any API> -> Overview -> Published Service Plans*
 +
 image::images/published_service_plans.png[]
 
-.. `Audience -> Accounts -> Subscriptions`
+** *Audience -> Accounts -> Subscriptions*:
 +
 image::images/list_ss.png[]
 
 
 === Modify Default Service Plan of Stores SOAP Policy API
 
-. As an API provider, navigate to the _Subscriptions -> Service Plans_ section of the *Stores SOAP Policy API*. 
-. Ensure that the *Default Plan* text box is empty.
+. As an API provider, navigate to the *Subscriptions -> Service Plans* section of the `Stores SOAP Policy API`.
+. Make sure that the *Default Plan* text box is empty:
 +
 image::images/3scale_amp_group_member_signup_plan_2.png[]
 
-. Click on the *Default* service plan.
-. Click on *New Feature* link.
-. Add the following values:
-.. *Name* : external feature
-.. *System name* : serviceplan/external
-.. *Description* : This is the external service plan.
-. Save and then click the *x* under *Enabled?* to enable the feature.
+. Click the *Default* service plan.
+. Click *New Feature* and enter the following values:
+* *Name*: `external feature`
+* *System name*: `serviceplan/external`
+* *Description*: `This is the external service plan.`
+. Click *Save* and then click the *x* in the *Enabled?* column to enable the feature:
 +
 image::images/3scale_amp_group_member_signup_plan_4.png[]
 
 === Modify Default Service Plan of Stores SOAP Transformation API
 
-Similar to what you just previously did, create a new feature on the *Default* service plan of your _Stores SOAP Transformation API_.
-This new feature should have the following attributes:
+. As you did in the previous section, create a new feature for the *Default* service plan of the `Stores SOAP Transformation API` with the following details:
+* *Name*: `private feature`
+* *System name*: `serviceplan/private`
+* *Description*: `This is the private service plan.`
 
-. *Name* : private feature
-. *System name* : serviceplan/private
-. *Description* : This is the private service plan.
-
-Also, ensure that a default service plan is de-selected from this API.
+. Make sure that a *Default* service plan is _not_ selected for this API.
 
 === Enable Features in Developer Portal
 
-By default, some features of the Developer Portal are configured as _hidden_.
-Specific to this _Group Membership Sign-up Flow_, two important features of the Developer Portal need to be enabled.
-You can do so as follows:
+By default, some features of the Developer Portal are configured as `hidden`.
+Specifically for this group membership signup flow, you need to enable two important features of the Developer Portal.
 
-. Navigate to *Audience -> Developer Portal -> Feature Visibility*
-. Click the *Show* button on _Service Plans_ as well as _Multiple Services_.
-. Both features should be in a _Visible_ state:
+. Navigate to *Audience -> Developer Portal -> Feature Visibility*.
+. For *Service Plans* and *Multiple Services*, click *Show*.
+. Confirm that both features are marked as *Visible*:
 +
 image::images/advanced_features.png[]
 
 
 === Create New Sections in Developer Portal
 
-HTML _sections_ are a grouping of content and should appear as an entry in an outline of an HTML page.
+HTML _sections_ are groupings of content and appear as entries in an outline of an HTML page.
 
-Beyond this basic HTML functionality, 3scale overloads the use of HTML sections.
-Specifically, 3scale also maintains a listing of HTML sections that an API consumer of an account is affiliated with.
+Beyond this basic HTML functionality, 3scale API Management further enhances the use of HTML sections.
+Specifically, 3scale API Management also maintains a listing of HTML sections that an API consumer of an account is affiliated with.
 
-It's this latter capability of *Sections* that facilitates the _Group Membership Signup Flow_.
+It is this latter capability of sections that facilitates the group membership signup flow.
 
-. Navigate to *Audience -> Developer Portal -> Content*
-. Click on the *New Section* from the *New Page* drop down in the top right corner.
+. Navigate to *Audience -> Developer Portal -> Content*.
+. Select *New Section* from the *New Page* list.
 . Enter the following values:
-.. *Title*: external
-.. *Public*: uncheck the box
-.. *Parent*: .Root
-.. *Partial Path*: /external
-. Click on *Create Section*.
+* *Title*: `external`
+* *Public*: Uncheck the box
+* *Parent*: `.Root`
+* *Partial path*: `/external`
 +
 image::images/3scale_amp_group_member_signup_plan_6.png[]
-
-. Create another *New Section* for *private* with the following values:
-.. *Title*: private 
-.. *Public*: uncheck the box
-.. *Parent*: .Root
-.. *Partial Path*: /private
+. Click *Create Section*.
+. Create another *New Section* for `private` with the following values:
+* *Title*: `private`
+* *Public*: Uncheck the box
+* *Parent*: `.Root`
+* *Partial path*: `/private`
 
 === Create New Groups in Developer Portal
 
-Now that HTML _sections_ have been defined that allign with our use case, let's make use of _Groups_ to create a grouping of these _sections_.
+Now that you have defined HTML sections that align with your use case, you need to make use of _groups_ to create a grouping of these sections.
 
-Later in the lab, we'll see how an API Provider can then associate Groups to API Consumer accounts.
+Later in the lab, you see how an API provider can associate groups to API consumer accounts.
 
 
-. From the left panel of the CMS, click: *Groups*
-. Create a new group *External* and assign the *external* section.
+. From the left-hand panel of the CMS, click *Groups*.
+. Create a new group called `External` and assign it the `external` section:
 +
 image::images/3scale_amp_group_member_signup_plan_8.png[]
 
-. Create another new group *Private* and assign the *private* section.
-. Confirm that both groups are created and correct sections assigned.
+. Create another new group called `Private` and assign it the `private` section.
+. Confirm that both groups are created and the correct sections are assigned:
 +
 image::images/3scale_amp_group_member_signup_plan_9.png[]
 
-=== Add *Group Membership Flow* to Developer Portal
+=== Add Group Membership Flow to Developer Portal
 
-. Study the contents of the file: *~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid*
-+
-Understand the liquid logic used in order to present the user with the correct signup form depending on their group membership.
+. Study the contents of the `~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid` file and make sure you understand the liquid logic that is used to present the user with the correct signup form based on their group membership.
 
-. Via the CMS, add a new partial *group_member_signup_form* to the Dev Portal *Homepage*.
-+
-Do so by copying contents from file *~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid* to your new partial
+. Via the CMS, add a `group_member_signup_form` partial to the Developer Portal *Homepage*.
+. Copy and paste the contents from the `~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid` file to your new partial.
 
-. Navigate to the CMS and in the *Homepage* make the following changes:
-.. Remove the reference to following line (at about line 88) created in the previous section of this lab:
+. Navigate to the CMS and make the following changes to the *Homepage*:
+.. At about line 88, remove the reference to the following line you created previously:
 +
+[source,texinfo]
 ----
  {% include 'custom_field_signup_form' %}
 ----
 
 ..  Replace that line with the following:
 +
+[source,texinfo]
 ----
 {% if current_user and current_account.applications.size == 0 %}
 
@@ -655,86 +641,86 @@ Do so by copying contents from file *~/lab/3scale_development_labs/DevPortal/_gr
 {% endif %}
 ----
 +
-NOTE: This liquid code ensures that if the user has a private section (e.g is part of a group) then the section is presented to the user. Otherwise, the custom field signup form from previous lab is presented.
-+
-. Publish all the changes in the Developer Portal.
+NOTE: This liquid code ensures that if the user has a private section--that is, they are part of the group--then the section is presented to the user. Otherwise, the custom field signup form section is presented.
 
-=== Test the Group Membership flow for *external* access
+. Publish all of the changes in the Developer Portal.
 
-To subscribe to any API, an API consumer must have signed up to create an account first.
-Therefore, the Services and Plans are only visible to API consumers once they have an Account.
+=== Test Group Membership Flow for External Access
 
-The API provider will assign the appropriate Group Membership once the Account has been created.
+To subscribe to any API, an API consumer must sign up to create an account first.
+Therefore, the services and plans are only visible to API consumers once they have an account.
 
-==== New User Registration
-. Navigate to the Developer Portal and ensure you are currently logged out.
-. Click the link provided by your _unauthenticated_noplan_signup_form_.
-. In the sign-up form, provide a new user details (with a valid email address).
-. Ignore the *ACCESS* parameter.
-. Click on *Sign up*.
+The API provider assigns the appropriate group membership once the account has been created.
 
-==== API Provider: Active new account and assign group membership
-. Navigate to the *Developers* tabs and note the new account is created.
+==== Register New User
+. Navigate to the *Developer Portal* and make sure that you are currently logged out.
+. Click the link provided by your `unauthenticated_noplan_signup_form`.
+. Complete the form with details about a new user, including a valid email address.
+. Leave the *ACCESS* parameter blank.
+. Click *Sign up*.
+
+==== Activate Account and Assign Group Membership
+As the API provider, you need to activate the new account and assign group membership.
+
+. In the Admin Portal, navigate to *Audience -> Accounts* and verify that the account and user were created:
 +
 image::images/3scale_amp_group_member_signup_plan_11.png[]
-+
-NOTE: Note that the account created does not have any service subscriptions or applications associated with it.
-The reason for this is that you previously set blank the value of the _Default Service Plan_.
 
-. Activate the user by clicking on the *Activate* link in the Accounts listing.
+* Note that the account does not have any service subscriptions or applications associated with it.
+The reason for this is that you previously set the value of the *Default Service Plan* to blank.
+
+. From the *Accounts* page, click *Activate* to activate the account:
 +
 image::images/3scale_amp_group_member_signup_plan_12.png[]
 
-. Click on *Group Memberships* breadcrumb in the Account details page.
+. In the account's *Account Summary* page, click *Group Memberships*:
 +
 image::images/3scale_amp_group_member_signup_plan_13.png[]
 
-. Assign the Group *External* to the user and Save.
+. Assign the *External* group to the account and click *Save*:
 +
 image::images/3scale_amp_group_member_signup_plan_14.png[]
 +
-NOTE:  This step associates a list of _sections_ to the API consumers of this account.
-This is done so via the _group_ (created previously) of _sections_.
-This becomes important in the _group_membership_plans_ partial where the _sections_ associated with a user are compared with the _features_ of the API (via the APIs _service plans_).
+NOTE: This step associates a list of sections to the API consumers of this account via the group of sections you previously created.
+This becomes important in the `group_membership_plans` partial where the sections associated with a user are compared with the features of the API via the API's service plans.
 
 
-==== API Consumer: Subscribe to Service
+==== Subscribe to Service
+As the API consumer, you need to subscribe to the service.
 
-. In a new browser window, login with the user credentials to the Developer Portal.
-. Note the Homepage after sign-in :
+. In a new browser window, log in to the *Developer Portal* as the new user:
 +
 image::images/3scale_amp_group_member_signup_plan_15.png[]
 
-. Click on *Subscribe to the Stores SOAP Policy API service* link.
-. Notice that the *Services* page shows the user subscribed to the *Default* service for the Stores SOAP Policy API.
+. Click *Subscribe to the Stores SOAP Policy API service*.
+* Note that the *Services* page shows that the user subscribed to the *Default* service for the `Stores SOAP Policy API`:
 +
 image::images/3scale_amp_group_member_signup_plan_16.png[]
 +
-NOTE: You can also edit the *Services - Index* page to only show the subscribed services, or remove the link for the service subscriptions for the other services, so that the user can only see the services he is already subscribed to. This is left as an exercise.
+NOTE: You can also edit the *Services - Index* page to show only the subscribed services or remove the link to the service subscriptions for the other services, so that the user can see only the services they are already subscribed to. This is an optional exercise.
 
-. As the API provider, verify that the new account is now associated with 1 _service subscription_:
+. As the API provider, verify that the new account is now associated with one service subscription:
 +
 image::images/ss.png[]
 
 ==== Select and Approve Application
 
-. As the API Consumer, click on the *Applications* menu item in the Developer Portal.
-. Click on *Create New Application*.
-. Fill in the form and click *Create Application*
+. In the Developer Portal, as the API consumer, click *Applications*.
+. Click *Create New Application*.
+. Complete the form and click *Create Application*
 
-. As the API provider, navigate to the account in the Admin Portal and click on the Application created for _Stores SOAP Policy API_.
-. Notice the Application State.
-. Click on *Accept* to accept the application.
+. As the API provider, navigate to the account in the Admin Portal and click the application created for `Stores SOAP Policy API`.
+. Note the application's *State*, and click *Accept* to accept the application:
 +
 image::images/3scale_amp_group_member_signup_plan_18.png[]
 
-=== Test the Group Membership  flow for *Internal* access
+=== Test Group Membership Flow for Private Access
 
-Now repeat the steps from the above section to create a user with *private* group membership, and ensure that you can subscribe the user to the *Stores SOAP Transformation API service*.
-
-
+Repeat the steps from the previous section to create a user with `private` group membership, and make sure that you can subscribe the user to the `Stores SOAP Transformation API service`.
 
 
 
-.References
-* https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flows/
+
+
+.Reference
+* link:https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flows/[https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flows/]
