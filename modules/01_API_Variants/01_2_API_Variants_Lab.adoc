@@ -1,61 +1,60 @@
 :scrollbar:
-:data-uri:
+
 :toc2:
 :linkattrs:
 
 
-== SOAP and OData Service Management Lab
+== SOAP Service Management Lab
 
 .Goals
 
-* Use Red Hat 3scale API Management's gateway to manage SOAP 1.1 based web services
-* Explore two solutions for the management of SOAP based web services:
-** SOAP _Policy_ to automatically associate metrics to SOAP operations
-** Camel route installed in Red Hat JBoss Fuse Integration Services to route a REST request from 3scale API Management's gateway to a SOAP web service endpoint
+* Use Red Hat 3scale API Management's APIcast gateway to manage SOAP 1.1-based web services
+* Explore two solutions for the management of SOAP-based web services:
+** A SOAP policy to automatically associate metrics to SOAP operations
+** A Camel route installed in Red Hat Fuse Integration Services to route a REST request from Red Hat 3scale's APIcast gateway to a SOAP web service endpoint
 
 
 
 :numbered:
 
-== SOAP Management using SOAP Policy
+== SOAP Management Using SOAP Policy
 
 === Overview
 
-It is often the case that there will be a requirement to manage SOAP based web services in addition to RESTful web services.
+It is often the case that SOAP-based web services need to be managed in addition to RESTful web services.
 
-SOAP requests consist of HTTP POST requests with an XML payload and some additional SOAP specific headers.
-It is possible for these SOAP requests to be sent to 3scale's API gateway, forwarded to your backend SOAP services and reported on to the 3scale API Manager without any customizations.
+SOAP requests consist of HTTP POST requests with an XML payload and some additional SOAP-specific headers.
+It is possible for these SOAP requests to be sent to 3scale's APIcast gateway, forwarded to your back-end SOAP services, and reported on to the 3scale API Management system without any customizations.
 
-However, if there is an additional requirement to gather metrics on requests to specific operations exposed by a backend SOAP service, then some additional set-up is needed.
+However, if there is an additional requirement to gather metrics on requests to specific operations exposed by a back-end SOAP service, some additional setup is needed.
 
-In this first half of this lab, you experiment with the following two approaches:
+In this lab, you experiment with the following two approaches:
 
-. Utilization of the API gateway _SOAP_ policy
-. REST-to-XML transformations via a Fuse on OpenShift application
-+
-This Fuse application serves as a RESTful proxy to the backend SOAP service and transforms between SOAP and REST.
+* Utilization of the APIcast gateway `SOAP` policy
+* REST-to-XML transformations via a Fuse on OpenShift application
 
-In the second half of this lab, you manage an _OData_ endpoint exposed by JBoss Data Virtualization.
+** This application serves as a RESTful proxy to the back-end SOAP service and transforms between SOAP and REST.
 
-=== SOAP-UI (Recommended)
 
-It is recommended that you install _SOAP-UI_ on your local laptop.
 
-SOAP-UI can optionally be used in later labs of this course when you configure 3scale to manage SOAP based API endpoints.
+=== Install SoapUI (Recommended)
 
-== SOAP Service Management using API gateway Policy
+It is recommended that you install SoapUI on your local laptop.
+
+Optionally, you can use SoapUI in later labs of this course when you configure 3scale API Management to manage SOAP-based API endpoints.
+
+== SOAP Service Management Using APIcast Gateway Policy
 
 === Deploy SOAP Service to OpenShift
 
-In this lab you expose an existing SOAP-based JEE application running on a JBoss Enterprise Application Platform (EAP) container in the same OpenShift cluster as your 3scale API manager.
+In this exercise, you expose an existing SOAP-based JEE application running on a Red Hat JBoss(R) Enterprise Application Platform (JBoss EAP) container in the same OpenShift cluster as your 3scale API Management system.
 
-Follow the instructions below.
 
 . Inspect the SOAP service code:
 
-* In this section you study the `Stores` web service interface and implementation.
+* In this section, you study the `Stores` web service interface and implementation.
 
-.. Open the file `$HOME/lab/3scale_development_labs/Stores/src/main/resources/wsdl/Stores.wsdl`  :
+.. Open the `$HOME/lab/3scale_development_labs/Stores/src/main/resources/wsdl/Stores.wsdl` file:
 +
 [source,xml]
 -----
@@ -87,14 +86,14 @@ Follow the instructions below.
 </wsdl>
 -----
 
-.. Note that this WSDL adheres to the SOAP 1.1 specification.
-... The SOAP 1.1 specification defines the following namespace: _http://schemas.xmlsoap.org/wsdl/soap/_
-... The SOAP 1.2 specification defines the following namespace: _http://schemas.xmlsoap.org/wsdl/soap12/_
+** Note that this WSDL file adheres to the SOAP 1.1 specification.
+*** The SOAP 1.1 specification defines the `http://schemas.xmlsoap.org/wsdl/soap/` namespace.
+*** The SOAP 1.2 specification defines the `http://schemas.xmlsoap.org/wsdl/soap12/` namespace.
 +
-NOTE: The two versions of the SOAP specification mandate different mechanisms to invoke SOAP operations defined in its WSDLs.
-Later in this lab, the ramifications of the two specifications will become evident in the context of managing SOAP services using 3scale.
+NOTE: The two versions of the SOAP specification mandate different mechanisms to invoke SOAP operations defined in their WSDL files.
+Later in this lab, the ramifications of the two specifications are made evident in the context of managing SOAP services using 3scale API Management.
 
-.. Open the file `$HOME/lab/3scale_development_labs/Stores/src/main/java/com/redhat/service/StoresWS.java`.
+.. Open the `$HOME/lab/3scale_development_labs/Stores/src/main/java/com/redhat/service/StoresWS.java` file.
 .. Inspect the SOAP web service implementation:
 +
 [source,java]
@@ -133,12 +132,13 @@ public class StoresWS implements Stores {
 }
 -----
 
-* This service can be deployed on JBoss EAP and hosted on your shared OpenShift environment.
+** This service can be deployed on JBoss EAP and hosted on your shared OpenShift environment.
 
 . Deploy the `Stores` web service to OpenShift:
 
 .. Create a new project for your Stores API business service applications:
 +
+[source,sh]
 -----
 $ oc new-project $OCP_USERNAME-stores-api \
      --display-name="$OCP_USERNAME Stores API" \
@@ -147,18 +147,21 @@ $ oc new-project $OCP_USERNAME-stores-api \
 
 .. Import the `stores-api` template into your OpenShift environment:
 +
+[source,sh]
 -----
 $ oc create -f $HOME/lab/3scale_development_labs/templates/stores-api.json
 -----
 
 .. Create the new application using the `stores-api` template:
 +
+[source,sh]
 -----
 $ oc new-app --template=stores-soap --param HOSTNAME_HTTP=stores-api-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
-.. Wait a few minutes for the SOAP service to be deployed and for pods to be started, and then run this command:
+.. Wait a few minutes for the SOAP service to deploy and for pods to start, then run this command:
 +
+[source,sh]
 -----
 $ oc get pods
 NAME                  READY     STATUS      RESTARTS   AGE
@@ -167,53 +170,47 @@ storesdb-1-6z5lx      1/1       Running     0          12m
 -----
 
 
-=== Test the `Stores` API SOAP service:
+=== Test `Stores` API SOAP Service
 
-. Using the _curl_ utility:
+. At the command line, use the cURL utility to view the WSDL file exposed by the `Stores` service:
 +
-At the command line, view the WSDL exposed by the Stores service:
-+
+[source,texinfo]
 -----
 $ curl -v http://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api `/StoresWS?wsdl
 -----
 
-. Using a browser:
+. From a browser, execute the following command to determine the URL to the WSDL file of your new `Stores` SOAP service:
 +
-NOTE:  There is a known bug with the rendering of WSDLs in recent versions of Firefox.
-
-... Execute the following to determine the URL to the WSDL of your new _Stores_ SOAP service:
-+
+[source,texinfo]
 -----
 $ echo -en "\n\nhttp://`oc get route stores-soap -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api `/StoresWS?wsdl\n\n"
 -----
 
-... In a web browser, navigate to the Stores WSDL using the previously determined URL:
-+
-NOTE: You may encounter a blank screen if using Firefox.  If so, switch to Google Chrome.
+. Navigate to the `Stores` WSDL file using the previously determined URL:
 +
 image::images/3scale_amp_stores_api_8.png[]
++
+NOTE: There is a known bug with the rendering of WSDL files in recent versions of Firefox. If you encounter a blank screen in Firefox, switch to Google Chrome.
 
-
-. Using _wsdlbrowser.com_
-
-... In a new browser tab or window, open the URL link:http://wsdlbrowser.com["http://wsdlbrowser.com"].
-... Provide the URL of the Stores WSDL and click *Browse*.
-... Check that the WSDL is imported successfully and that the list of functions is displayed on the page:
+. In a new browser tab or window, open link:http://wsdlbrowser.com[http://wsdlbrowser.com].
+. Provide the URL of the `Stores` WSDL file and click *Browse*.
+. Verify that the WSDL file is imported successfully and that the list of functions is displayed on the page:
 +
 image::images/3scale_amp_stores_api_9.png[]
 
-... Click *getAllStores* to generate a sample request for the operation, and then click *Call function*.
+. Click *getAllStores* to generate a sample request for the operation, then click *Call function*.
 
 * Expect a response similar to the following:
 +
 image::images/3scale_amp_stores_api_11.png[]
 
-=== Create API gateway Staging and Production Routes
+=== Create APIcast Gateway Staging and Production Routes
 
-Later in this lab, you'll need routes for your staging and production API gateways that are used to proxy traffic to your _Stores_ backend SOAP service.
+In this section, you create the routes for your staging and production APIcast gateways that you use later in the lab to proxy traffic to your `Stores` back-end SOAP service.
 
-. Verify that you have gateways in the $GW_PROJECT:
+. Verify that you have gateways in `$GW_PROJECT`:
 +
+[source,sh]
 -----
 $ oc get deploy -n $GW_PROJECT
 
@@ -227,8 +224,9 @@ prod-apicast    ClusterIP   172.30.18.254   <none>        8080/TCP,8090/TCP   1h
 stage-apicast   ClusterIP   172.30.47.202   <none>        8080/TCP,8090/TCP   1h
 -----
 
-. Create new routes for the Stores API staging and production API gateway:
+. Create new routes for the `Stores` API staging and production APIcast gateways:
 +
+[source,sh]
 -----
 $ oc create route edge stores-soap-policy-staging-route \
   --service=stage-apicast \
@@ -240,41 +238,41 @@ $ oc create route edge stores-soap-policy-production-route \
   --hostname=stores-soap-production-apicast-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN \
   -n $GW_PROJECT
 -----
-
-TIP: We will be using these routes to be configured as the production and sandbox API endpoints for the Stores SOAP service.
++
+NOTE: Later, you configure these routes as the production and sandbox API endpoints for the `Stores` SOAP service.
 
 === Define Account and User
 
-Similar to what you previously did in the 3scale developer pre-req course, you will use an organization called:  `RHBank` with  a developer called:  `rhbankdev`.
-The following is a refresher for how to create this account.
+As in previous 3scale by Red Hat developer courses, in this lab you use an organization called `RHBank` with a developer called `rhbankdev`.
+The following is a refresher for how to create this account:
 
-. In the 3scale Admin Portal, navigate to  *Audience -> Accounts -> Listing*.
+. In the Admin Portal, navigate to *Audience -> Accounts -> Listing*.
 . Click *Create*.
 . Create a new account with the following credentials:
 * *Username*: `rhbankdev`
-* *Email*: `_Provide unique email address_`
-* *PASSWORD*: `_Provide unique, easy-to-remember password_`
+* *Email*: Enter a unique email address
+* *Password*: Enter a unique, easy-to-remember password
 * *Organization/Group Name*: `RHBank`
 
-=== Define new API
+=== Define New API
 
-. In the Admin Portal, create a new service:
+. In the Admin Portal, create a new service with the following details:
 * *Name*: `Stores SOAP Policy API`
 * *System Name*: `stores-soap-policy-api`
 * *Description*: `Stores SOAP Policy API`
-. Create an application plan for this new _Stores SOAP Policy API_:
+. Create an application plan:
 * *Name*: `StoresSOAPBasicPlan`
 * *System Name*: `storesSOAPBasicPlan`
 . Publish the application plan.
 
-. Create an application associated with _RHBank_ account and the _StoresSOAPBasicPlan_ as per the following:
+. Create an application associated with the `RHBank` account and the `StoresSOAPBasicPlan` as follows:
 * *Application Plan*: `storesSOAPBasicPlan`
 * *Name*: `StoresSOAPApp`
 * *Description*: `Stores SOAP Application`
 
 . Configure the metrics:
-.. Navigate to: `API:Stores SOAP Policy API -> Integration -> Methods & Metrics`
-.. Click `New Metric` and populate the form for each of the following :
+.. Navigate to the *API* tab, click `Stores SOAP Policy API`, and select *Integration -> Methods & Metrics*.
+.. Click *New Metric* and populate the form for each of the following:
 +
 [options="header"]
 |=======================
@@ -284,34 +282,37 @@ The following is a refresher for how to create this account.
 |`deleteStore`|`Stores/deleteStore`|`hits`
 |`getStore`|`Stores/getStore`|`hits`
 |=======================
-+
-These metrics correspond to SOAP _operations_ implemented by your backend SOAP service.
 
-. *Stores SOAP Policy API* integrations
-* *Private Base URL*:  Populate with the output of the following:
+* These metrics correspond to SOAP _operations_ implemented by your back-end SOAP service.
+
+. Set up the `Stores SOAP Policy API` integrations as follows:
+* *Private Base URL*: Populate with the output of the following:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttp://stores-soap.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
 -----
 
-* *Staging Public Base URL*:  Populate with the output of the following:
+* *Staging Public Base URL*: Populate with the output of the following:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttps://`oc get route stores-soap-policy-staging-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
 * *Production Public Base URL*: Populate with the output of the following:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
-. Configure a Method to represent the only HTTP resource exposed by the backend SOAP service:
-.. *Friendly name*: StoresWS
-.. *system name*: stores/storesws
-.. *Description*: Stores SOAP Web Service
+. Configure a method to represent the only HTTP resource exposed by the back-end SOAP service:
+.. *Friendly name*: `StoresWS`
+.. *System name*: `stores/storesws`
+.. *Description*: `Stores SOAP Web Service`
 
-. Configure Mapping rules:
+. Configure mapping rules:
 +
 [options="header"]
 |=======================
@@ -320,22 +321,23 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --temp
 |`GET`|`/StoresWS`|`1`|`hits`
 |=======================
 
-.. The mapping for the _POST_ requests will increment hits on the _StoresWS_ method every time a SOAP request is made to any of the SOAP _operations_ of your backend _Stores_ service.
-.. The mapping for the _GET_ request will increment hits made to resources such as the _Stores_ service's WSDL.
+* The mapping for the `POST` request increments hits on the `StoresWS` method every time a SOAP request is made to any of the SOAP operations of your back-end `Stores` service.
+* The mapping for the `GET` request increments hits made to resources such as the `Stores` service's WSDL file.
 
 
 . Set an API Test GET request:
 * *API Test GET Request*: `/StoresWS?wsdl`
 
-. Click *Update and test in the Staging Environment*.
+. Click *Update and test in Staging Environment*.
 
 
-=== Test API Managed SOAP service
+=== Test API-Managed SOAP Service
 
-You should now be able to use a HTTP client to send SOAP requests to your backend SOAP service via the API gateway.
+In this section, you verify that you can use an HTTP client to send SOAP requests to your back-end SOAP service via the APIcast gateway.
 
-. Test the API by making a `curl` request to the WSDL of the _Stores_ service via the API gateway staging URL:
+. Test the API by making a cURL request to the `Stores` service's WSDL file via the APIcast gateway staging URL:
 +
+[source,texinfo]
 -----
 $ export STORES_SOAP_API_KEY=<stores-soap api key>
 
@@ -344,8 +346,9 @@ $ curl -k "https://`oc get route stores-soap-policy-staging-route \
       -n $GW_PROJECT`/StoresWS?wsdl&user_key=$STORES_SOAP_API_KEY"
 -----
 
-. Make a POST request to the _getAllStores_ operation of the _Stores_ Web Service :
+. Make a POST request to the `getAllStores` operation of the `Stores` web service:
 +
+[source,texinfo]
 -----
 $ curl -v -k -X POST \
        --header "Content-Type: application/soap+xml"  \
@@ -356,11 +359,15 @@ $ curl -v -k -X POST \
 
 -----
 
-.. Notice the inclusion of the _SOAPAction_ header.
-.. As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification], an HTTP client *MUST* use this header field when issuing a SOAP HTTP Request.
-
-.. The response should be similar to the following:
+* Note the inclusion of the `SOAPAction` header.
 +
+[IMPORTANT]
+====
+As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification], an HTTP client must use this header field when issuing a SOAP HTTP request.
+====
++
+.Sample Response
+[source,texinfo]
 -----
 ...
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -387,118 +394,117 @@ $ curl -v -k -X POST \
 </soap:Envelope>
 -----
 
-At this point in the lab, you have been able to invoke your backend SOAP 1.1 service via the API gateway proxy.
+At this point in the lab, you have invoked your back-end SOAP 1.1 service via the APIcast gateway proxy.
 
-You could investigate the analytics of your service and view the number hits that have been reported on the _StoresWS_ method.
+You can now investigate the analytics of your service and view the number of hits reported on the `StoresWS` method.
 
-What you don't know at this time by just observing the analytics dashboard of 3scale is which specific SOAP operations exposed by your SOAP backend have been invoked.
+At this point, what you do not know from just observing the 3scale by Red Hat analytics dashboard is which specific SOAP operations exposed by your SOAP back end were invoked.
 
 Determining this is the objective of the next section of the lab.
 
 
-=== SOAP Operation Tracking Using API gateway Custom Policies
+== SOAP Operation Tracking Using APIcast Gateway Custom Policies
 
-In this section, we create a custom API gateway policy for SOAP requests, and use policy chaining to ensure that the custom policy is executed by the gateway.
+In this section, you create a custom APIcast gateway policy for SOAP requests, and use policy chaining to ensure that the custom policy is executed by the gateway.
 
 The custom policy ensures that the metrics are updated for the SOAP operations.
 
-Similar to the previous section of this lab, you continue to use a SOAP 1.1 web service and you continue to make use of the HTTP header called _SOAPAction_ in the requests to that SOAP web service.
+As in the previous section of this lab, you continue to use a SOAP 1.1 web service and you continue to make use of the HTTP header called `SOAPAction` in the requests to that SOAP web service.
 
-These _SOAPAction_ header fields will now be used by your API gateway to update appropriate API metrics.
+These `SOAPAction` header fields are now used by your APIcast gateway to update appropriate API metrics.
 
-==== Custom Configuration to handle SOAP requests
+=== Create Custom Configuration to Handle SOAP Requests
 
-. Navigate to *API:Stores SOAP Policy API -> Integration -> Configuration*.
-. Click: `Integration -> edit APIcast configuration`.
+. Navigate to the *API* tab, click `Stores SOAP Policy API`, and select *Integration -> Configuration*.
+. Click *Integration -> edit APIcast configuration*.
 . Expand the *Policies* section.
-. In the *Policy Chain*, click *Add Policy* button and choose *SOAP*.
+. In the *Policy Chain* section, click *Add Policy* and select *SOAP*:
 +
 image::images/3scale_amp_stores_soap_policies_add.png[]
 
-. Under the _Policy Chain_ section, use the up and down arrows to reorder the policies so that *SOAP* policy is first, followed by the *APIcast* policy.
+. In the *Policy Chain* section, use the up and down arrows to reorder the policies so that the *SOAP* policy is first, followed by the *APIcast* policy:
 +
 image:images/3scale_amp_stores_soap_policies_order.png[]
 
-. Click on *SOAP* policy to expand it.
+. Click the *SOAP* policy to expand it.
 . Enter the following mapping rules:
 +
 [options="header"]
 |=======================
-|delta|metric_system_name|pattern
+|Delta|metric_system_name|Pattern
 |1|`Stores/getAllStores`|`http://www.rhmart.com/Stores/getAllStores`
 |1|`Stores/createStore`|`http://www.rhmart.com/Stores/createStore`
 |1|`Stores/deleteStore`|`http://www.rhmart.com/Stores/deleteStore`
 |1|`Stores/getStore`|`http://www.rhmart.com/Stores/getStore`
 |=======================
 +
-NOTE: The *pattern* should match the *SOAPAction* for each operation. The *metric_system_name* should match the System Name entered for the Metrics of each operation.
-+
+IMPORTANT: The pattern must match the `SOAPAction` for each operation. The `metric_system_name` must match the *System Name* entered for the *Metrics* of each operation.
+
 . Click *Update Policy* to save the changes.
-. Click on *Update & test in Staging Environment*.
+. Click *Update and test in Staging Environment*.
 
-. Now redeploy the stage-apicast pod in OpenShift by simply deleting the existing one.
-Kubernetes will make sure a new one is started.
+. Redeploy the `stage-apicast` pod in OpenShift by simply deleting the existing one.
+* Kubernetes makes sure a new one is started.
 
-. Wait for a couple of minutes for the deployment to complete, and the pod to be in `Running` state.
+. Wait a few minutes for the deployment to complete and the pod to be in the `Running` state, then run this command:
 +
+[source,sh]
 -----
 $ oc get pods | grep stage-apicast
 stage-apicast-5-49cv1           1/1       Running   0          1m
 -----
 
-==== Invoke various operations of SOAP service
+=== Invoke Various SOAP Service Operations
 
-In this section of the lab, you make more SOAP based invocations to your API gateway.
+In this section of the lab, you make more SOAP-based invocations to your APIcast gateway.
 
-You will specify the SOAPAction header corresponding to the other `getStore`, `createStore` and `deleteStore` SOAP operations of the Store API.
+You specify the `SOAPAction` header corresponding to the other `getStore`, `createStore`, and `deleteStore` SOAP operations of the `Stores` API.
+By doing so, you can visualize your invocations to each SOAP operation in the built-in analytics capabilities of 3scale API Management.
 
-By doing so, you'll then be able to visualize your invocations to each SOAP operation in the built-in analytics capabilities of 3scale.
+To invoke the other SOAP operations of your `Stores` API, you can continue to use the cURL utility (similar to how you previously invoked the `getAllStores` operation).
+Alternatively, it may be easier to execute the SOAP requests using SoapUI.
+As with the cURL utility, SoapUI allows you to set the custom `SOAPAction` header in the HTTP request.
 
-. To invoke the other SOAP operations of your Store API, you can continue to use the curl utility (similar to how you previously invoked the _getAllStores_ operation).
-
-. Alternatively, it may be easier to execute the SOAP requests using SOAP-UI.
-+
-Similar to the _curl_ utility, SOAP-UI allows for setting of the custom _SOAPAction_ header in the http request.
-+
 image::images/3scale_amp_stores_soap_soapui.png[]
+
+If you decide to use SoapUI, refer to the appendix of this lab for tips regarding the import of the `Stores` API WSDL file.
+
+. Using either the cURL utility or SoapUI, make several invocations to each of the four SOAP operations of the `Stores` API via your APIcast gateways.
+. Verify that the requests are served with correct responses.
+
+=== Explore Analytics
+
+. Verify that the metrics you set up for each operation are captured correctly by the APIcast gateway.
+* Expect to see the number of hits correspond to each `SOAPAction` that you request to the staging endpoint.
 +
-If you decide to use SOAP-UI, please refer to the appendix of this lab for tips regarding the import of the _Stores_ API WSDL.
-
-. Using either the _curl_ utility or SOAP-UI, make several invocations to each of the four SOAP operations of the _Stores_API_ via your API gateways.
-. Observe that the requests are served with correct responses.
-
-==== Analytics
-
-Notice that the metrics you have set up for each operation are captured correctly by the API gateway.
-You should see the number of hits corresponding to each SOAPAction that you have requested to the staging endpoint.
-
 image::images/3scale_amp_stores_api_metrics.png[]
 
-==== Management of SOAP 1.2 Web Services
+=== Manage SOAP 1.2 Web Services (Reference)
 
-NOTE:  This section is for informational purposes only.
+NOTE: This section is for informational purposes only.
 
-Management of SOAP 1.2 Web Service is similar to the approach you have taken here to manage your SOAP 1.1 _Stores_ Web Service.
+The management of a SOAP 1.2 web service is similar to the approach you took in this lab to manage your SOAP 1.1 `Stores` web service.
 
-What you will want to do different is:
+For SOAP 1.2, you need to make the following changes:
 
-. Do not set a _SOAPAction_ header in your HTTP requests.
-. Use the _Content-Type_ header on HTTP requests and set a value for its _action_ parameter
+* Do not set a `SOAPAction` header in your HTTP requests.
+* Use the `Content-Type` header on HTTP requests and set a value for its `action` parameter.
 
-.. The _action_ parameter of the _application/soap+xml_ Content-Type header is specified in link:https://www.w3.org/TR/soap12-part2/#ActionFeature[v1.2 of the SOAP standard]
+** The `action` parameter of the `application/soap+xml` `Content-Type` header is specified in link:https://www.w3.org/TR/soap12-part2/#ActionFeature[v1.2 of the SOAP standard].
 
-.. An example using the curl utility is as follows:
+** An example using the cURL utility follows:
 +
+[source,texinfo]
 -----
 
 --header application/soap+xml;charset=UTF-8;action="http://www.rhmart.com/Stores/getAllStores".
 
 -----
 
-==== SOAP Requests to Production Endpoint(Bonus)
+=== Make SOAP Requests to Production Endpoint (Bonus)
 
-Now you can use *Promote to Production* to push the custom policies to the Production API gateway. 
-Redeploy the gateway to ensure the latest configuration is updated, and repeat the SOAP requests to production endpoint.
+Now you can use *Promote to Production* to push the custom policies to the Production APIcast gateway. 
+Redeploy the gateway to ensure that the latest configuration is updated, and repeat the SOAP requests to the production endpoint.
 
 ifdef::showscript[]
 
@@ -511,33 +517,36 @@ endif::showscript[]
 
 == SOAP Transformation Using Fuse on OpenShift
 
-In the previous section of the lab, you observed how 3scale can managed SOAP services.
-You also introduced a SOAP policy into your API gateways for gathering of metrics based on SOAP operations.
+In the previous section of the lab, you observed how 3scale API Management can manage SOAP services.
+You also introduced a SOAP policy into your APIcast gateways for gathering metrics based on SOAP operations.
 
-As an alternative to having 3scale manage SOAP services, you could introduce a _mediation_ layer into your architecture that exposes REST and transforms to SOAP.
-An ideal tool for this purpose is JBoss Fuse.
+As an alternative to having 3scale API Management manage SOAP services, you can introduce a _mediation_ layer into your architecture that exposes REST and transforms to SOAP.
+An ideal tool for this purpose is Red Hat Fuse.
 
-In this section you create a Fuse camel integration to expose a REST endpoint and route to the SOAP service deployed earlier.
-The REST endpoint is then configured in 3scale API Management Platform as a service.
+In this section, you create a Camel integration with Fuse on OpenShift to expose a REST endpoint and route to the SOAP service you deployed earlier.
+You then configure the REST endpoint as a service in 3scale API Management.
 
-=== Deploy `stores fis` application to OpenShift
+=== Deploy `stores fis` Application to OpenShift
 
-. If you are not already there, change to the `$OCP_USERNAME-stores-api` project:
+. If you are not already there, change to the `$OCP_USERNAME-stores-api` project.
 
-. Import the `stores-fis` template to your OpenShift environment:
+. Import the `stores-fis` template into your OpenShift environment:
 +
+[source,sh]
 -----
 $ oc create -f $HOME/lab/3scale_development_labs/templates/stores-fis.json
 -----
 
 . Create a new application using the `stores-fis` template:
 +
+[source,sh]
 -----
 $ oc new-app --template=stores-fis --param ROUTE_HOST=stores-fis-$OCP_USERNAME.$OCP_WILDCARD_DOMAIN
 -----
 
-. Wait a few minutes for the `fis` service to be deployed and for the pods to be started:
+. Wait a few minutes for the `fis` service to deploy and for the pods to start, then run this command:
 +
+[source,sh]
 -----
 $ oc get pods
 NAME                  READY     STATUS      RESTARTS   AGE
@@ -546,23 +555,21 @@ stores-soap-1-jnjrb   1/1       Running     0          1h
 storesdb-1-6z5lx      1/1       Running     0          1h
 -----
 
-=== Examine the Fuse Mediation Layer:
+=== Examine Fuse Mediation Layer
 
-. Log in to the OpenShift administration console from a web browser using your login credentials.
-. Navigate to the `Stores API` project.
-. Click the *Stores-FIS* pod, and then click *Open Java Console*:
+. From a web browser, log in to the OpenShift web console.
+. Navigate to the `Stores` API project.
+. Click the `Stores-FIS` pod, and then click *Open Java Console*:
 +
 image::images/3scale_amp_stores_api_13.png[]
 
 . Click *Route Diagram*.
-+
-Expect to see all of the Camel routes defined:
+* Expect to see all of the Camel routes defined:
 +
 image::images/3scale_amp_stores_api_14.png[]
 
-. Alternatively, click *Source* and look into the Camel route:
-+
-A REST route is exposed to provide HTTP methods and URLs for the different SOAP operations provided by the Stores API:
+. Alternatively, click *Source* and examine the Camel route.
+* A REST route is exposed to provide HTTP methods and URLs for the different SOAP operations provided by the `Stores` API:
 +
 [source,xml]
 -----
@@ -588,8 +595,7 @@ A REST route is exposed to provide HTTP methods and URLs for the different SOAP 
     </route>
 
 -----
-+
-Note the two GET methods for `getStore` and `getAllStores`, the POST method for `postStore`, and the DELETE method for `deleteStore` operation.
+* Note the two GET methods for `getStore` and `getAllStores`, the POST method for `postStore`, and the DELETE method for `deleteStore` operations.
 
 * Each of the `direct` routes corresponds to the four operations defined in the REST service:
 +
@@ -636,10 +642,9 @@ Note the two GET methods for `getStore` and `getAllStores`, the POST method for 
         <to customId="true" id="_to4" uri="direct:soap"/>
     </route>
 -----
-+
-Each of the routes above gets the request, constructs the CXF request message object, and updates the header to the right `soapMethod` for calling the SOAP web service.
+* Each route above gets the request, constructs the CXF request message object, and updates the header to the correct `soapMethod` method for calling the SOAP web service.
 
-. A route to call the SOAP endpoint:
+* This route calls the SOAP endpoint:
 +
 [source,xml]
 -----
@@ -655,15 +660,17 @@ Each of the routes above gets the request, constructs the CXF request message ob
     </route>
 -----
 
-. Investigate the property that defines the URL to the backend SOAP service
-.. Inspect the properties found in the project's _application.properties_ file:
+. Investigate the property that defines the URL to the back-end SOAP service:
+.. Inspect the properties found in the project's `application.properties` file:
 +
+[source,texinfo]
 -----
 cat $HOME/lab/3scale_development_labs/StoresFIS/src/main/resources/application.properties
 -----
 
-.. Notice a property called _cxf.endpoint.soap_ is defined:
+* Note that a property called `cxf.endpoint.soap` is defined:
 +
+[source,texinfo]
 -----
 
 ...
@@ -674,36 +681,39 @@ cxf.endpoint.soap = http://stores-soap:8080
 
 -----
 
-=== Test the Camel REST route:
+=== Test Camel REST Route
 
-. Send a `curl` request to the `stores-fis` route to make a call to the REST web service and check that the SOAP web service is called and that the response is converted to `application/json`:
+. Send a cURL request to the `stores-fis` route to make a call to the REST web service, and check that the SOAP web service is called and that the response is converted to `application/json`:
 +
+[source,texinfo]
 -----
 $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n $OCP_USERNAME-stores-api`/allstores
 
 -----
-
-. Check the response:
 +
+.Sample Response
+[source,texinfo]
 -----
 {"store":[{"storeID":1,"storeName":"Downtown\n  Store","storeLat":-34.6052704,"storeLong":-58.3791766},{"storeID":2,"storeName":"EastSide\n  Store","storeLat":-34.5975668,"storeLong":-58.3710199}]}[sjayanti@localhost camel-webservice-fis]
 -----
 * You can also send sample requests to the other endpoints and ensure that there are no errors.
 
-The REST-SOAP Camel proxy is now correctly deployed, and you can begin to configure the API gateway to use this REST endpoint to communicate with the SOAP web service.
+The REST-SOAP Camel proxy is now correctly deployed, and you can begin to configure the APIcast gateway to use this REST endpoint to communicate with the SOAP web service.
 
-=== Create API Staging and Production Routes
+=== Create APIcast Gateway Staging and Production Routes
 
-. Follow the steps in the API Management lab to create secure routes to the `stage-apicast` and `apicast-production` services for the Stores Transformation API.
 
-. Verify that you are in the apicast gateway project:
+
+. Verify that you are in the APIcast gateway project:
 +
+[source,sh]
 -----
 $ oc project $GW_PROJECT
 -----
 
-. Create new routes for the Stores API staging and production API gateway:
+. Create new routes for the `Stores` API staging and production APIcast gateways:
 +
+[source,sh]
 -----
 $ oc create route edge stores-soap-transformation-staging-route \
   --service=stage-apicast \
@@ -727,39 +737,41 @@ $ oc create route edge stores-soap-transformation-production-route \
 * *Name*: `StoresTransPremiumPlan`
 * *System Name*: `storesTransPremiumPlan`
 . Publish the application plan.
-. Create a new application for the *RHBank* account that is associated with your _StoresTransPremiumPlan_.
-. Fill in the following information:
+. Create a new application for the `RHBank` account that is associated with your `StoresTransPremiumPlan` application plan.
+. Enter the following information:
 * *Application Plan*: `StoresTransPremiumPlan`
 * *Name*: `StoresTransformationApp`
 * *Description*: `Stores Transformation Application`
 
-. *Stores SOAP Transformation API* integrations
-* *Private Base URL*: 
+. Enter the following information for the `Stores SOAP Transformation API` integration:
+* *Private Base URL*: Populate with the output of the following:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttp://stores-fis.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
 -----
 
-* *Staging Public Base URL*: 
+* *Staging Public Base URL*: Populate with the output of the following:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttps://`oc get route stores-soap-transformation-staging-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
-* *Production Public Base URL*: 
+* *Production Public Base URL*: Populate with the output of the following:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttps://`oc get route stores-soap-transformation-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
 . Create an API Test GET request:
 * *API Test GET Request*: `/allstores`
-.  Click *Update and test in the Staging Environment*.
-. Make a test request to the staging URL.
-. Promote to production, and make a test request to the production URL:
+. Click *Update and test in Staging Environment*.
 
-.. Test the API by making a `curl` request to the staging URL, and check the response:
+. Test the API by making a cURL request to the staging URL, and check the response:
 +
+[source,texinfo]
 -----
 $ export STORES_TRANS_API_KEY=<api key to your Stores App>
 
@@ -769,8 +781,9 @@ $ curl -k "https://`oc get route stores-soap-transformation-staging-route -o tem
 
 -----
 
-.. Promote the API to production, test the production URL, and check the response:
+. Promote the API to production, test the production URL, and check the response:
 +
+[source,texinfo]
 -----
 $ curl -v -k "https://`oc get route stores-soap-transformation-production-route -o template --template {{.spec.host}} -n $GW_PROJECT`/allstores?user_key=$STORES_TRANS_API_KEY"
 
@@ -778,29 +791,30 @@ $ curl -v -k "https://`oc get route stores-soap-transformation-production-route 
 
 -----
 
-* A Camel route can be used to provide routing for 3scale API Management's gateway to the SOAP web service.
+* A Camel route can be used to provide routing for the APIcast gateway to the SOAP web service.
 
 == Appendix
 
-=== SOAP UI Related Hints
+=== SoapUI Hints
 
-When creating a SOAP based project in SOAP-UI, you'll need to provide the wsdl to your Store service.
+When creating a SOAP-based project in SoapUI, you need to provide the WSDL file to your `Stores` service.
 This can be a bit problematic.
 
-You won't be able to simply supply SOAP-UI with a valid URL (with API key) to your Store service WSDL.
-SOAP-UI will pull down that initial wsdl, parse it for the value of <wsdl:import location= />  attribute and error out because the value of the location attribute is not complete".  It is missing your API key.
+You cannot simply supply SoapUI with a valid URL (with API key) to your `Stores` service WSDL file.
+SoapUI pulls that initial WSDL file, parses it for the value of the `<wsdl:import location= />` attribute--and errors out because the value of the location attribute is not complete. It is missing your API key.
 
-Subsequently, you'll want to execute the following:
+Subsequently, you need to execute the following:
 
-. Use curl to retrieve a copy of your wsdl and save that copy to disk
-. Using a text editor, change the value of the <wsdl:import location="" /> attribute to a valid URL to your wsdl.
-.. You will want to url encode the ampersand character in the URL
-.. Example as follows:
+. Use cURL to retrieve a copy of your WSDL file and save it to disk.
+. Using a text editor, change the value of the `<wsdl:import location="" />` attribute to a valid URL to your WSDL file.
+.. Make sure to URL-encode the ampersand character in the URL:
 +
+.Example
+[source,texinfo]
 -----
 <wsdl:import location="https://stores-soap-staging-apicast-jb.apps.dev39.openshift.opentlc.com/StoresWS?wsdl=Stores.wsdl&amp;user_key=4fab352901d3badef8cbe9e05eab1271" namespace="http://www.rhmart.com/Stores/">
 -----
-. Create a new SOAP project in SOAP-UI by referencing this downloaded and modified local wsdl.
+. Create a new SOAP project in SoapUI by referencing this downloaded and modified local WSDL file.
 
 
 ifdef::showscript[]

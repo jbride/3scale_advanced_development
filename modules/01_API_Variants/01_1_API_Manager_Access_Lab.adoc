@@ -1,47 +1,49 @@
 :scrollbar:
-:data-uri:
+:noaudio:
 :toc2:
 :linkattrs:
 
 
-== API Manager Access Lab
+== Environment Setup Lab
 
 .Goals
 
-* Review of lab assets
-* Orientation to multitenant API Manager lab environment
-* Review  API gateways
+* Review lab assets
+* Become familiar with the multi-tenant Red Hat 3scale API Management lab environment
+* Review API gateways
 
 .Prerequisites
 * Completion of the following courses:
-** link:https://learning.redhat.com/course/view.php?id=739[App Development using RHT OpenShift Container Platform]
-** link:https://learning.redhat.com/course/view.php?id=977[RHT 3scale Implementation]
-** link:https://learning.redhat.com/course/view.php?id=1121[RHT 3scale Development]
+** link:https://learning.redhat.com/course/view.php?id=739[App Development using Red Hat OpenShift Container Platform]
+** link:https://learning.redhat.com/course/view.php?id=977[Red Hat 3scale Implementation]
+** link:https://learning.redhat.com/course/view.php?id=1121[Red Hat 3scale Development]
 
 :numbered:
 
-== Lab Assets
+== Clone Lab Assets
 
-The lab assets for this course are version controlled at:  `https://github.com/gpe-mw-training/3scale_development_labs.git`
+The lab assets for this course are version-controlled at `https://github.com/gpe-mw-training/3scale_development_labs.git`.
 
-You can clone these lab assets to your local machine as follows:
-
+. Clone the lab assets to your local machine as follows:
++
+[source,texinfo]
 -----
 $ mkdir -p $HOME/lab
 
 $ git clone https://github.com/gpe-mw-training/3scale_development_labs.git $HOME/lab/3scale_development_labs
 -----
 
-== Environment Variables
+== Set Environment Variables
 
-Open a terminal window in your local machine and set the following environment variables that will be used throughout the duration of this course.
-
+. Open a terminal window on your local machine and set the following environment variables for use throughout the duration of this course:
++
+[source,texinfo,options="nowrap"]
 -----
 # Modify each of the following based on settings provided by Instructor
-# Afterwards, exeecute each of the modified commands in your shell:
+# Afterwards, execute each of the modified commands in your shell:
 
 echo "export REGION=<provided by your instructor>" >> ~/.bashrc
-echo "export OCP_AMP_ADMIN_ID=<provided by your instructor>                          #   Name of API Manager administrator " >> ~/.bashrc
+echo "export OCP_AMP_ADMIN_ID=<provided by your instructor>                          #   Name of 3scale API Management administrator " >> ~/.bashrc
 echo "export OCP_USERNAME=<provided by your instructor>" >> ~/.bashrc
 echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
 echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
@@ -50,7 +52,7 @@ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                    
 
 #  Review, copy & paste the following in same terminal #
 
-echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where API Manager resides "   >> ~/.bashrc
+echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where 3scale API Management resides "   >> ~/.bashrc
 echo "export GW_PROJECT=\$OCP_USERNAME-gw                                               #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
 echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
 echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.openshift.opentlc.com                    #   OCP Wildcard DNS" >> ~/.bashrc
@@ -63,47 +65,48 @@ source ~/.bashrc
 
 == Red Hat OpenShift Container Platform
 
-The instructor of this course will have provisioned an OpenShift cluster environment to support this enablement.
+For this course, you use a remote OpenShift(R) cluster environment that was provisioned by your instructor.
+All of the labs for this course execute in this remote OpenShift cluster environment.
 
-All labs for this course will execute in this remote OpenShift cluster environment.
+=== Access Red Hat OpenShift Web Console
 
-=== OpenShift Web Console
-
-. The OpenShift web console can be accessed by pointing your browser to the following url:
+. Point your browser to the following URL:
 +
+[source,texinfo]
 -----
 $ echo -en "\n\nhttps://master.$REGION.openshift.opentlc.com\n\n"
 -----
-+
-At the login prompt, use the values of `$OCP_USERNAME` and `$OCP_PASSWD`
 
-. Determine the version of the OpenShift cluster:
-.. Navigate to question mark icon in the top right of the Web Console and select `About`.
+. At the login prompt, use the `$OCP_USERNAME` and `$OCP_PASSWD` values.
+
+. Click image:images/ocp_help_icon.png[] and select *About* to determine the OpenShift cluster version:
 +
 image::images/ocp_version.png[]
 
-=== `oc` utility tooling
+=== Install `oc` Utility Tooling
 
-The OpenShift `oc` client utility will need to be installed on your host laptop.
+The OpenShift `oc` client utility needs to be installed on your host laptop.
 
-The version of the `oc` utility should be of the same major version as the OCP shared cluster environment provisioned by your instructor.
+The version of the `oc` utility needs to be of the same major version as the Red Hat OpenShift Container Platform (RHOCP) shared cluster environment provisioned by your instructor.
 
-If you do not already have a compatible version of the `oc` utility installed on your host machine, then you can retrieve it by navigating to the following in the OCP Web Console:
+If you do not already have a compatible version of the `oc` utility installed on your host machine, you can retrieve it by completing these steps in the OpenShift web console:
 
-. Navigate to the question mark icon in the top right of the Web Console and select: `Command Line Tools`
-. Under `Download oc`, click the `Latest Release` link
-. Doing so will redirect your browser to a page that allows for selection of a specific version for each type of operating system (Linux, OSX, Windows).
+. Click image:images/ocp_help_icon.png[] and select *Command Line Tools*.
+. Under *Download oc*, click the *Latest Release* link.
+* This redirects your browser to a page that allows you to select a specific version for each type of operating system (Linux(R), macOS, or Windows).
 
-Once you've installed the oc utility, log in to Openshift using the oc utility.
-
+. Install the `oc` utility, then log in to OpenShift using it:
++
+[source,sh]
 ----
 $ oc login https://master.$REGION.openshift.opentlc.com -u $OCP_USERNAME -p $OCP_PASSWD
 ----
 
-=== OCP Projects
+=== Verify RHOCP Projects
 
-. Once you have authenticated in, you should see two OpenShift projects :
+. After you authenticate, confirm that you see these two OpenShift projects:
 +
+[source,sh]
 -----
 $ oc get projects
 
@@ -113,41 +116,39 @@ $ oc get projects
 user1-gw                          Active
 -----
 
-.. *3scale-mt-amp0*
+* `3scale-mt-amp0`: Your RHOCP user has _view_ access to the central multi-tenant 3scale API Management system.
+
+* `$OCP_USERNMAE-gw`: This namespace includes an API gateway that is preconfigured to interact with your 3scale API Management tenant.
+
+
+== Access Multi-Tenant 3scale API Management
+
+Your lab environment includes access to a multi-tenant 3scale API Management installation.
+
+For the purposes of this lab, you serve as the administrator of your own 3scale API Management _tenant_ (domain).
+
+. Access your 3scale by Red Hat Admin Portal by pointing your browser to the output of the following:
 +
-Your OCP user has been provided with _view_ access to the central multi-tenant API Manager.
-
-.. *$OCP_USERNMAE-gw*
-+
-This namespace includes an API gateway pre-configured to interact with your API Management tenant.
-
-
-== Multitenant 3scale API Manager
-
-Your lab environment includes access to a multi-tenant 3scale API Manager installation.
-
-For the purpose of this lab, you will serve as the administrator of your own 3scale _tenant_ (aka: _domain_)
-
-. To access the admin portal of your 3scale environment, point your browser to the output of the following:
-+
+[source,texinfo]
 -----
 $ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
 -----
 
-Login credentials are as follows:
+. Authenticate using the following values:
 
-. *Username*:  $API_TENANT_USERNAME
-. *Password*:  admin
+* *Username*: `$API_TENANT_USERNAME`
+* *Password*: `admin`
 
 
-== API Gateways
+== Review API Gateways
 
-=== API Manager Gateways
+=== Explore 3scale API Management Gateways
 
-Your 3scale API Manager multitenant lab environment does come with a set of associated staging and production apicast gateways.
+Your 3scale API Management multi-tenant lab environment comes with a set of associated staging and production APIcast gateways.
 
-These gateways can be seen by executing the following:
-
+. Execute the following command to view these gateways:
++
+[source,sh]
 -----
 $ oc get dc -n $API_MANAGER_NS | grep apicast
 
@@ -157,23 +158,24 @@ apicast-staging           1          1         1         config,image(amp-apicas
 apicast-wildcard-router   1          1         1         config,image(amp-wildcard-router:latest)-
 -----
 
-It is technically feasible that your backend services, if they were to be  co-located in the same cluster as the API Manager, could be managed by these default API Manager gateways.
+It is technically feasible that your back-end services, if they are co-located in the same cluster as the 3scale API Management system, can be managed by these default 3scale API Management gateways.
 
-One practical hinderance however is that these gateways are owned by the 3scale master user and the OCP cluster-admin.
-You, as a non cluster-admin,  do not have the ability to bounce these gateways, nor modify them if need be.
+One practical hindrance, however, is that these gateways are owned by the 3scale API Management master user and the RHOCP cluster-admin.
+Because you are not a cluster-admin, you do not have the ability to bounce these gateways, or to modify them if need be.
 
-It also would be difficult to identify your logs while everyone's traffic flows through those gateways at the same time.
+Also, it is difficult to identify your logs while everyone's traffic flows through those gateways at the same time.
 
-These default API Manager gateways are of minimal value to you.
+These default 3scale API Management gateways are of minimal value to you.
 
-=== Tenant specific API Gateways
+=== Explore Tenant-Specific API Gateways
 
-Your lab environment comes pre-provisioned with a set of API gateways that are specific to your tenant.
-You have full administrative access to your tenant specific API gateways.
-These are the API gateways that you will use to manage your backend services for the duration of this course.
+Your lab environment is provisioned with a set of API gateways that are specific to your tenant.
+You have full administrative access to your tenant-specific API gateways.
+These are the API gateways that you use to manage your back-end services for the duration of this course.
 
-. You can get a list of these API gateways by executing the following:
+. Get a list of these API gateways by executing the following command:
 +
+[source,sh]
 -----
 $ oc get deploy -n $GW_PROJECT
 
@@ -183,22 +185,22 @@ prod-apicast    1         0         0            0           7h
 stage-apicast   1         0         0            0           7h
 -----
 
-. Notice the value of _$THREESCALE_PORTAL_ENDPOINT_ has already been set for you in each of your gateways:
+. Note that the value of `$THREESCALE_PORTAL_ENDPOINT` is already set for you in each of your gateways:
 +
+[source,sh]
 -----
 $ oc describe deploy prod-apicast -n $OCP_USERNAME-gw | grep THREESCALE_PORTAL_ENDPOINT
 
       THREESCALE_PORTAL_ENDPOINT:    https://b753490aa7586f8e0663f5d5ec62b63cf9e71540d9138e4869eede4446e8e871@user1-3scale-mt-amp0-admin.apps.3295.openshift.opentlc.com
 -----
-+
-The API Gateway uses the value of _THREESCALE_PORTAL_ENDPOINT_ invoke the API Manager and retrieve details of your APIs.
+
+* The API Gateway uses the value of `THREESCALE_PORTAL_ENDPOINT` to invoke the 3scale API Management system and retrieve details of your APIs.
 
 . Resume the paused deploy objects:
 +
+[source,sh]
 -----
 $ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
 -----
 
 
-ifdef::showscript[]
-endif::showscript[]
