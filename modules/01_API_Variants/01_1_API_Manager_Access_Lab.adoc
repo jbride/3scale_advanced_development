@@ -47,6 +47,7 @@ echo "export OCP_AMP_ADMIN_ID=<provided by your instructor>                     
 echo "export OCP_USERNAME=<provided by your instructor>" >> ~/.bashrc
 echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
 echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
+echo "export API_TENANT_PASSWORD=<provided by instructor>                            #   Password of tenant admin " >> ~/.bashrc
 echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                         #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
 
 
@@ -136,8 +137,8 @@ $ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --t
 
 . Authenticate using the following values:
 
-* *Username*: `$API_TENANT_USERNAME`
-* *Password*: `admin`
+. *Username*:  $API_TENANT_USERNAME
+. *Password*:  $API_TENANT_PASSWORD
 
 
 == Review API Gateways
