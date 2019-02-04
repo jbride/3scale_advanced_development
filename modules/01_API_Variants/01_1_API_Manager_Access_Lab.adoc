@@ -37,7 +37,6 @@ $ git clone https://github.com/gpe-mw-training/3scale_development_labs.git $HOME
 
 . Open a terminal window on your local machine and set the following environment variables for use throughout the duration of this course:
 +
-[source,texinfo,options="nowrap"]
 -----
 # Modify each of the following based on settings provided by Instructor
 # Afterwards, execute each of the modified commands in your shell:
