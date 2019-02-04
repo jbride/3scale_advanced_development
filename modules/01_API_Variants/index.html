@@ -4,7 +4,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>01_API_Variants</title>
+		<title>3scale Advanced Development  - 01_API_Variants</title>
 
 
 		<link rel="stylesheet" type="text/css" href="lib/offline-v2.css">
@@ -1741,246 +1741,397 @@ animation:         icon-animation-short 3.5s 1.5s 1;
 
 		</style>
 
+		<!-- User CSS -->
+		<style id="user-css-output" type="text/css">
+			.reveal .slides section h1 {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 36pt;
+  font-weight: bold;
+  text-transform: none;
+}
+.reveal .slides section h2 {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 26pt;
+  font-weight: bold;
+  text-transform: none;
+  padding-bottom: 24px;
+}
+.reveal .slides section h3 {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 20pt;
+  font-weight: bold;
+  text-transform: none;
+  padding-top: 14px;
+}
+.reveal .slides section {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 16pt;
+}
+.reveal .slides section li {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 16pt;
+}
+.reveal .slides section table {
+  border: solid;
+  border-color: black;
+}
+.reveal .slides section td {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 14pt;
+}
+.reveal .slides section th {
+  font-family: Overpass, Open Sans, "Helvetica";
+  font-size: 14pt;
+  border: solid;
+  border-color: black;
+}
+.reveal .slides section code {
+  font-family: Overpass mono;
+  font-size: 10pt;
+  color: black;
+  background-color: #d8e1e9;
+  border: solid;
+}
+.reveal .slides section audio {
+  position: absolute;
+  left: 900px;
+  width: 300px;
+  z-index: 99;
+}
+.reveal .slides section span.mono {
+  font-family: Overpass mono;
+  font-size: 16pt;
+  color: black;
+  background-color: #d8e1e9;
+}
+
+		</style>
 	</head>
 	<body class="reveal-viewport theme-font-overpass2 theme-color-no-color">
 		<div class="reveal">
 			<div class="slides">
-				<section data-background-color="rgb(156,0,0)" data-background-image="01_api_variants/32fa01ef1b64201650bdc7d29ce7c22c.svg" data-id="7c401743de3b79b5c87091e9852dff4a"><div class="sl-block" data-block-type="text" style="height: auto; width: 915px; left: 45px; top: 278px;" data-block-id="4cb55af9529b9b124d1f825ff47bbee9"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 10; text-align: left;" data-has-custom-html="" dir="ui">
-<p style="font-size: 2.25em;"><span style="font-size:1.4em;">Red Hat 3scale API Management Advanced Development</span></p>
-
-<p style="font-size: 2.25em;">API Variants</p>
-
-<h3> </h3>
-
-<p> </p>
+				<section data-background-color="rgb(156,0,0)" data-background-image="adminapi/32fa01ef1b64201650bdc7d29ce7c22c.svg" data-id="7c401743de3b79b5c87091e9852dff4a"><div class="sl-block" data-block-type="text" style="height: auto; width: 915px; left: 45px; top: 278px;" data-block-id="4cb55af9529b9b124d1f825ff47bbee9"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 10; text-align: left;" data-has-custom-html="" dir="ui">
+<h1>Advanced Development with <br>​Red Hat 3scale API Management </h1>
+<h2>API Variants</h2>
+<h3><br></h3>
+<p><br></p>
 </div></div>
 <div class="sl-block" data-block-type="image" style="width: 360px; height: 122.4px; left: 0px; top: 0px; min-width: 4px; min-height: 4px;" data-block-id="7e84991eccd936ca94c6e99e1f6d0aba"><div class="sl-block-content" style="z-index: 11;" data-inline-svg="true">
-<img data-natural-width="500" data-natural-height="170" data-lazy-loaded="" style="" data-src="01_api_variants/bfa11a84cdd2fc0f50cb6fb54942bd62.svg"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 500 170" height="170" width="500" class="redhat-logo" preserveaspectratio="xMidYMid meet">
+<img data-natural-width="500" data-natural-height="170" data-lazy-loaded="" style="" data-src="adminapi/bfa11a84cdd2fc0f50cb6fb54942bd62.svg"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 500 170" height="170" width="500" class="redhat-logo" preserveaspectratio="xMidYMid meet">
 <path class="logotext" d="m 495.6,120.6 c 0,1.8 -1.5,3.3 -3.3,3.3 -1.8,0 -3.3,-1.5 -3.3,-3.3 0,-1.8 1.5,-3.3 3.3,-3.3 1.8,0 3.3,1.5 3.3,3.3 z m -3.3,-4 c -2.2,0 -4,1.8 -4,4 0,2.2 1.8,4 4,4 2.2,0 4,-1.8 4,-4 0,-2.2 -1.8,-4 -4,-4 z m 0,3.8 c 0.6,0 1,-0.1 1,-0.7 0,-0.5 -0.4,-0.6 -0.9,-0.6 l -0.8,0 0,1.3 z m -0.7,2.3 -0.6,0 0,-4.1 1.5,0 c 1,0 1.5,0.3 1.5,1.1 0,0.8 -0.5,1.1 -1.1,1.2 l 1.2,1.8 -0.7,0 -1.1,-1.8 -0.7,0 z m -22.2,-64.92 0,11.91 15.4,0 0,4.34 -15.4,0 0,35.17 c 0,6.9 2.2,11.2 8,11.2 2.8,0 4.7,-0.4 6.1,-0.9 l 0.7,4.2 c -1.8,0.7 -4.2,1.3 -7.5,1.3 -3.9,0 -7.2,-1.3 -9.3,-3.9 -2.5,-2.8 -3.3,-7.4 -3.3,-12.9 l 0,-34.17 -9.1,0 0,-4.34 9.1,0 0,-9.94 z m -21.3,32.06 c 0,-9.67 -3,-21.38 -18.6,-21.38 -4.9,0 -10.9,1.32 -15.8,4.67 l 1.7,3.89 c 3.9,-2.76 8.8,-4.03 13.5,-4.03 12.8,-0.1 13.9,10.59 13.9,15.94 l 0,1.44 c -22,-0.23 -33,7.33 -33,19.73 0,7.3 5,14.9 15.9,14.9 8.6,0 14.6,-4.8 16,-6.9 l 2.3,5.7 4.9,0 c -0.6,-4.2 -0.8,-8.6 -0.8,-12.9 z m -5.3,16.66 c 0,0.9 -0.2,2.1 -0.6,3.2 -1.8,5.3 -7,10.9 -16,10.9 -5.6,0 -10.7,-3.5 -10.7,-11.3 0,-13 15.5,-14.77 27.3,-14.43 z m -42.7,-15.34 0,32.64 -5.3,0 0,-32.05 c 0,-9.74 -3.8,-18.62 -14.9,-18.62 -7.7,0 -14,5.52 -16.3,12.25 -0.6,1.6 -0.8,3.13 -0.8,5.33 l 0,33.09 -5.3,0 0,-71.31 5.3,1.58 0,25.29 0.3,0 c 1.5,-3.01 4.1,-5.92 7.3,-7.8 3.1,-1.91 6.8,-3.1 10.9,-3.1 5.2,0 18.8,2.56 18.8,22.7 z m -68.5,1.09 c 0,-1.09 -0.1,-2.46 -0.3,-3.57 -1.3,-5.26 -5.7,-9.59 -11.8,-9.59 -8.8,0 -13.7,7.76 -13.7,17.81 0,9.9 4.9,17.2 13.5,17.2 5.6,0 10.5,-3.9 11.8,-9.8 0.4,-1.2 0.5,-2.5 0.5,-3.9 z M 202.9,87.1 c 0,-7.23 -0.1,-12.55 -0.4,-17.36 l 11.8,0 0.5,10.26 0.4,0 c 2.7,-7.6 9,-11.48 14.8,-11.48 1.4,0 2.1,0 3.2,0.29 l 0,12.87 c -1.3,-0.25 -2.4,-0.38 -4.1,-0.38 -6.5,0 -11,4.14 -12.2,10.33 -0.3,1.2 -0.4,2.65 -0.4,4.17 l 0,28 -13.7,0 z m 142.3,21.5 c 0,5.6 0.2,11.5 0.5,15.2 l -12.2,0 -0.6,-8.6 -0.3,0 c -3.2,6.1 -9.7,9.8 -17.5,9.8 -12.9,0 -23.1,-11 -23.1,-27.6 -0.1,-18.13 11.2,-28.88 24.2,-28.88 7.4,0 12.7,3.05 15.1,7.04 l 0.3,0 0,-30.48 13.6,3.85 z m -59.3,-8.1 c 0.2,-1.2 0.5,-3.3 0.5,-5.8 0,-11.83 -5.8,-26.28 -23.3,-26.28 -17.4,0 -26.5,14.11 -26.5,28.98 0,16.6 10.3,27.4 27.9,27.4 7.8,0 14.2,-1.4 18.8,-3.4 l -2,-9.4 c -4.1,1.5 -8.6,2.5 -14.9,2.5 -8.7,0 -16.3,-4.3 -16.7,-14.1 z m -36.2,-9.58 c 0.6,-5.54 4.1,-13.17 12.5,-13.17 9.2,0 11.3,8.16 11.3,13.17 z m -83.8,29.68 c 0,1.8 -1.4,3.3 -3.2,3.3 -1.8,0 -3.3,-1.5 -3.3,-3.3 0,-1.8 1.5,-3.3 3.3,-3.3 1.8,0 3.2,1.5 3.2,3.3 z m -3.2,-4 c -2.2,0 -4,1.8 -4,4 0,2.2 1.8,4 4,4 2.2,0 4,-1.8 4,-4 0,-2.2 -1.8,-4 -4,-4 z m 0,3.8 c 0.5,0 1,-0.1 1,-0.7 0,-0.5 -0.5,-0.6 -0.9,-0.6 l -0.9,0 0,1.3 z m -0.8,2.3 -0.6,0 0,-4.1 1.6,0 c 0.9,0 1.4,0.3 1.4,1.1 0,0.8 -0.4,1.1 -1,1.2 l 1.1,1.8 -0.7,0 -1,-1.8 -0.8,0 z"></path>
 <path style="fill:#fff" d="M150.1 125c-3.1-.7-6.3-1.1-9.5-1.1-5.6 0-10.8.8-14.4 2.5-.8.4-.8.9-.6 1.6.4 1.3-.3 2.7-3.9 3.5-5.4 1.2-8.8 6.7-10.7 8.6-2.3 2.1-8.8 3.5-7.8 2.2.8-1 3.7-4.2 5.4-7.6 1.6-3 3-3.9 4.9-6.8.6-.8 2.8-3.8 3.4-6.2.8-2.3.5-5.2.8-6.4.4-1.7 2-5.4 2.1-7.5.1-1.2-4.9 1.7-7.3 1.7-2.4 0-4.8-1.5-6.9-1.6-2.7-.1-4.4 2.1-6.74 1.7-1.37-.2-2.52-1.4-4.9-1.5-3.4-.2-7.57 1.9-15.38 1.6-7.68-.2-14.77-9.7-15.74-11.2-1.13-1.8-2.52-1.8-4.03-.4-1.5 1.4-3.36.3-3.9-.6-1-1.8-3.7-6.92-7.87-8-5.77-1.5-8.7 3.2-8.3 6.9.38 3.8 2.83 4.9 3.96 6.9 1.12 2 1.7 3.3 3.84 4.2 1.5.6 2.07 1.6 1.62 2.8-.4 1.1-1.97 1.3-3 1.4-2.2.1-3.74-.5-4.86-1.2-1.3-.9-2.37-2-3.5-4-1.33-2.2-3.4-3.1-5.83-3.1-1.16 0-2.24.3-3.2.8-3.8 2-8.3 3.1-13.17 3.1H9.1C19.64 138.5 49.14 161 83.88 161c27.73 0 52.13-14.3 66.23-36"></path>
 <path style="fill:#000" d="m 150.1,125 c -2.6,-0.6 -6.3,-1.1 -9.5,-1.1 -5.6,0 -10.7,0.9 -14.4,2.5 -0.5,0.2 -0.7,0.6 -0.7,1.1 0,0.2 0,0.4 0.1,0.5 0.4,1.3 -0.3,2.7 -3.9,3.5 -5.4,1.2 -8.8,6.7 -10.7,8.6 -2.3,2.1 -8.8,3.5 -7.8,2.2 0.8,-1 3.7,-4.2 5.4,-7.6 1.6,-3 3,-3.9 4.9,-6.8 0.6,-0.8 2.8,-3.8 3.4,-6.2 0.8,-2.3 0.5,-5.2 0.8,-6.4 0.4,-1.7 2,-5.4 2.1,-7.5 0.1,-1.2 -4.9,1.7 -7.3,1.7 -2.4,0 -4.8,-1.5 -6.9,-1.6 -2.6,-0.1 -4.3,2.1 -6.74,1.7 -1.36,-0.2 -2.51,-1.4 -4.9,-1.5 -3.41,-0.1 -7.56,1.9 -15.37,1.6 -7.68,-0.2 -14.78,-9.7 -15.75,-11.2 -1.13,-1.8 -2.52,-1.8 -4.03,-0.4 -1.51,1.4 -3.37,0.3 -3.9,-0.6 -1.01,-1.8 -3.7,-6.92 -7.87,-8 -5.77,-1.5 -8.69,3.19 -8.31,6.9 0.38,3.8 2.83,4.9 3.96,6.9 1.14,2 1.72,3.3 3.85,4.2 1.51,0.6 2.07,1.6 1.62,2.8 -0.39,1.1 -1.96,1.3 -3,1.4 -2.2,0.1 -3.74,-0.5 -4.86,-1.2 -1.31,-0.9 -2.37,-2 -3.51,-4 -1.32,-2.2 -3.4,-3.1 -5.82,-3.1 -1.15,0 -2.23,0.3 -3.19,0.8 -3.8,2 -8.31,3.1 -13.18,3.1 l -5.481,0 C 6.45,99.4 5,90.95 5,82.13 5,38.57 40.32,3.26 83.88,3.262 c 43.52,0 78.82,35.31 78.82,78.87 0,15.77 -4.6,30.57 -12.6,42.87 z m -49.2,-7.2 c -1.03,1.2 -1.47,1.6 -2.21,2.2 -1.78,1.4 -3.81,-0.2 -5.11,-1 -2.9,-1.7 -5.23,-0.6 -5.8,0.7 -0.57,1.3 0.1,2.9 1.64,2.7 2.21,-0.3 2.31,0.1 3.9,1.1 2.98,1.9 5.15,0.8 6.26,-0.1 0.92,-0.7 1.42,-1.3 1.92,-2.2 0.9,-1.7 0.2,-3 -0.3,-3.4 -0.1,-0.1 -0.2,-0.1 -0.3,0 z"></path>
 <path style="fill:#c00" d="m 87.26,25.76 c 3.86,-0.47 10.35,-1.28 10.82,1.61 0.18,1.13 -1.98,2.32 -5.13,3.05 -0.34,0.1 -0.33,0.54 0,0.67 1.32,0.38 2.86,0.65 4.49,0.65 5.06,0.12 9.16,-1.71 9.26,-4.07 0.1,-2.36 -4,-4.39 -9.04,-4.49 -0.99,0 -1.98,0 -3.09,0.15 -3.02,0.3 -5.62,1.1 -7.42,1.98 -0.29,0.14 -0.28,0.45 0.11,0.45 z m -9.53,15.06 c 4.35,-0.32 4.79,-1.32 4.66,-2.39 -0.14,-1.25 -2.77,-2.71 -6.67,-2.71 -3.84,0 -6.6,0.46 -8.99,0.56 -2.39,0.1 -4.24,-1.69 -5.1,-2.76 -0.71,-0.88 -2.97,-1.73 -4.2,1.1 -1.24,2.86 1.07,5.93 2.97,6.33 0,0 3.17,5.89 5.57,3.33 1.71,-1.82 2.65,-2.8 11.76,-3.46 z m 43.87,28.83 c 2.9,-1.57 5.5,-3.63 6.8,-8.5 13.4,3.02 21.3,10 19.6,19.43 C 144.2,101.3 110.3,108.3 77.23,98.3 45.75,88.79 18.11,69.8 21.31,58.68 c 1.86,-6.48 12.13,-9.24 25.82,-7.76 -2.08,4.23 -1.92,9.21 7.14,14.75 11.07,6.29 29.79,11.66 34.85,11.14 1.89,-0.2 3.58,-1.13 1.89,-2.27 -1.7,-1.13 -3.21,-3.4 -4.16,-7.36 C 86.33,64.97 85.73,61.89 73.83,59.63 48.31,54.77 49.29,47.55 50.05,43.4 c 0,0 2.26,-10.19 3.21,-13.78 0.94,-3.59 3.38,-11.82 19.82,-8.12 9.5,2.14 14.62,-0.52 17.24,-1.19 7.1,-1.82 14.98,-0.57 19.28,3.9 4.5,4.63 10.7,18.9 13.7,29.57 1.5,5.42 1.1,8.02 0.3,9.85 -0.5,1.25 -0.8,2.05 -2.7,5.22 -0.3,0.56 -0.1,1.17 0.7,0.8 z"></path>
 </svg>
-</div></div></section><section data-id="2f2c70b435fc1ff15590b3e46c337043" data-background-color="#ffffff"><div class="sl-block" data-block-type="text" style="height: auto; width: 880px; left: 80px; top: 70px;" data-block-id="c600a86f7b30b783e77e9d1e12629003"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
-<h1 style="text-align:left">Course Navigation TipS</h1>
-</div></div>
-<div class="sl-block" data-block-type="text" style="height: auto; width: 372px; left: 80px; top: 172px;" data-block-id="f10b190636d874d1f0455aa7553baeaf"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;" dir="ui">
+</div></div></section><section data-id="2f2c70b435fc1ff15590b3e46c337043" data-background-color="#ffffff">
+
+
+<div class="sl-block" data-block-type="image" style="width: 418px; height: 139px; left: 37px; top: 150px; min-width: 4px; min-height: 4px;" data-block-id="2591bd2a79ce215d4a214cf70ba002ef"><div class="sl-block-content" style="z-index: 11; border-style: solid; border-width: 1px;"><img style="" data-natural-width="418" data-natural-height="139" data-lazy-loaded="" data-src="adminapi/dcbee5530f1a813102960aa3d69e5c34.png"></div></div>
+
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 183px; top: 267px;" data-block-id="846591df2ecd058328cd2ece6a49e1ce"><div class="sl-block-content" data-line-x1="265" data-line-y1="29" data-line-x2="218" data-line-y2="-5" data-line-color="#cc0000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 12;" data-line-width="6px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="47" height="34" viewbox="218 -5 47 34"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="265" y1="29" x2="225" y2="0"></line><line stroke="#cc0000" stroke-width="6" x1="265" y1="29" x2="225" y2="0"></line><polygon fill="#cc0000" transform="translate(225,0) rotate(-54.118)" points="0,-9 9,9 -9,9"></polygon></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="916889307897e339369977d26f138c92">
+    <div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 10;" dir="ui" data-has-custom-html="">
+<h2>Course Navigation Tips</h2>
+
 <ul>
 	<li>
+	<p>To receive credit for completing a module, you must click the <strong>Complete Module</strong> button on the Module Completion slide:<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	 </p>
+
+	<ul>
+		<li>
+		<p>​ To confirm that you received credit for completing a module, look for a check mark next to the module name on the left side of the screen</p>
+		</li>
+	</ul>
+	</li>
+	<li>
+	<p> After exiting the course, close the course's tab in your browser</p>
+
+	<ul>
+		<li>
+		<p>If your course session expires before closing the course's browser tab, your progress in the course will be lost</p>
+		</li>
+	</ul>
+	</li>
+	<li style="color:rgb(53, 64, 69)">
 	<p>To display the audio transcript, press <strong>S</strong></p>
 
 	<ul>
-		<li>
-		<p><strong>​</strong>If the transcript does not display, click the slide and press <strong>S</strong> again</p>
-		</li>
-	</ul>
-	</li>
-	<li>
-	<p>To expand or collapse an item, click the <strong>+</strong> or <strong>-</strong> symbol that appears between the bullet symbol and the text</p>
-	</li>
-	<li>
-	<p>To receive credit for completing a module, you must click the <strong>Complete Module</strong> button on the Module Completion slide</p>
-
-	<ul>
-		<li>
-		<p>To confirm that you received credit for completing a module, look for a check mark next to the module name on the left side of the screen</p>
+		<li style="color: rgb(53, 64, 69);">
+		<p>If the transcript does not display, click the slide and press <strong>S</strong> again</p>
 		</li>
 	</ul>
 	</li>
 </ul>
-</div></div>
-<div class="sl-block" data-block-type="image" style="width: 418px; height: 186px; left: 542px; top: 211px; min-width: 4px; min-height: 4px;" data-block-id="218638d63f6ccea0ae27b5058011a846"><div class="sl-block-content" style="z-index: 13; border-style: solid; border-width: 1px;"><img style="" data-natural-width="418" data-natural-height="186" data-lazy-loaded="" data-src="01_api_variants/58a0f71451c5603713c04ed673107e08.png"></div></div>
-<div class="sl-block" data-block-type="image" style="width: 418px; height: 139px; left: 542px; top: 442px; min-width: 4px; min-height: 4px;" data-block-id="2591bd2a79ce215d4a214cf70ba002ef"><div class="sl-block-content" style="z-index: 14; border-style: solid; border-width: 1px;"><img style="" data-natural-width="418" data-natural-height="139" data-lazy-loaded="" data-src="01_api_variants/dcbee5530f1a813102960aa3d69e5c34.png"></div></div>
-<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 532px; top: 295px;" data-block-id="80c77e665d05c7c642e5f88942f767f6"><div class="sl-block-content" data-line-x1="144" data-line-y1="55" data-line-x2="200" data-line-y2="0" data-line-color="#cc0000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 15;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="56" height="55" viewbox="144 0 56 55"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="144" y1="55" x2="196" y2="4"></line><line stroke="#cc0000" stroke-width="4" x1="144" y1="55" x2="196" y2="4"></line><polygon fill="#cc0000" transform="translate(196,4) rotate(45.516)" points="0,-6 6,6 -6,6"></polygon></svg></div></div>
-<div class="sl-block" data-block-type="line" style="width: auto; height: auto; left: 473px; top: 565px;" data-block-id="846591df2ecd058328cd2ece6a49e1ce"><div class="sl-block-content" data-line-x1="159" data-line-y1="48" data-line-x2="218" data-line-y2="-5" data-line-color="#cc0000" data-line-start-type="none" data-line-end-type="arrow" style="z-index: 16;" data-line-width="4px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="59" height="53" viewbox="159 -5 59 53"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="159" y1="48" x2="214" y2="-1"></line><line stroke="#cc0000" stroke-width="4" x1="159" y1="48" x2="214" y2="-1"></line><polygon fill="#cc0000" transform="translate(214,-1) rotate(48.066)" points="0,-6 6,6 -6,6"></polygon></svg></div></div></section><section data-id="2fc50d6f6576ea351cd6119817c9b783"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 6px; top: 12px;" data-block-id="164b3836379a7ead62cab82a7f91c55d"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
-<h1 style="text-align:left">Module Topics</h1>
-
-<p> </p>
+</div>
+</div></section><section data-id="2fc50d6f6576ea351cd6119817c9b783"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="164b3836379a7ead62cab82a7f91c55d"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
+<h2>Module Topics</h2>
 
 <ul>
-	<li><strong>REST APIs</strong></li>
-	<li><strong>REST API Architecture</strong></li>
-	<li><strong>SOAP Services</strong></li>
-	<li><strong>Other Non-REST APIs</strong></li>
-	<li><strong>Manage Non-REST APIs</strong></li>
-</ul>
-</div></div></section><section data-id="7e564e63bfef51e058f490d032729e17"><div class="sl-block" data-block-type="text" style="height: auto; width: 800px; left: 0px; top: 0px;" data-block-id="2444947dec4fff36d554de9d2b6c3ae9"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
-<h1 style="text-align:left">REST APIs</h1>
-
-<p> </p>
-
-<ul>
-	<li><span>Most suited for API economy </span></li>
 	<li>
-<span>Constraints of REST: </span>
+	<p>REST APIs</p>
+	</li>
+	<li>
+	<p>REST API Architecture</p>
+	</li>
+	<li>
+	<p>SOAP Services</p>
+	</li>
+	<li>
+	<p>Other Non-REST APIs</p>
+	</li>
+	<li>
+	<p><span style="color:rgb(53, 64, 69); font-size:21.3333px">Non-REST API Management</span></p>
+	</li>
+</ul>
+</div></div></section><section data-id="7e564e63bfef51e058f490d032729e17"><div class="sl-block" data-block-type="text" style="height: auto; width: 800px; left: 0px; top: 0px;" data-block-id="2444947dec4fff36d554de9d2b6c3ae9"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui" data-has-custom-html="">
+<h2>REST APIs</h2>
+
+<ul>
+	<li>
+	<p>Most suited for API economy</p>
+	</li>
+	<li>
+	<p>API constraints:</p>
+
 	<ul>
 		<li>
-<span>Uniform interface </span>
+		<p>Statelessness</p>
+		</li>
+		<li>
+		<p>Layered system</p>
+		</li>
+		<li>
+		<p>Uniform interface</p>
+
 		<ul>
-			<li><span>Resource-based </span></li>
-			<li><span>Manipulate resources through representations </span></li>
-			<li><span>Self-descriptive messages </span></li>
-			<li><span>HATEOS (Hypermedia as the Engine of Application State) </span></li>
+			<li>
+			<p>Resource-based</p>
+			</li>
+			<li>
+			<p>Manipulation of resources through representations</p>
+			</li>
+			<li>
+			<p>Self-descriptive messages</p>
+			</li>
+			<li>
+			<p>HATEOAS</p>
+			</li>
 		</ul>
 		</li>
-		<li><span>Stateless </span></li>
-		<li><span>Layered system </span></li>
 	</ul>
 	</li>
 </ul>
-</div></div></section><section data-id="784219e5d3f3c970706a848ef26bd506"><div class="sl-block" data-block-type="text" style="height: auto; width: 939px; left: 0px; top: 0px;" data-block-id="71fb6fbc5fae15f6d5ec137a34304b30"><div class="sl-block-style" style="z-index: 11;"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
-<h1>REST API Architecture</h1>
-
-<p> </p>
+</div></div></section><section data-id="784219e5d3f3c970706a848ef26bd506"><div class="sl-block" data-block-type="text" style="height: auto; width: 939px; left: 1px; top: 0px;" data-block-id="71fb6fbc5fae15f6d5ec137a34304b30"><div class="sl-block-style" style="z-index: 11;"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui" data-has-custom-html="">
+<h2>REST API Architecture</h2>
 
 <ul>
-	<li><span>Data-driven </span></li>
-	<li><span>Permits multiple data formats (JSON, XML, text) </span></li>
-	<li><span>Security using HTTPS protocol </span></li>
-	<li><span>Lightweight framework </span></li>
 	<li>
-<span>REST limitations for APIs: </span>
+	<p>Data-driven</p>
+	</li>
+	<li>
+	<p>Multiple data formats permitted: JSON, XML, text</p>
+	</li>
+	<li>
+	<p>Security using HTTPS protocol</p>
+	</li>
+	<li>
+	<p>Lightweight framework</p>
+	</li>
+	<li>
+	<p>REST limitations for APIs:</p>
+
 	<ul>
-		<li><span>Using non-HTTP protocols </span></li>
-		<li><span>Stateful </span></li>
-		<li><span>Constrained by too few HTTP verbs </span></li>
+		<li>
+		<p>Use of non-HTTP protocols</p>
+		</li>
+		<li>
+		<p>Stateful</p>
+		</li>
+		<li>
+		<p>Constrained by too few HTTP verbs</p>
+		</li>
 	</ul>
 	</li>
 </ul>
 
 <p> </p>
 </div></div></div>
-</section><section data-id="cd91047000d80d16b957653d70287aa3"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="dd66fd96ecdd99f924b3b8a5b18ad36b"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
-<h1 style="text-align:left">SOAP Services</h1>
-
-<p> </p>
-
-<p> </p>
+</section><section data-id="cd91047000d80d16b957653d70287aa3"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="dd66fd96ecdd99f924b3b8a5b18ad36b"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" data-has-custom-html="">
+<h2>SOAP Services</h2>
 
 <ul>
-	<li><span>Protocol </span></li>
-	<li><span>Function-driven </span></li>
-	<li><span>WS-Security </span></li>
-	<li><span>Calls cannot be cached </span></li>
-	<li><span>Heavy payload </span></li>
-	<li><span>XML data format </span></li>
+	<li>
+	<p>Protocol</p>
+	</li>
+	<li>
+	<p>Function-driven</p>
+	</li>
+	<li>
+	<p>WS-Security</p>
+	</li>
+	<li>
+	<p>Inability to cache calls</p>
+	</li>
+	<li>
+	<p>Heavy payload</p>
+	</li>
+	<li>
+	<p>XML data format</p>
+	</li>
 </ul>
 </div></div>
 
 
 
-</section><section data-id="aefb2244e9d6fb041beafa78ad751752"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="bcf789980cac2e42c95b875cd2cd60f5"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
-<h1 style="text-align:left">Other Non-REST APIs</h1>
-
-<p> </p>
+</section><section data-id="aefb2244e9d6fb041beafa78ad751752"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 1px; top: 0px;" data-block-id="bcf789980cac2e42c95b875cd2cd60f5"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<h2>Other Non-REST APIs</h2>
 
 <ul>
-	<li><span>Use cases justify RESTless APIs </span></li>
 	<li>
-<span>Apache Thrift </span>
+	<p>Some use cases justify RESTless APIs</p>
+	</li>
+	<li>
+	<p>Apache Thrift</p>
+
 	<ul>
-		<li><span>Interface definition language </span></li>
-		<li><span>Multiple target languages </span></li>
-		<li><span>Low-level transports (Socket, Pipe, etc.) </span></li>
-		<li><span>Multiple protocols (JSON, compact, binary, etc.) </span></li>
-		<li><span>Examples: Facebook FBOSS API, Evernote SDK, Elasticsearch API </span></li>
+		<li>
+		<p>Interface definition language</p>
+		</li>
+		<li>
+		<p>Multiple target languages</p>
+		</li>
+		<li>
+		<p>Low-level transports: Socket, Pipe, etc.</p>
+		</li>
+		<li>
+		<p>Multiple protocols: JSON, compact, binary, etc.</p>
+		</li>
+		<li>
+		<p>Examples: Facebook FBOSS API, Evernote SDK, Elasticsearch API</p>
+		</li>
 	</ul>
 	</li>
 	<li>
-<span>Apache Spark and Python </span>
+	<p>Apache Spark and Python</p>
+
 	<ul>
-		<li><span>H2O Python API </span></li>
+		<li>
+		<p>H2O Python API</p>
+		</li>
 	</ul>
 	</li>
-	<li><span>Apache Avro </span></li>
+	<li>
+	<p>Apache Avro</p>
+	</li>
 </ul>
 </div></div>
 
 
 
 </section><section data-id="875f58961b23e075ea1fc47f9f1eac5c"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="4abe6360798c5960e1a932b8b9860f47"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
-<h1 style="text-align:left">Manage Non-REST APIs</h1>
-</div></div>
-<div class="sl-block" data-block-type="text" style="height: auto; width: 951px; left: 0px; top: 125px;" data-block-id="58cd58f57dfd4679ff3adaf97eacb3be"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;">
+<h2>Non-REST API Management</h2>
+
 <ul>
-	<li><span>APIcast gateway customization for HTTP protocol </span></li>
-	<li><span>Use code plug-ins for other protocols such as TCP </span></li>
-	<li><span>Use custom Lua modules </span></li>
 	<li>
-<span>Example: SOAP: </span>
+	<p>APIcast gateway customization supported for HTTP protocol </p>
+	</li>
+	<li>
+	<p>For other protocols (e.g., TCP), use code plug-ins </p>
+	</li>
+	<li>
+	<p>Example: Use custom Lua modules to support SOAP provider</p>
+
 	<ul>
-		<li><span>Match SOAPAction header </span></li>
-		<li><span>Create mapping rule for POST operation </span></li>
-		<li><span>Create method for each SOAP endpoint </span></li>
-		<li><span>Create metrics for each SOAP operation </span></li>
+		<li>
+		<p>Match SOAPAction header</p>
+		</li>
+		<li>
+		<p>Create mapping rule for POST operation</p>
+		</li>
+		<li>
+		<p>Create method for each SOAP endpoint</p>
+		</li>
+		<li>
+		<p>Create metrics for each SOAP operation</p>
+		</li>
 	</ul>
 	</li>
 </ul>
 </div></div>
-</section><section data-id="d682c675c4e54e2c6abb0f812534e8db"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="adbdc413f58e2fbea22169f2acd36f3e"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
-<h1 style="text-align:left">Manage Non-REST APIS</h1>
 
-<p> </p>
+</section><section data-id="d682c675c4e54e2c6abb0f812534e8db"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 0px;" data-block-id="adbdc413f58e2fbea22169f2acd36f3e"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" data-has-custom-html="" dir="ui">
+<h2>Non-REST API Management</h2>
+<h3>Separation of Concerns</h3>
+<ul>
+<li>
+<p>Red Hat<span style="font-weight:normal;" id="docs-internal-guid-aaf7b6e8-7fff-b0b7-84c3-54dc858f10cd"><span style=" font-family: Arial; background-color: transparent; font-weight: 400; font-style: normal; font-variant: normal; white-space: pre-wrap;">®</span></span> Fuse as integration platform:</p>
+<ul>
+<li><p>Camel route exposing REST/HTTP endpoint</p></li>
+<li><p>Camel producer endpoint using non-REST endpoint</p></li>
+</ul>
+</li>
+<li><p>Support transformation and encryption capabilities</p></li>
+</ul>
+</div></div>
+
+</section><section data-background-color="#ffffff" data-id="2a994daf8ece0dedcd758672fb6631e8"><div class="sl-block" data-block-type="text" style="height: auto; width: 800px; left: 0px; top: 0px;" data-block-id="1bc7454f6c5b67e9d74ea5e9af3318ac"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
+<h2>Module Summary</h2>
 
 <ul>
-	<li><span>Separation of concerns </span></li>
 	<li>
-<span>Red Hat JBoss Fuse as integration platform: </span>
-	<ul>
-		<li><span>Camel route exposing REST/HTTP endpoint </span></li>
-		<li><span>Camel producer endpoint using non-REST endpoint </span></li>
-	</ul>
+	<p>REST APIs</p>
 	</li>
-	<li><span>Support transformation and encryption capabilities </span></li>
+	<li>
+	<p>REST API Architecture</p>
+	</li>
+	<li>
+	<p>SOAP Services</p>
+	</li>
+	<li>
+	<p>Other Non-REST APIs</p>
+	</li>
+	<li>
+	<p>Non-REST API Management</p>
+	</li>
 </ul>
 </div></div>
-
-</section><section data-background-color="#ffffff" data-id="2a994daf8ece0dedcd758672fb6631e8"><div class="sl-block" data-block-type="text" style="height: auto; width: 800px; left: 80px; top: 70px;" data-block-id="1bc7454f6c5b67e9d74ea5e9af3318ac"><div class="sl-block-content rh-ul" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
-<h1 style="text-align:left">Module SUMMARY</h1>
-
-<ul>
-</ul>
-</div></div>
-<div class="sl-block" data-block-type="text" style="height: auto; min-width: 30px; min-height: 30px; width: 600px; left: 80px; top: 210px;" data-block-id="12638ce99699cf5809270d3ace592f48"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;">
-<ul>
-	<li><span>REST APIs </span></li>
-	<li><span>REST API Architecture </span></li>
-	<li><span>SOAP Services </span></li>
-	<li><span>Other Non-REST APIs </span></li>
-	<li><span>Manage Non-REST APIs </span></li>
-</ul>
-</div></div></section>
+</section>
 			</div>
 		</div>
 
 		<script>
-			var SLConfig = {"deck": {"id":1280048,"slug":"01_api_variants","title":"01_API_Variants","description":"","width":960,"height":700,"visibility":"self","published_at":"2018-01-16T20:35:50.663Z","sanitize_messages":null,"thumbnail_url":"https://s3.amazonaws.com/media-p.slid.es/thumbnails/c4cbc6881d5349a69134128a5f755389/thumb.jpg?1529453222","view_count":0,"user":{"id":351799,"username":"jbride","name":"Jeffrey Bride","description":null,"thumbnail_url":"https://www.gravatar.com/avatar/14bfd9ed929ecb895f001cc49464c463?s=140\u0026d=https%3A%2F%2Fstatic.slid.es%2Fimages%2Fdefault-profile-picture.png","paid":true,"pro":true,"lite":false,"team_id":32,"settings":{"id":185185,"present_controls":true,"present_upsizing":true,"present_pointer":true,"present_notes":true,"default_deck_tag_id":null},"enterprise":true,"membership":{"role":"member","manager":false,"activated":true}},"background_transition":"none","transition":"none","theme_id":176,"theme_font":"overpass2","theme_color":"no-color","auto_slide_interval":0,"comments_enabled":true,"forking_enabled":false,"rolling_links":false,"center":false,"shuffle":false,"should_loop":false,"share_notes":false,"slide_number":true,"slide_count":10,"rtl":false,"version":2,"collaborative":true,"deck_user_editor_limit":1,"data_updated_at":1529454817518,"font_typekit":null,"font_google":null,"notes":{"2fc50d6f6576ea351cd6119817c9b783":"This module discusses the API management of non-REST based APIs. Red Hat 3scale API Management supports the REST API framework as standard. The module describes the advantages and prevalence of REST APIs in the API management ecosystem, and then discusses other API specifications like SOAP and Thrift. The module concludes with some approaches to managing non-REST APIs using Red Hat 3scale API Management and Red Hat JBoss Fuse.","7e564e63bfef51e058f490d032729e17":"The REST architecture offers many benefits, including simplicity, particularly when used over HTTP with a data interchange format as straightforward as JSON. As such, it is not surprising that REST has largely become the default choice for new API development.\n\nThe chief constraints that are useful in APIs are uniform interface, statelessness, and layered system.\n\nA *uniform interface* simplifies and decouples the architecture, which enables each part to evolve independently. The guiding principles are:\n\n* *Resource-based* - The resources themselves are conceptually separate from the representations that are returned to the client.\n* *Manipulate resources through representations* - When a client holds a representation of a resource, including any metadata attached, it has enough information to modify or delete the resource on the server, provided it has permission to do so.\n\n* *Self-descriptive messages* - Each message includes enough information to describe how to process the message.\n* *HATEOS* - Clients deliver state via body contents, query-string parameters, request headers, and the requested URI (the resource name). Services deliver state to clients via body content, response codes, and response headers. This is technically referred to as hypermedia (or hyperlinks within hypertext).\n+\nAside from this description, HATEOS also means that, where necessary, links are contained in the returned body (or headers) to supply the URI for retrieval of the object itself or related objects. This is covered in detail later.","784219e5d3f3c970706a848ef26bd506":"REST APIs are based on URIs--Uniform Resource Identifiers, of which a URL is a specific type--and the HTTP protocol. REST APIs use JSON as the data format. REST is all about simplicity, thanks to HTTP protocols. REST is optimized for the web. Using JSON as its data format makes it compatible with browsers.\n\nRESTful APIs are quite fashionable at the moment. However, you should not follow this trend just for the sake of fashion. Some use cases are well suited for it, but others favor other architectural styles.","cd91047000d80d16b957653d70287aa3":"Where REST is an architecture that is more data-driven, SOAP--short for Simple Object Access Protocol--is a standardized protocol for transferring structured information that is more function-driven. This, coupled with the fact that much of the existing web service architecture was developed with SOAP/XML, makes supporting SOAP web services a common requirement in API  management.\n\nSOAP is its own protocol. It is more complex than REST because it defines more standards than REST--things like security and how messages are sent. These built-in standards carry more overhead, but they can be a deciding factor for organizations that require more comprehensive features such as security, transactions, and ACID (Atomicity, Consistency, Isolation, Durability) compliance.\n\nSOAP has tighter security. WS-Security, in addition to SSL support, is a built-in standard that provides enterprise-level security features.","aefb2244e9d6fb041beafa78ad751752":"While the REST architecture offers many benefits, particularly when used over HTTP, there are some cases where requirements like support for complex data model or big binary attachments for which HTTP as a protocol may not be suitable, and API providers may want to look for other alternatives.\n\nCompanies like Evernote have taken a different approach to developing SDKs by using open-source alternatives like Apache Thrift, a technology originally developed by Facebook. Thrift supports many programming languages and has an impressive test suite that exercises most of the languages, protocols, and transports that represent a matrix of thousands of possible combinations. Thrift is an interface description language, or IDL. Everything is specified in an IDL file from which bindings for many languages can be generated. The languages supported include C++, Java, PHP, Python, Ruby, Smalltalk, Perl, C#, and Haskell.\n\nApache Avro Interface Definition Language is an alternate IDL language for authoring and interfacing with Apache Avro schemata.\n\nAlthough alternative approaches are unlikely to dethrone REST, the fact that companies like Broadcom and Evernote are not always turning to REST tells developers that it is important to think critically about their APIs and how they will be used before they make decisions about architecture and protocol.\n","875f58961b23e075ea1fc47f9f1eac5c":"Because the APICast gateway is built on top of NGINX, Lua, and OpenResty, it supports the HTTP protocol. Therefore, any non-REST APIs that uses an HTTP transport layer can be supported in APIcast with custom modules. For APIs using other protocols, a traffic controller needs to be created using code plug-ins and mappings, methods, and metrics matched to the API.\n\nAn example of using custom Lua modules would be to support a SOAP API provider. Here, because SOAP uses `POST` requests with a `SOAPAction` header, the Lua script has to provide special methods to NGINX for the `urlrewrite` response from SOAP endpoints.\n\nMapping rules in a 3scale service need to be defined in such a way that each SOAP endpoint has a method definition, because the URL is unique for each endpoint. Each operation for the SOAP endpoint can be defined in metrics so that 3scale can provide fine-grained metrics on the SOAP operations.","d682c675c4e54e2c6abb0f812534e8db":"Frequently, there are requirements for Red Hat 3scale API Management to support enterprise integration capabilities such as multiple transport protocols or payload data types, data transformation, and payload encryption and enrichment. While some of these use cases may be trivial and can be handled using custom Lua modules, it is good idea to have a separation of concerns between the API management and integration layers. Red Hat recommends the JBoss Fuse product for enterprise integration scenarios.\n\nWith Red Hat JBoss Fuse, it is trivial to support any number of transport protocols, data types, and payload transformation and encryption capabilities. This product uses the popular Apache Camel library to provide routing and mediation capabilities.\n\nThe Camel route can expose a REST/HTTP endpoint to be used in Red Hat 3scale API Management as the back-end API, and in turn route the request to the actual provider API endpoint using the protocol expected, like SOAP or JMS.","2a994daf8ece0dedcd758672fb6631e8":"This module discussed the API management of non-REST based APIs. Red Hat 3scale API Management supports the REST API framework as standard. The module described the advantages and prevalence of REST APIs in the API management ecosystem, and then discussed other API specifications like SOAP and Thrift. The module concluded with some approaches to managing non-REST APIs using Red Hat 3scale API Management and Red Hat JBoss Fuse."}}};
+			var SLConfig = {"deck": {"id":1409163,"slug":"adminapi","title":"3scale Advanced Development  - 01_API_Variants","description":"","width":1280,"height":720,"visibility":"team","published_at":"2019-01-13T17:02:55.055Z","sanitize_messages":null,"thumbnail_url":"https://s3.amazonaws.com/media-p.slid.es/thumbnails/fb0c0433db924391c7c91717c82bc6f7/thumb.jpg?1548342034","view_count":14,"user":{"id":645440,"username":"sjayanti","name":"Satya Jayanti","description":"","thumbnail_url":"https://www.gravatar.com/avatar/628a7ac3a1547cb8565a4eb2d54b6773?s=140\u0026d=https%3A%2F%2Fstatic.slid.es%2Fimages%2Fdefault-profile-picture.png","paid":true,"pro":true,"lite":false,"team_id":32,"settings":{"id":493293,"present_controls":true,"present_upsizing":true,"present_pointer":false,"present_notes":false,"default_deck_tag_id":null},"enterprise":true,"membership":{"role":"member","manager":false,"activated":true}},"background_transition":"none","transition":"none","theme_id":176,"theme_font":"overpass2","theme_color":"no-color","auto_slide_interval":0,"comments_enabled":true,"forking_enabled":false,"rolling_links":false,"center":false,"shuffle":false,"should_loop":false,"share_notes":false,"slide_number":true,"slide_count":10,"rtl":false,"version":2,"collaborative":true,"deck_user_editor_limit":null,"data_updated_at":1548673062281,"font_typekit":null,"font_google":null,"notes":{"2fc50d6f6576ea351cd6119817c9b783":"Red Hat 3scale API Management supports REST as its standard API framework. The module describes the advantages and prevalence of REST APIs in the API management ecosystem, and then discusses other API specifications such as SOAP and Thrift. The module concludes with some approaches to managing non-REST APIs using Red Hat 3scale API Management and Red Hat Fuse.","7e564e63bfef51e058f490d032729e17":"The REST architecture offers many benefits, including simplicity, particularly when used over HTTP with a data interchange format as straightforward as JSON. As such, it is not surprising that REST has largely become the default choice for new API development.\n\nThe chief constraints that are useful in APIs are statelessness, a layered system, and a uniform interface.\n\nA uniform interface simplifies and decouples the architecture, which enables each part to evolve independently. The guiding principles for a uniform interface are as follows.\n\nFirst, it is resource-based. The resources themselves are conceptually separate from the representations that are returned to the client.\n\nSecond, resources are manipulated through representations. When a client holds a representation of a resource, including any metadata attached, it has enough information to modify or delete the resource on the server, provided it has permission to do so.\n\nThird, the interface uses self-descriptive messages. Each message includes enough information to describe how to process the message.\n\nFinally, the interface incorporates the principle of Hypermedia as the Engine of Application State, or HATEOS. In HATEOS, clients deliver state via body contents, query-string parameters, request headers, and the requested Uniform Resource Identifier, or URI--that is, the resource name. Services deliver state to clients via body content, response codes, and response headers. This is technically referred to as hypermedia--that is, the use of hyperlinks within hypertext.\n\nIn HATEOS, where necessary, links are contained in the returned body or headers to supply the URI for the retrieval of the object itself or related objects. ","784219e5d3f3c970706a848ef26bd506":"REST APIs are based on URIs--of which a URL is a specific type--and the HTTP protocol. REST APIs use JSON as the data format. REST is all about simplicity, thanks to HTTP protocols. REST is optimized for the web. Using JSON as its data format makes it compatible with browsers.\n\nRESTful APIs are quite popular at the moment. However, do not follow this trend just because of its popularity. Some use cases are well suited for it, but others favor other architectural styles.","cd91047000d80d16b957653d70287aa3":"Where REST is an architecture that is more data-driven, SOAP--short for Simple Object Access Protocol--is a standardized protocol for transferring structured information that is more function-driven. This, coupled with the fact that much of the existing web service architecture has been developed with SOAP and XML, makes supporting SOAP web services a common requirement in API management.\n\nSOAP is its own protocol. It is more complex than REST because it defines more standards than REST--things like security and how messages are sent. These built-in standards carry more overhead, but they can be a deciding factor for organizations that require more comprehensive features such as security, transactions, and ACID--which stands for Atomicity, Consistency, Isolation, Durability--compliance.\n\nSOAP also has tighter security than REST. In addition to SSL support, SOAP features WS-Security, a built-in standard that provides enterprise-level security features.","aefb2244e9d6fb041beafa78ad751752":"While the REST architecture offers many benefits, particularly when used over HTTP, there are some use cases with requirements such as support for complex data models or big binary attachments for which HTTP as a protocol may not be suitable. In these cases, API providers may want to look for alternatives.\n\nCompanies such as Evernote have taken a different approach to developing SDKs by using open source alternatives such as Apache Thrift, a technology originally developed by Facebook. Thrift supports many programming languages and has an impressive test suite that exercises most of the languages, protocols, and transports that represent a matrix of thousands of possible combinations. Thrift is an interface description language, or IDL. Everything is specified in an IDL file, from which bindings for many languages can be generated. Supported languages include C++, Java, PHP, Python, Ruby, Smalltalk, Perl, C#, and Haskell.\n\nApache Avro Interface Definition Language is an alternate IDL for authoring and interfacing with Apache Avro schemata.\n\nAlthough alternative approaches are unlikely to overtake REST, the fact that companies like Broadcom and Evernote are not always turning to REST tells developers that it is important to think critically about their APIs and how they will be used before they make decisions about architecture and protocol.","875f58961b23e075ea1fc47f9f1eac5c":"Because the APIcast gateway is built on top of NGINX, Lua, and OpenResty, it supports the HTTP protocol. Therefore, any non-REST APIs that use an HTTP transport layer can be supported in APIcast with custom modules. For APIs using other protocols, a traffic controller needs to be created using code plug-ins and mappings, methods, and metrics matched to the API.\n\nOne example of this is using custom Lua modules to support a SOAP API provider. Here, because SOAP uses POST requests with a SOAPAction header, the Lua script needs to provide special methods to NGINX for the urlrewrite response from SOAP endpoints.\n\nMapping rules in a 3scale service need to be defined in such a way that each SOAP endpoint has a method definition, because the URL is unique for each endpoint. Each operation for the SOAP endpoint can be defined in metrics so that 3scale can provide fine-grained metrics on the SOAP operations.","d682c675c4e54e2c6abb0f812534e8db":"Frequently, there are requirements for Red Hat 3scale API Management to support enterprise integration capabilities such as multiple transport protocols or payload data types, data transformation, and payload encryption and enrichment. While some of these use cases may be trivial and can be handled using custom Lua modules, it is a good idea to have a separation of concerns between the API management and integration layers. Red Hat recommends the Red Hat Fuse product for enterprise integration scenarios.\n\nWith Red Hat Fuse, it is trivial to support any number of transport protocols, data types, and payload transformation and encryption capabilities. This product uses the popular Apache Camel library to provide routing and mediation capabilities.\n\nThe Camel route can expose a REST/HTTP endpoint to be used in Red Hat 3scale API Management as the back-end API, and then route the request to the actual provider API endpoint using the expected protocol, such as SOAP or JMS.","2a994daf8ece0dedcd758672fb6631e8":"This module described the advantages and prevalence of REST APIs in the API management ecosystem, and then discussed other API specifications such as SOAP and Thrift. The module concluded with some approaches to managing non-REST APIs using Red Hat 3scale API Management and Red Hat Fuse."}}};
 
-				SLConfig.theme = {"id":176,"created_at":"2014-05-27T12:38:16.183Z","updated_at":"2018-05-04T07:53:25.097Z","name":"Red Hat Corporate","thumbnail_url":"https://s3.amazonaws.com/media-p.slid.es/thumbnails/66755080be2b0c8c0146bfa70069ef16/thumb.jpg?1525420403","sanitize_messages":null,"slide_template_ids":[56708,56706,56689,28642,36442,27160,26765,26762,56684,56696,56697,56698,56699,56704,56703,56707],"font_typekit":"","font_google":"","width":960,"height":700};
+				SLConfig.theme = {"id":176,"created_at":"2014-05-27T12:38:16.183Z","updated_at":"2018-05-04T07:53:25.097Z","name":"Red Hat Corporate","thumbnail_url":"https://s3.amazonaws.com/media-p.slid.es/thumbnails/66755080be2b0c8c0146bfa70069ef16/thumb.jpg?1525420403","sanitize_messages":null,"slide_template_ids":[56706,56689,28642,36442,27160,26765,26762,56684,56696,56704,56703],"font_typekit":"","font_google":"","width":960,"height":700};
 
 			// Use local fonts
 			SLConfig.fonts_url = 'lib/fonts/';
 		</script>
 
-		<script src="lib/head.min.js"></script>
 		<script src="lib/reveal.min.js"></script>
 		<script src="lib/offline.js"></script>
 
 		<!-- Initialize the presentation -->
 		<script>
 			Reveal.initialize({
-				width: 960,
-				height: 700,
+				width: 1280,
+				height: 720,
 				margin: 0.05,
 
+				hash: true,
 				controls: true,
 				progress: true,
-				history: true,
 				mouseWheel: false,
 				showNotes: false,
 				slideNumber: true,
 
-				autoSlide: 0 || 0,
+				autoSlide: 0,
 				autoSlideStoppable: true,
 
 				center: false,
@@ -1995,7 +2146,8 @@ animation:         icon-animation-short 3.5s 1.5s 1;
 					{ src: 'lib/reveal-plugins/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'lib/reveal-plugins/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
 					{ src: 'lib/reveal-plugins/highlight/highlight.js', async: true, callback: function() { hljs.initHighlighting(); hljs.initHighlightingOnLoad(); } },
-					{ src: 'lib/reveal-plugins/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					{ src: 'lib/reveal-plugins/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'lib/reveal-plugins/zoom/zoom.js', async: true }
 				]
 			});
 		</script>
