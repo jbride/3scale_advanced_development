@@ -474,10 +474,15 @@ If you decide to use SoapUI, refer to the appendix of this lab for tips regardin
 
 === Explore Analytics
 
-. Verify that the metrics you set up for each operation are captured correctly by the APIcast gateway.
-* Expect to see the number of hits correspond to each `SOAPAction` that you request to the staging endpoint.
+ Verify that the metrics you set up for each operation are captured correctly by the APIcast gateway.
+
+. If you navigate to the Dashboard of your API, expect to see the following type of reports providing the number of hits that correspond to each `SOAPAction` that you request to the staging endpoint.
 +
 image::images/3scale_amp_stores_api_metrics.png[]
+
+. If you navigate to the *Analytics* section of your API, expect to see the following type of charts providing similar information:
++
+image::images/detailed_analytics.png[]
 
 === Manage SOAP 1.2 Web Services (Reference)
 
