@@ -1,2 +1,0 @@
-include::cover.adoc[]
-include::Overview.adoc[]
