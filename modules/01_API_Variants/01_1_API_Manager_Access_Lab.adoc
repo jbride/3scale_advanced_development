@@ -2,6 +2,7 @@
 :noaudio:
 :toc2:
 :linkattrs:
+:data-uri:
 
 
 == Environment Setup Lab
