@@ -105,58 +105,7 @@ $ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERN
 * The REST `odata` service is now correctly deployed, and you can begin to configure the APIcast gateway to use this REST endpoint to communicate with the service.
 
 
-== 3scale Service Discovery 
-
-In order for any OpenShift service to be discoverable by 3scale API Management running on the same OpenShift cluster, the `default` service account of the 3scale API Management namespace needs view access to the entire cluster. 
-This configuration is executed by the OpenShift cluster administrator.
-
-In your lab environment, this has already been done for you.
-[TIP]
-====
-For informational purposes only, the following command is used by the cluster administrator to provide the required view access:
-
-[source,sh]
------
-oc adm policy add-cluster-role-to-user view system:serviceaccount:3scale-mt-api0:default
------
-
-You do not need to execute the above command at this time.
-====
-
-See link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/service_discovery/index[Service Discovery] for details on this new 3scale by Red Hat feature.
-
-=== Set Up OData Service for Discovery
-
-. Edit the `stock-api` service in the `$OCP_USERNAME-stock-api` OpenShift project:
-+
-[source,sh]
-----
-oc edit svc stock-api
-----
-
-. Add the following line under `labels`:
-+
-[source,texinfo]
-----
-    discovery.3scale.net: "true"
-----
-
-. Add the following lines under `annotations`:
-+
-[source,texinfo]
-----
-    discovery.3scale.net/description-path: 
-    discovery.3scale.net/path: 
-    discovery.3scale.net/port: "8080"
-    discovery.3scale.net/scheme: http
-
-----
-
-. Save the changes.
-
-=== Create APIcast Gateway Staging and Production Routes
-
-
+== Create APIcast Gateway Staging and Production Routes
 
 . Verify that you are in the APIcast gateway project:
 +
@@ -179,8 +128,64 @@ $ oc create route edge stock-odata-production-route \
   -n $GW_PROJECT
 -----
 
-=== Configure 3scale API Management
 
+== 3scale Service Discovery 
+
+As of version 2.4 of the 3scale product, it has the ability to auto-discover OpenShift _services_ so as to auto-generate API resources in 3scale.
+
+As you'll see in this section of th elab, these OpenShift _services_ need to include several specific _labels_ and _annotations_ for this discovery mechanism to work.
+In addition, the `default` service account of the 3scale API Management namespace (typically owned by a OpenShift cluster admin)  needs view access to the entire cluster. 
+This configuration needs to be executed by the OpenShift cluster administrator.
+
+In your lab environment, the cluster admin has already done this for you.
+[TIP]
+====
+For informational purposes only, the following command is used by the cluster administrator to provide the required view access:
+
+[source,sh]
+-----
+oc adm policy add-cluster-role-to-user view system:serviceaccount:3scale-mt-api0:default
+-----
+
+You do not need to execute the above command at this time.
+====
+
+See link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html/service_discovery/service-discovery-configuration-procedure#making-service-discoverable[Service Discovery] for details on this new 3scale by Red Hat feature.
+
+
+=== Set Up OData Service for Discovery
+
+. Edit the `stock-api` service in the `$OCP_USERNAME-stock-api` OpenShift project:
++
+[source,sh]
+----
+oc edit svc stock-api
+----
+
+. Add the following line under `labels`:
++
+[source,texinfo]
+----
+    discovery.3scale.net: "true"
+----
+
+. Add the following lines under `annotations`:
++
+[source,texinfo]
+----
+    discovery.3scale.net/scheme: http
+    discovery.3scale.net/port: "8080"
+    discovery.3scale.net/path: 
+    discovery.3scale.net/description-path: 
+----
++
+NOTE: The _description-path_ annotation is currently left blank because the OData RESTful backend service currently does not expose _OpenAPI_ documentation.
+If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate _ActiveDocs_ from this _OpenAPI_ documentation.
+
+. Save the changes.
+
+
+=== Configure 3scale API Management
 
 ==== Use API Discovery
 
