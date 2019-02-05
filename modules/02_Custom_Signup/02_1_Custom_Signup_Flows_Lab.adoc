@@ -29,6 +29,10 @@ The signup flow that you, as an API provider, select and implement in your produ
 * Should any of your API services be made available to non-registered API consumers?
 * Are there different application plans for each service?
 
+NOTE: There are known problems with the Chrome browser when executing this lab.
+In particular, the iframes needed to support viewing of the 3scale Content Management System (CMS) and the 3scale Developer Portal in different tabs of the same Chrome browser is problematic.
+A workaround is to use Firefox or Safari (for OSX) for this lab.
+
 
 == Save Original Signup Flow as Partial
 
