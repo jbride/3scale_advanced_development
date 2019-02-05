@@ -5,16 +5,17 @@
 :data-uri:
 
 
-== APIcast Customization Lab
+== API Gateway Policies Lab
 
-In this lab you learn about APIcast gateway customizations. You study two popular standard plug-ins available in 3scale API Management and learn about using them in a policy chain to manage the API gateway's behavior.
+In this lab you learn about API gateway policies. 
+You study two popular standard policies available and learn about using them in a policy chain to manage the API gateway's behavior.
 
 .Goals
 * Create a custom `Logging` policy in an APIcast gateway
 * Create a custom `IP check` policy in an APIcast gateway
 
-
-
+.Reference
+* link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/deployment_options/#standard-policies[API Gateway Stanadard Policies]
 
 :numbered:
 
