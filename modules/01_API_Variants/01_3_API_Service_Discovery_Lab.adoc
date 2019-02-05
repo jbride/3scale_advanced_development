@@ -34,7 +34,7 @@ Red Hat Data Virtualization is used to provide data virtualization and present t
 
 IMPORTANT: When executing commands using the `oc` utility, you must be logged in to the master API of your OpenShift Container Platform environment with your `OCP_USER_ID` credentials.
 
-. At the shell prompt of your VM, verify that you are using the `jboss` user.
+. At the terminal, ensure you are logged into your OpenShift environment using the *oc* utility.
 . Create a new project for your Stock API business service applications:
 +
 [source,sh]
