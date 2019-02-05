@@ -373,8 +373,6 @@ In this scenario, you leave all of these options unchecked so that upon signup, 
 +
 image::images/3scale_amp_custom_signup_field_plan_3.png[]
 
-
-
 === Enable Account Approval
 It is possible to require that an API provider approves and activates all accounts initiated by API consumers.
 In this section, you enable this feature.
@@ -425,11 +423,12 @@ image::images/3scale_amp_custom_signup_field_plan_4.png[]
 === Make Developer Portal Changes
 
 In this section, you specify two partials in the Homepage.
-The first new partial renders in the Developer Portal for unauthenticated users.
-The second new partial renders in the Developer Portal only after the API consumer has registered a new account and authenticated in.
+
+The first new partial (called: _unauthenticated_noplan_signup_form_) renders in the Developer Portal for unauthenticated users.
+The second new partial (called: _custom_field_signup_form_)  renders in the Developer Portal only after the API consumer has registered a new account and authenticated in.
 
 . Add the `unauthenticated_noplan_signup_form` partial using the contents of the `~/lab/3scale_development_labs/DevPortal/_unauthenticated_noplan_signup_form.html.liquid` file.
-. In the *Homepage*, modify the `include` statement near line 123:
+.. In the *Homepage*, modify the `include` statement near line 123:
 +
 [source,texinfo]
 ----
@@ -441,7 +440,7 @@ Note that it simply provides a link to the registration page.
 
 
 . Add the `custom_field_signup_form` partial using the contents of the `~/lab/3scale_development_labs/DevPortal/_custom_field_plans.html.liquid` file.
-. In the *Homepage*, add the following after line 87 and before the `{% else %}` line:
+.. In the *Homepage*, add the following after line 87 and before the `{% else %}` line:
 +
 [source,texinfo]
 ----
@@ -473,9 +472,16 @@ image::images/3scale_amp_custom_signup_field_plan_8.png[]
 NOTE: Even if no application is selected during signup, the default plans for each service are created for each account.
 
 . Activate the user by clicking the activation link in the email.
++
+Account activation is required because you (as an admin of your tenant)  previously checked the box `Account approval required`.
+
 . Log in to the Developer Portal as the new user and note that the Homepage now displays the *PUBLIC* plan for the user to subscribe to:
 +
 image::images/3scale_amp_custom_signup_field_plan_9.png[]
++
+Why are *INTERNAL* plans that may exist not rendered as an option to the API consumer ?
++
+HINT: Study the _liquid_ code embedded in the first 15 lines of the _partial_ executed for authenticated users: _custom_field_signup_form_.
 
 . Click *Signup to plan StoresTransPremiumPlan*, provide a name and description for the new plan, and click *Create Application*.
 
@@ -487,7 +493,6 @@ image::images/3scale_amp_custom_signup_field_plan_12.png[]
 . Click *Accept* to accept the application:
 +
 image::images/3scale_amp_custom_signup_field_plan_13.png[]
-
 
 === Test Custom Field Flow for Internal Access
 
