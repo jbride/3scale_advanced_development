@@ -185,6 +185,32 @@ oc edit svc stock-api
 NOTE: The _description-path_ annotation is currently left blank because the OData RESTful backend service currently does not expose _OpenAPI_ documentation.
 If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate _ActiveDocs_ from this _OpenAPI_ documentation.
 
+.. Yaml is very white-space sensitive.  Ensure that when adding these labels and annotations, then indentations are correct.
+.. The modifed service should be similar to the following:
++
+-----
+...
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    description: The data virtualization services.
+    discovery.3scale.net/port: "8080"
+    discovery.3scale.net/scheme: http
+    openshift.io/generated-by: OpenShiftNewApp
+  creationTimestamp: 2019-02-05T13:13:34Z
+  labels:
+    app: stock-api
+    application: stock-api
+    discovery.3scale.net: "true"
+    template: stock-api
+    xpaas: 1.4.0
+  name: stock-api
+
+...
+-----
+
 . Save the changes.
 
 
