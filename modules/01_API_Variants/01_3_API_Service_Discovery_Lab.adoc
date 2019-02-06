@@ -131,7 +131,7 @@ $ oc create route edge stock-odata-production-route \
 
 As of version 2.4 of the 3scale product, it has the ability to auto-discover OpenShift _services_ so as to auto-generate API resources in 3scale.
 
-As you'll see in this section of th elab, these OpenShift _services_ need to include several specific _labels_ and _annotations_ for this discovery mechanism to work.
+As you will see in this section of the lab, these OpenShift _services_ need to include several specific _labels_ and _annotations_ for this discovery mechanism to work.
 In addition, the `default` service account of the 3scale API Management namespace (typically owned by a OpenShift cluster admin)  needs view access to the entire cluster. 
 This configuration needs to be executed by the OpenShift cluster administrator.
 
@@ -152,10 +152,10 @@ See link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_manage
 
 
 NOTE:  With 3scale 2.4, there is a known problem when executing this section of the lab using Google Chrome as your browser.
-The javascript that retrieves and renders the list of discovered APIs breaks in certain versions of Chrome.
+The JavaScript that retrieves and renders the list of discovered APIs breaks in certain versions of Chrome.
 Subsequently, if using some versions of Chrome you will not see the list of APIs.
-Please try upgrading to the lastest version of Chrome.
-If that still doesn't help, then please switch to the Firefox browser.
+Please try upgrading to the latest version of Chrome.
+If that still does not help, then please switch to the Firefox browser.
 
 === Set Up OData Service for Discovery
 
@@ -186,8 +186,8 @@ oc edit svc stock-api
 NOTE: The _description-path_ annotation is currently left blank because the OData RESTful backend service currently does not expose _OpenAPI_ documentation.
 If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate _ActiveDocs_ from this _OpenAPI_ documentation.
 
-.. Yaml is very white-space sensitive.  Ensure that when adding these labels and annotations, then indentations are correct.
-.. The modifed service should be similar to the following:
+.. YAML is very white-space sensitive.  Ensure that when adding these labels and annotations, the indentations are correct.
+.. The modified service should be similar to the following:
 +
 -----
 ...

@@ -32,8 +32,8 @@ The signup flow that you, as an API provider, select and implement in your produ
 NOTE: With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
 In particular, the iframes needed to support viewing of the 3scale Content Management System (CMS) and the 3scale Developer Portal in different tabs of the same Chrome browser can be problematic.
 This problem only affects some versions of Chrome.
-Please try upgrading to the lastest version of Chrome.
-If that still doesn't help, then please switch to the Firefox browser.
+Please try upgrading to the latest version of Chrome.
+If that still does not help, then please switch to the Firefox browser.
 
 
 == Save Original Signup Flow as Partial
@@ -473,13 +473,13 @@ NOTE: Even if no application is selected during signup, the default plans for ea
 
 . Activate the user by clicking the activation link in the email.
 +
-Account activation is required because you (as an admin of your tenant)  previously checked the box `Account approval required`.
+Account activation is required because you (as an admin of your tenant) previously checked the box `Account approval required`.
 
 . Log in to the Developer Portal as the new user and note that the Homepage now displays the *PUBLIC* plan for the user to subscribe to:
 +
 image::images/3scale_amp_custom_signup_field_plan_9.png[]
 +
-Why are *INTERNAL* plans that may exist not rendered as an option to the API consumer ?
+Why are *INTERNAL* plans that may exist not rendered as an option to the API consumer?
 +
 HINT: Study the _liquid_ code embedded in the first 15 lines of the _partial_ executed for authenticated users: _custom_field_signup_form_.
 
