@@ -266,7 +266,7 @@ WebRetail Inc. management requires that you include all of the items listed in t
 
 === API Gateway
 
-* The API gateway must be colocated with the services in the same OpenShift project to reduce latency.
+* The API gateway must be colocated with the backend business services in the same OpenShift cluster to reduce latency.
 * The API gateway must expose separate routes for each service.
 * The API gateway must expose HTTPS endpoints to the APIs.
 * Once the API services are exposed on the APIcast gateway, the API back-end routes must not have a publicly available URL that can be accessed directly.

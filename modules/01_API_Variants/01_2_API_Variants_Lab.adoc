@@ -12,6 +12,7 @@
 * Explore two solutions for the management of SOAP-based web services:
 ** A SOAP policy to automatically associate metrics to SOAP operations
 ** A Camel route installed in Red Hat Fuse Integration Services to route a REST request from Red Hat 3scale's APIcast gateway to a SOAP web service endpoint
+* Clarify the difference between a Method and a Metric
 
 
 
@@ -37,11 +38,12 @@ In this lab, you experiment with the following two approaches:
 
 
 
-=== Install SoapUI (Recommended)
+=== Install SoapUI (Optional)
 
-It is recommended that you install SoapUI on your local laptop.
+You'll be invoking backend SOAP services via your API gateway.
 
-Optionally, you can use SoapUI in later labs of this course when you configure 3scale API Management to manage SOAP-based API endpoints.
+These lab instructions provide examples of how to do use using the `cURL` utility.
+You can optionally download and install SoapUI on your local laptops as an alternative to cURL if you prefer a more graphical tool.
 
 == SOAP Service Management Using APIcast Gateway Policy
 
@@ -270,20 +272,14 @@ The following is a refresher for how to create this account:
 * *Name*: `StoresSOAPApp`
 * *Description*: `Stores SOAP Application`
 
-. Configure the metrics:
-.. Navigate to the *API* tab, click `Stores SOAP Policy API`, and select *Integration -> Methods & Metrics*.
-.. Click *New Metric* and populate the form for each of the following:
+. Configure a _method_ to represent the only HTTP resource exposed by the back-end SOAP service:
+.. From the top panel, navigate to:  `API: Stores SOAP Policy API -> Integration -> Methods & Metrics*.
+.. Click *New Method* and populate with the following values:
+... *Friendly name*: `StoresWS`
+... *System name*: `stores/storesws`
+... *Description*: `Stores SOAP Web Service`
 +
-[options="header"]
-|=======================
-|Metric|System Name|Unit
-|`getAllStores`|`Stores/getAllStores`|`hits`
-|`createStore`|`Stores/createStore`|`hits`
-|`deleteStore`|`Stores/deleteStore`|`hits`
-|`getStore`|`Stores/getStore`|`hits`
-|=======================
-
-* These metrics correspond to SOAP _operations_ implemented by your back-end SOAP service.
+A _method_ will be used to track the number of _hits_ on the SOAP API.
 
 . Set up the `Stores SOAP Policy API` integrations as follows:
 * *Private Base URL*: Populate with the output of the following:
@@ -307,12 +303,7 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-staging-route --templat
 $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
-. Configure a method to represent the only HTTP resource exposed by the back-end SOAP service:
-.. *Friendly name*: `StoresWS`
-.. *System name*: `stores/storesws`
-.. *Description*: `Stores SOAP Web Service`
-
-. Configure mapping rules:
+. Define mapping rules for `POST` and `GET` HTTP verbs to the previously created `StoreWS` _method_:
 +
 [options="header"]
 |=======================
@@ -321,9 +312,8 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --temp
 |`GET`|`/StoresWS`|`1`|`hits`
 |=======================
 
-* The mapping for the `POST` request increments hits on the `StoresWS` method every time a SOAP request is made to any of the SOAP operations of your back-end `Stores` service.
-* The mapping for the `GET` request increments hits made to resources such as the `Stores` service's WSDL file.
-
+* The `POST`verb mapping enables the `StoresWS` _method_ to be incremented every time a SOAP request is made to any of the SOAP operations of your back-end `Stores` service.
+* The `GET` verb mapping enables the out-of-the-box `hits` _metric_ to be incremented every time a request is made to the `Stores` service's WSDL file.
 
 . Set an API Test GET request:
 * *API Test GET Request*: `/StoresWS?wsdl`
@@ -398,25 +388,76 @@ At this point in the lab, you have invoked your back-end SOAP 1.1 service via th
 
 You can now investigate the analytics of your service and view the number of hits reported on the `StoresWS` method.
 
-At this point, what you do not know from just observing the 3scale by Red Hat analytics dashboard is which specific SOAP operations exposed by your SOAP back end were invoked.
+At this point, what you do not know from just observing the analytics dashboard is which specific SOAP operations exposed by your SOAP back end were invoked.
 
 Determining this is the objective of the next section of the lab.
 
 
 == SOAP Operation Tracking Using APIcast Gateway Custom Policies
 
-In this section, you create a custom APIcast gateway policy for SOAP requests, and use policy chaining to ensure that the custom policy is executed by the gateway.
+In this section, you leverage the SOAP APIcast gateway _policy_ to track invocations on specific SOAP operations of your backend SOAP service.
 
-The custom policy ensures that the metrics are updated for the SOAP operations.
+The SOAP policy is one of many out-of-the-box link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/deployment_options/#standard-policies[API Gateway Stanadard Policies] provided by 3scale.
 
 As in the previous section of this lab, you continue to use a SOAP 1.1 web service and you continue to make use of the HTTP header called `SOAPAction` in the requests to that SOAP web service.
 
-These `SOAPAction` header fields are now used by your APIcast gateway to update appropriate API metrics.
+These `SOAPAction` header fields are now used by your APIcast gateway to update appropriate API _metrics_.
+
+
+
+=== Understand Methods and Metrics
+
+What is the difference between a _method_ and a _metric_ ?
+when is one used over the other ?
+
+The SOAP policy of the 3scale API gateway make use of custom metrics.
+Subsequently it is a good candidate to take a quick detour to shed light on these questions.
+
+==== Path based Methods and the _Service Management API_
+Recall that in the previous section of the lab, you defined a custom _method_ to track HTTP POST requests to your backend SOAP service.
+
+_Methods_ are mapped to specific URL paths.
+The API gateways increment _hits_ on these path matching _methods_. 
+The API gateways does so by invoking the _Service Management API_ of 3scale.
+
+image::images/authrep.png[]
+ 
+==== Non path based Custom Metrics to support SOAP policy
+Beyond _hits_ on _path matching_ methods, 3scale allows for defining anything numerical in nature to be incremented on the API _application_.
+This is done by defining a custom _metric_.
+Any client (not just the API gateways) can increment a custom _metric_ using the _Service Management API_.
+
+A custom _metric_ can be assigned any String based name and does not necessarily need to be mapped to a URL path.
+
+The SOAP policy of 3scale makes use of custom metrics that are not associated with a URL path.
+
+As you'll see in this section of the lab, a custom _metric_ is defined for every _operation_ defined by the WSDL of the SOAP backend service.
+These custom metrics are each given names that correspond with a SOAP operation.
+The SOAP policy functionality enabled in the API gateway submits an _AuthRep_ request to the _Service Management API_ with an additional increment on the custom metric corresponding to the SOAP operation invoked on the backend SOAP service.
+
+For example, if a SOAP request with operation _createStore_ is posted to the API gateway, the SOAP policy of the API gateway will increment a custom metric called: _createStore_.
+
+The analytics charts provided by 3scale will then display this custom _createStore_ metric having been incremented. 
+
 
 === Create Custom Configuration to Handle SOAP Requests
 
-. Navigate to the *API* tab, click `Stores SOAP Policy API`, and select *Integration -> Configuration*.
-. Click *Integration -> edit APIcast configuration*.
+. Create Metrics to be incremented by SOAP Policy
+.. From the top panel, navigate to: `Stores SOAP Policy API -> Integration -> Methods & Metrics`.
+.. Click *New Metric* and populate the form for each of the following:
++
+[options="header"]
+|=======================
+|Metric|System Name|Unit
+|`getAllStores`|`Stores/getAllStores`|`hits`
+|`createStore`|`Stores/createStore`|`hits`
+|`deleteStore`|`Stores/deleteStore`|`hits`
+|`getStore`|`Stores/getStore`|`hits`
+|=======================
++ These metrics correspond to SOAP _operations_ implemented by your back-end SOAP service.
+
+. Configure SOAP Policy
+.. Navigate to:  *Stores SOAP Policy API -> Integration -> Configuration -> edit APIcast configuration*.
 . Expand the *Policies* section.
 . In the *Policy Chain* section, click *Add Policy* and select *SOAP*:
 +
@@ -438,9 +479,11 @@ image:images/3scale_amp_stores_soap_policies_order.png[]
 |1|`Stores/getStore`|`http://www.rhmart.com/Stores/getStore`
 |=======================
 +
-IMPORTANT: The pattern must match the `SOAPAction` for each operation. The `metric_system_name` must match the *System Name* entered for the *Metrics* of each operation.
+IMPORTANT: The pattern must match the `SOAPAction` for each operation. 
+The `metric_system_name` must match the *System Name* entered for the *Metrics* of each operation.
+Note that the mapping is between custom metric and SOAP operation (as opposed to a _method_ and a URI path like you created earlier in the lab)
 
-. Click *Update Policy* to save the changes.
+.. Click *Update Policy* to save the changes.
 . Click *Update and test in Staging Environment*.
 
 . Redeploy the `stage-apicast` pod in OpenShift by simply deleting the existing one.

@@ -1,2 +1,28 @@
 = Instructor Notes
 
+== Agenda
+. link:https://etherpad.net/p/3scale_Feb_4_2019[ILT agenda]
+
+== Setup
+
+. Provision a 3.11.43 OCP workshop environment sized appropriately for your course.
++
+Assume that each 64 GB OCP node can support 6 students of this course.
++
+Note that these workshop environments already come pre-provisioned using a wildcard certificate using LetsEncrypt
+
+. RH-SSO
+.. Installation
++
+After OCP workshop environent has been provisioned, install link:https://galaxy.ansible.com/gpe_mw_ansible/rh_sso_multi_realm[SSO]
+
+.. link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
+.. Tenants
++
+After RH-SSO has been installed, configure the following tenants:
+
+... *ocp-realm*: https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#openshift-realm
+... *generic-realms*: https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#generic-realms 
+
+
+
