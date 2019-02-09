@@ -8,10 +8,10 @@
 
 .Goals
 
-* Use Red Hat 3scale API Management's APIcast gateway to manage SOAP 1.1-based web services
+* Use Red Hat 3scale API Management's API gateway to manage SOAP 1.1-based web services
 * Explore two solutions for the management of SOAP-based web services:
 ** A SOAP policy to automatically associate metrics to SOAP operations
-** A Camel route installed in Red Hat Fuse Integration Services to route a REST request from Red Hat 3scale's APIcast gateway to a SOAP web service endpoint
+** A Camel route installed in Red Hat Fuse Integration Services to route a REST request from Red Hat 3scale's API gateway to a SOAP web service endpoint
 * Clarify the difference between a Method and a Metric
 
 
@@ -23,13 +23,13 @@
 It is often the case that SOAP-based web services need to be managed in addition to RESTful web services.
 
 SOAP requests consist of HTTP POST requests with an XML payload and some additional SOAP-specific headers.
-It is possible for these SOAP requests to be sent to 3scale's APIcast gateway, forwarded to your back-end SOAP services, and reported on to the 3scale API Manager without any customizations.
+It is possible for these SOAP requests to be sent to 3scale's API gateway, forwarded to your back-end SOAP services, and reported on to the 3scale API Manager without any customizations.
 
 However, if there is an additional requirement to gather metrics on requests to specific SOAP _operations_ exposed by a back-end SOAP service, some additional setup is needed.
 
 In this lab, you experiment with the following two approaches for gathering of metrics on specific SOAP _operations_:
 
-* Utilization of the APIcast gateway `SOAP` policy
+* Utilization of the API gateway `SOAP` policy
 * REST-to-XML transformations via a Fuse on OpenShift application
 
 ** This application serves as a RESTful proxy to the back-end SOAP service and transforms between SOAP and REST.
@@ -202,9 +202,9 @@ image::images/3scale_amp_stores_api_9.png[]
 +
 image::images/3scale_amp_stores_api_11.png[]
 
-=== Create APIcast Gateway Staging and Production Routes
+=== Create API Gateway Staging and Production Routes
 
-In this section, you create the routes for your staging and production APIcast gateways that you use later in the lab to proxy traffic to your `Stores` back-end SOAP service.
+In this section, you create the routes for your staging and production API gateways that you use later in the lab to proxy traffic to your `Stores` back-end SOAP service.
 
 . Verify that you have gateways in `$GW_PROJECT`:
 +
@@ -222,7 +222,7 @@ prod-apicast    ClusterIP   172.30.18.254   <none>        8080/TCP,8090/TCP   1h
 stage-apicast   ClusterIP   172.30.47.202   <none>        8080/TCP,8090/TCP   1h
 -----
 
-. Create new routes for the `Stores` API staging and production APIcast gateways:
+. Create new routes for the `Stores` API staging and production API gateways:
 +
 [source,sh]
 -----
@@ -273,13 +273,14 @@ The following is a refresher for how to create this account:
 * *Description*: `Stores SOAP Application`
 
 . Configure a _method_ to represent the only HTTP resource exposed by the back-end SOAP service:
-.. From the top panel, navigate to:  `API: Stores SOAP Policy API -> Integration -> Methods & Metrics*.
+.. From the top panel, navigate to:  `API: Stores SOAP Policy API -> Integration -> Methods & Metrics`.
 .. Click *New Method* and populate with the following values:
 ... *Friendly name*: `StoresWS`
 ... *System name*: `stores/storesws`
 ... *Description*: `Stores SOAP Web Service`
 +
 A _method_ will be used to track the number of _hits_ on the SOAP API.
+You'll see later in this lab how this _method_ is not granular enough to track the number of _hits_ on each SOAP operation.
 
 . Set up the `Stores SOAP Policy API` integrations as follows:
 * *Private Base URL*: Populate with the output of the following:
@@ -323,9 +324,9 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --temp
 
 === Test API-Managed SOAP Service
 
-In this section, you verify that you can use an HTTP client to send SOAP requests to your back-end SOAP service via the APIcast gateway.
+In this section, you verify that you can use an HTTP client to send SOAP requests to your back-end SOAP service via the API gateway.
 
-. Test the API by making a cURL request to the `Stores` service's WSDL file via the APIcast gateway staging URL:
+. Test the API by making a cURL request to the `Stores` service's WSDL file via the API gateway staging URL:
 +
 [source,texinfo]
 -----
@@ -384,7 +385,7 @@ As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOA
 </soap:Envelope>
 -----
 
-At this point in the lab, you have invoked your back-end SOAP 1.1 service via the APIcast gateway proxy.
+At this point in the lab, you have invoked your back-end SOAP 1.1 service via the API gateway proxy.
 
 You can now investigate the analytics of your service and view the number of hits reported on the `StoresWS` method.
 
@@ -393,35 +394,33 @@ At this point, what you do not know from just observing the analytics dashboard 
 Determining this is the objective of the next section of the lab.
 
 
-== SOAP Operation Tracking Using APIcast Gateway Custom Policies
+== SOAP Operation Tracking Using SOAP Policy
 
-In this section, you leverage the SOAP APIcast gateway _policy_ to track invocations on specific SOAP operations of your backend SOAP service.
+In this section, you leverage the SOAP API gateway _policy_ to track invocations of specific SOAP operations of your backend SOAP service.
 
 The SOAP policy is one of many out-of-the-box link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/deployment_options/#standard-policies[API Gateway Stanadard Policies] provided by 3scale.
 
 As in the previous section of this lab, you continue to use a SOAP 1.1 web service and you continue to make use of the HTTP header called `SOAPAction` in the requests to that SOAP web service.
 
-These `SOAPAction` header fields are now used by your APIcast gateway to update appropriate API _metrics_.
+These `SOAPAction` header fields are now used by your API gateway to update appropriate API _metrics_.
 
 
 
 === Understand Methods and Metrics
 
 What is the difference between a _method_ and a _metric_ ?
-when is one used over the other ?
+When is one used over the other ?
 
-The SOAP policy of the 3scale API gateway make use of custom metrics.
+The SOAP policy of the 3scale API gateway makes use of custom _metrics_.
 Subsequently it is a good candidate to take a quick detour to shed light on these questions.
 
-==== Path based Methods and the _Service Management API_
+==== Path based Methods
 Recall that in the previous section of the lab, you defined a custom _method_ to track HTTP POST requests to your backend SOAP service.
 
 _Methods_ are mapped to specific URL paths.
 The API gateways increment _hits_ on these path matching _methods_. 
-The API gateways does so by invoking the _Service Management API_ of 3scale.
+The API gateways do so by invoking the _Service Management API_ of 3scale.
 
-image::images/authrep.png[]
- 
 ==== Non path based Custom Metrics to support SOAP policy
 Beyond _hits_ on _path matching_ methods, 3scale allows for defining anything numerical in nature to be incremented on the API _application_.
 This is done by defining a custom _metric_.
@@ -433,12 +432,15 @@ The SOAP policy of 3scale makes use of custom metrics that are not associated wi
 
 As you'll see in this section of the lab, a custom _metric_ is defined for every _operation_ defined by the WSDL of the SOAP backend service.
 These custom metrics are each given names that correspond with a SOAP operation.
-The SOAP policy functionality enabled in the API gateway submits an _AuthRep_ request to the _Service Management API_ with an additional increment on the custom metric corresponding to the SOAP operation invoked on the backend SOAP service.
 
+The SOAP policy functionality enabled in the API gateway submits an _AuthRep_ request to the _Service Management API_ .
+This _AuthRep_ request contains an additional increment on the custom metric corresponding to the SOAP operation invoked on the backend SOAP service.
+
+image::images/authrep.png[]
+ 
 For example, if a SOAP request with operation _createStore_ is posted to the API gateway, the SOAP policy of the API gateway will increment a custom metric called: _createStore_.
 
-The analytics charts provided by 3scale will then display this custom _createStore_ metric having been incremented. 
-
+The analytics charts provided by 3scale will then display an increment on this custom _createStore_ metric. 
 
 === Create Custom Configuration to Handle SOAP Requests
 
@@ -499,7 +501,7 @@ stage-apicast-5-49cv1           1/1       Running   0          1m
 
 === Invoke Various SOAP Service Operations
 
-In this section of the lab, you make more SOAP-based invocations to your APIcast gateway.
+In this section of the lab, you make more SOAP-based invocations to your API gateway.
 
 You specify the `SOAPAction` header corresponding to the other `getStore`, `createStore`, and `deleteStore` SOAP operations of the `Stores` API.
 By doing so, you can visualize your invocations to each SOAP operation in the built-in analytics capabilities of 3scale API Management.
@@ -512,12 +514,12 @@ image::images/3scale_amp_stores_soap_soapui.png[]
 
 If you decide to use SoapUI, refer to the appendix of this lab for tips regarding the import of the `Stores` API WSDL file.
 
-. Using either the cURL utility or SoapUI, make several invocations to each of the four SOAP operations of the `Stores` API via your APIcast gateways.
+. Using either the cURL utility or SoapUI, make several invocations to each of the four SOAP operations of the `Stores` API via your API gateways.
 . Verify that the requests are served with correct responses.
 
 === Explore Analytics
 
- Verify that the metrics you set up for each operation are captured correctly by the APIcast gateway.
+ Verify that the metrics you set up for each operation are captured correctly by the API gateway.
 
 . If you navigate to the Dashboard of your API, expect to see the following type of reports providing the number of hits that correspond to each `SOAPAction` that you request to the staging endpoint.
 +
@@ -551,7 +553,7 @@ For SOAP 1.2, you need to make the following changes:
 
 === Make SOAP Requests to Production Endpoint (Bonus)
 
-Now you can use *Promote to Production* to push the custom policies to the Production APIcast gateway. 
+Now you can use *Promote to Production* to push the custom policies to the Production API gateway. 
 Redeploy the gateway to ensure that the latest configuration is updated, and repeat the SOAP requests to the production endpoint.
 
 ifdef::showscript[]
@@ -566,7 +568,7 @@ endif::showscript[]
 == SOAP Transformation Using Fuse on OpenShift
 
 In the previous section of the lab, you observed how 3scale API Management can manage SOAP services.
-You also introduced a SOAP policy into your APIcast gateways for gathering metrics based on SOAP operations.
+You also introduced a SOAP policy into your API gateways for gathering metrics based on SOAP operations.
 
 As an alternative to having 3scale API Management manage SOAP services, you can introduce a _mediation_ layer into your architecture that exposes REST and transforms to SOAP.
 An ideal tool for this purpose is Red Hat Fuse.
@@ -746,20 +748,20 @@ $ curl http://`oc get route stores-fis -o template --template {{.spec.host}} -n 
 -----
 * You can also send sample requests to the other endpoints and ensure that there are no errors.
 
-The REST-SOAP Camel proxy is now correctly deployed, and you can begin to configure the APIcast gateway to use this REST endpoint to communicate with the SOAP web service.
+The REST-SOAP Camel proxy is now correctly deployed, and you can begin to configure the API gateway to use this REST endpoint to communicate with the SOAP web service.
 
-=== Create APIcast Gateway Staging and Production Routes
+=== Create API Gateway Staging and Production Routes
 
 
 
-. Verify that you are in the APIcast gateway project:
+. Verify that you are in the API gateway project:
 +
 [source,sh]
 -----
 $ oc project $GW_PROJECT
 -----
 
-. Create new routes for the `Stores` API staging and production APIcast gateways:
+. Create new routes for the `Stores` API staging and production API gateways:
 +
 [source,sh]
 -----
@@ -839,7 +841,7 @@ $ curl -v -k "https://`oc get route stores-soap-transformation-production-route 
 
 -----
 
-* A Camel route can be used to provide routing for the APIcast gateway to the SOAP web service.
+* A Camel route can be used to provide routing for the API gateway to the SOAP web service.
 
 == Appendix
 
