@@ -18,35 +18,31 @@
 
 :numbered:
 
-== SOAP Management Using SOAP Policy
-
-=== Overview
+== Overview
 
 It is often the case that SOAP-based web services need to be managed in addition to RESTful web services.
 
 SOAP requests consist of HTTP POST requests with an XML payload and some additional SOAP-specific headers.
-It is possible for these SOAP requests to be sent to 3scale's APIcast gateway, forwarded to your back-end SOAP services, and reported on to the 3scale API Management system without any customizations.
+It is possible for these SOAP requests to be sent to 3scale's APIcast gateway, forwarded to your back-end SOAP services, and reported on to the 3scale API Manager without any customizations.
 
-However, if there is an additional requirement to gather metrics on requests to specific operations exposed by a back-end SOAP service, some additional setup is needed.
+However, if there is an additional requirement to gather metrics on requests to specific SOAP _operations_ exposed by a back-end SOAP service, some additional setup is needed.
 
-In this lab, you experiment with the following two approaches:
+In this lab, you experiment with the following two approaches for gathering of metrics on specific SOAP _operations_:
 
 * Utilization of the APIcast gateway `SOAP` policy
 * REST-to-XML transformations via a Fuse on OpenShift application
 
 ** This application serves as a RESTful proxy to the back-end SOAP service and transforms between SOAP and REST.
 
-
-
 === Install SoapUI (Optional)
 
-You'll be invoking backend SOAP services via your API gateway.
+You'll be invoking backend SOAP services from your local environment.
 
 These lab instructions provide examples of how to do use using the `cURL` utility.
 You can optionally download and install SoapUI on your local laptops as an alternative to cURL if you prefer a more graphical tool.
 
-== SOAP Service Management Using APIcast Gateway Policy
 
+== SOAP service and gateways
 === Deploy SOAP Service to OpenShift
 
 In this exercise, you expose an existing SOAP-based JEE application running on a Red Hat JBoss(R) Enterprise Application Platform (JBoss EAP) container in the same OpenShift cluster as your 3scale API Management system.
@@ -242,6 +238,10 @@ $ oc create route edge stores-soap-policy-production-route \
 -----
 +
 NOTE: Later, you configure these routes as the production and sandbox API endpoints for the `Stores` SOAP service.
+
+== Basic SOAP Service Management
+In this section of the lab, SOAP requests are sent to the 3scale API gateway, forwared to your back-end SOAP service and reported to the 3scale API Manager.
+Analytics report on the number of invocations based on the SOAP service.
 
 === Define Account and User
 
