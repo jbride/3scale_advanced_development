@@ -184,7 +184,7 @@ $ oc get deploy -n $GW_PROJECT
 NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 prod-apicast    1         0         0            0           7h
 stage-apicast   1         0         0            0           7h
-wc-apicast      1         0         0            0           7h
+wc-router       1         0         0            0           7h
 -----
 
 * This functionality provides the conveniance of allowing a single OCP wildcard route to manage requests for all your APIs.
@@ -206,12 +206,12 @@ $ oc describe deploy prod-apicast -n $OCP_USERNAME-gw | grep THREESCALE_PORTAL_E
 +
 [source,sh]
 -----
-$ oc rollout resume deploy stage-apicast prod-apicast wc-apicast -n $GW_PROJECT
+$ oc rollout resume deploy stage-apicast prod-apicast wc-router -n $GW_PROJECT
 -----
 
 
 ==== Wildcard API router
-Your lab environment comes provisioned with a link:https://github.com/3scale/wildcard-router-service[wildcard-router-service].
+Your lab environment comes provisioned with a link:https://github.com/3scale/wildcard-router-service[wildcard-router-service] whose name is: _wc-router_.
 
 The purpose of this extra router is to optionally eliminate the need to manually create OpenShift routes to your _prod_ and _stage_ API gateways for each 3scale API.
 
