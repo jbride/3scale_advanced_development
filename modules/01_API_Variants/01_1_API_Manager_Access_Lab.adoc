@@ -117,7 +117,7 @@ $ oc get projects
 user1-gw                          Active
 -----
 
-* `3scale-mt-amp0`: Your RHOCP user has _view_ access to the central multi-tenant 3scale API Management system.
+* `3scale-mt-amp0`: Your RHOCP user has _view_ access to the central multi-tenant API Manager.
 
 * `$OCP_USERNMAE-gw`: This namespace includes an API gateway that is preconfigured to interact with your 3scale API Management tenant.
 
@@ -159,7 +159,7 @@ apicast-staging           1          1         1         config,image(amp-apicas
 apicast-wildcard-router   1          1         1         config,image(amp-wildcard-router:latest)-
 -----
 
-It is technically feasible that your back-end services, if they are co-located in the same cluster as the 3scale API Management system, can be managed by these default 3scale API Management gateways.
+It is technically feasible that your back-end services, if they are co-located in the same cluster as the API Manager, can be managed by these default 3scale API Management gateways.
 
 One practical hindrance, however, is that these gateways are owned by the 3scale API Management master user and the RHOCP cluster-admin.
 Because you are not a cluster-admin, you do not have the ability to bounce these gateways, or to modify them if need be.
@@ -184,24 +184,57 @@ $ oc get deploy -n $GW_PROJECT
 NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 prod-apicast    1         0         0            0           7h
 stage-apicast   1         0         0            0           7h
+wc-apicast      1         0         0            0           7h
 -----
 
-. Note that the value of `$THREESCALE_PORTAL_ENDPOINT` is already set for you in each of your gateways:
+* This functionality provides the conveniance of allowing a single OCP wildcard route to manage requests for all your APIs.
+
+. Note that the value of `$THREESCALE_PORTAL_ENDPOINT` is already set for you in `prod-apicast` and `stage-apicast` gateways:
 +
 [source,sh]
 -----
 $ oc describe deploy prod-apicast -n $OCP_USERNAME-gw | grep THREESCALE_PORTAL_ENDPOINT
 
+...
+
       THREESCALE_PORTAL_ENDPOINT:    https://b753490aa7586f8e0663f5d5ec62b63cf9e71540d9138e4869eede4446e8e871@user1-3scale-mt-amp0-admin.apps.3295.openshift.opentlc.com
 -----
 
-* The API Gateway uses the value of `THREESCALE_PORTAL_ENDPOINT` to invoke the 3scale API Management system and retrieve details of your APIs.
+* The API Gateway uses the value of `THREESCALE_PORTAL_ENDPOINT` to invoke the API Manager and retrieve details of your APIs.
 
 . Resume the paused deploy objects:
 +
 [source,sh]
 -----
-$ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
+$ oc rollout resume deploy stage-apicast prod-apicast wc-apicast -n $GW_PROJECT
 -----
 
 
+==== Wildcard API router
+Your lab environment comes provisioned with a link:https://github.com/3scale/wildcard-router-service[wildcard-router-service].
+
+The purpose of this extra router is to optionally eliminate the need to manually create OpenShift routes to your _prod_ and _stage_ API gateways for each 3scale API.
+
+The instructions in this course do provide commands to assist in the creation of these OpenShift routes.
+You can choose to create these routes or as an alternative make use of your wildcard router service.
+
+If you choose to make use of your wildcard router service (and not created additional OCP routes to your gateway for each API), then the following are coouple of considerations:
+
+. *Public Base URLs*
++
+The values you set in the _Integration_ page of your _Staging Public Base URL_ and _Production Public Base URL_ must by of the following convention:
++
+*<any string>.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN*
+
+. *TLS Certificates*
++
+It is likely that your OpenShift lab environment provided by your instructor is enabled with a link:https://community.letsencrypt.org/t/acme-v2-production-environment-wildcards/55578[wildcard TLS certificate] from LetsEncrypt.
+Modern HTTP clients (including browsers) include the LetsEncrypt root certificate in their truststore.
++
+This wildcard certificate is valid for all OpenShift routes with the following host path: <any string>.$OCP_WILDCARD_DOMAIN.
++
+Notice that in the previous consideration, the hosts URLs to be used for the wildcard API router is slightly different:  <any string>.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN.
++
+The wildcard certificte from LetsEncrypt is valid for the host URLs you specify when using the wildcard API router.
+In the case of your wildcard API router routes, they will be secured using a self-signed certificate.
+Subsequently, when using the wildcard API router, your HTTP clients will have to ignore errors related to unkown certificate authorities. ie;   using the "-k" with the cURL utility.
