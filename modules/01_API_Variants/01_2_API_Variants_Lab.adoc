@@ -245,10 +245,9 @@ Analytics report on the number of invocations based on the SOAP service.
 
 === Define Account and User
 
-As in previous 3scale by Red Hat developer courses, in this lab you use an organization called `RHBank` with a developer called `rhbankdev`.
-The following is a refresher for how to create this account:
+In this lab you use an organization called `RHBank` with a developer called `rhbankdev`.
 
-. In the Admin Portal, navigate to *Audience -> Accounts -> Listing*.
+. In the Admin Portal of the API Manager, navigate to *Audience -> Accounts -> Listing*.
 . Click *Create*.
 . Create a new account with the following credentials:
 * *Username*: `rhbankdev`
@@ -258,7 +257,7 @@ The following is a refresher for how to create this account:
 
 === Define New API
 
-. In the Admin Portal, create a new service with the following details:
+. In the Admin Portal, navigate to *Dashboard* and click: *NEW API*.  Populate the form with with the following details:
 * *Name*: `Stores SOAP Policy API`
 * *System Name*: `stores-soap-policy-api`
 * *Description*: `Stores SOAP Policy API`
