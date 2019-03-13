@@ -40,3 +40,9 @@
 == Module 4: Homework Assignment
 
 . Homework assignment on *CoolStore* application emphasising learning on the topics discussed in the course.
+
+
+
+
+==Versions
+1.1 - Mar 13, 2019 - removed bogus assessments
