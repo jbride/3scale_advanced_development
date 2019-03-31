@@ -1,7 +1,7 @@
 = Instructor Notes
 
 == Agenda
-. link:https://etherpad.net/p/3scale_Feb_4_2019[ILT agenda]
+. link:https://etherpad.net/p/3scale_Feb_4_2019[Sample ILT agenda]
 
 == Setup
 
