@@ -19,10 +19,21 @@ After OCP workshop environent has been provisioned, install link:https://galaxy.
 .. link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
 .. Tenants
 +
-After RH-SSO has been installed, configure the following tenants:
+After RH-SSO has been installed, configure the following SSO realms:
 
 ... *ocp-realm*: https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#openshift-realm
 ... *generic-realms*: https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#generic-realms 
+
+
+. 3scale Multi-tenant environment
+.. Installation
++
+After OCP workshop environment and RH-SSO has been configured to serve as the identity provider of OCP itself, you'll need to install 3scale.
+For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc[this ansible].
+
+.. Tenants
++
+After 3scale has been installed, configure the appropriate number of tenants as per the section link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc#tenant-management[tenant management]
 
 
 
