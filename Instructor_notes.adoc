@@ -1,5 +1,7 @@
 = Instructor Notes
 
+:numbered:
+
 == Agenda
 . link:https://etherpad.net/p/3scale_Feb_4_2019[Sample ILT agenda]
 
