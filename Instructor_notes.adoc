@@ -6,6 +6,14 @@
 . link:https://etherpad.net/p/3scale_Feb_4_2019[Sample ILT agenda]
 
 == Setup
+The lab environment for this course is used by both this course as well as 3scale_advanced_implementation.
+
+Components needed are OCP, RH-SSO and 3scale.
+
+Several of the labs in these courses require emails to be sent out to students.
+Subsequently, both 3scale and RH-SSO need to be configured with details of your smtp provider.
+Each instructor should have their own SMTP provider account (typically a zero-cost account that allows for about 1000 emails for the week).
+Further details are found in the links below to the RH-SSO and 3scale installation ansible.
 
 . *OCP Cluster Workshop*
 +
