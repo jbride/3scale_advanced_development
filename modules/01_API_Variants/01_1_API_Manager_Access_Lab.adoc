@@ -218,11 +218,11 @@ The purpose of this extra router is to optionally eliminate the need to manually
 The instructions in this course do provide commands to assist in the creation of these OpenShift routes.
 You can choose to create these routes or as an alternative make use of your wildcard router service.
 
-If you choose to make use of your wildcard router service (and not created additional OCP routes to your gateway for each API), then the following are coouple of considerations:
+If you choose to make use of your wildcard router service (and not create additional OCP routes to your gateway for each API), then the following are coouple of considerations:
 
 . *Public Base URLs*
 +
-The values you set in the _Integration_ page of your _Staging Public Base URL_ and _Production Public Base URL_ must by of the following convention:
+The values you set in the _Integration_ page of your _Staging Public Base URL_ and _Production Public Base URL_ must be of the following convention:
 +
 *<any string>.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN*
 
@@ -235,6 +235,5 @@ This wildcard certificate is valid for all OpenShift routes with the following h
 +
 Notice that in the previous consideration, the hosts URLs to be used for the wildcard API router is slightly different:  <any string>.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN.
 +
-The wildcard certificte from LetsEncrypt is valid for the host URLs you specify when using the wildcard API router.
-In the case of your wildcard API router routes, they will be secured using a self-signed certificate.
-Subsequently, when using the wildcard API router, your HTTP clients will have to ignore errors related to unkown certificate authorities. ie;   using the "-k" with the cURL utility.
+In the case of your wildcard API routes, they will be secured using a self-signed certificate.
+Subsequently, when using the wildcard API router, your HTTP clients will have to ignore errors related to unknown certificate authorities. ie;   using the "-k" with the cURL utility.
