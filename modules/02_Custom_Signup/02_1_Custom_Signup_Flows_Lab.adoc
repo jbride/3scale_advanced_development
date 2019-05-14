@@ -7,13 +7,7 @@
 == Custom Signup Flows Lab
 
 In this lab, you create custom signup flows to manage various signup approaches for the API consumers of your Red Hat 3scale-managed APIs.
-Several signup flows are covered in this lab, including single application signups, multiple application signups, and group membership flows.
-
-.Goals
-* Create API documentation for the `Products` API application
-* Integrate the API documentation with 3scale API Management
-* Create a custom Developer Portal
-* Create a client application to call the `Products` API
+Several signup flows are covered in this lab, including _single application signups_, _multiple application signups_, _custom field_ flow_ and _group membership_ flows.
 
 :numbered:
 
@@ -25,9 +19,10 @@ In this lab, you follow the four examples discussed in the blog article and adap
 
 The signup flow that you, as an API provider, select and implement in your production environment to onboard API consumers is a function of several considerations, including the following:
 
-* Are API services available to all API consumers or should they be made available via a group?
 * Should any of your API services be made available to non-registered API consumers?
-* Are there different application plans for each service?
+* Should API consumers be prevented from sign-up to more than one application ?
+* Are API services available to all API consumers or should they be made available via a group?
+* Should your service(s) specify a  _default application plan_?
 
 NOTE: With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
 In particular, the iframes needed to support viewing of the 3scale Content Management System (CMS) and the 3scale Developer Portal in different tabs of the same Chrome browser can be problematic.
@@ -35,8 +30,26 @@ This problem only affects some versions of Chrome.
 Please try upgrading to the latest version of Chrome.
 If that still does not help, then please switch to the Firefox browser.
 
+== Automatic Signup via Account Creation
 
-== Save Original Signup Flow as Partial
+The existance of a _default_ application plan for an API service will influence the behavior of API consumer sign-up flows.
+
+For example, the out of the box api that comes pre-provisioned with the creation of a new 3scale tenant specifies a _Default Plan_ called:  `Basic`
+
+image::images/default_app_plan.png[]
+
+Subsequently, upon creation of a new _account_, a new _application_ derived from the _Basic_ application and the account is created.
+
+From the perspective of the API Consumer, this behavior could support the most basic type of signup to your Developer Portal:
+
+. API Consumer navigate to the Developer Portal of your API
+. API Consumer creates an account
+.. An _application_ derived from that API Consumer's account and the _default application plan_ of each API service is created.
+
+The remainder of the exercises in this lab assume API services that do not define a default application plan.
+Subsequently, the signup flow to your Developer Portal involves requiring the API Consumer to select specific applications plans from the APIs offered by your tenant.
+
+== Save Original Signup Flow as a _Partial_
 
 === Overview
 
@@ -222,9 +235,9 @@ image::images/3scale_amp_custom_signup_single_plan_2.png[]
 . Navigate to the *Developer Portal* and make sure you are currently logged out.
 . Verify that the Homepage now displays all of the API services and application plans that you created in the previous labs:
 +
-image::images/3scale_amp_custom_signup_single_plan_3.png[]
+image::images/3scale_amp_custom_signup_single_plan_3.png[width="90%"]
 
-. Sign up by clicking the signup link for one of the plans.
+. Sign up by clicking the signup link for one of the application plans.
 
 * Note that you are only allowed to select the link for one application plan at a time.
 
@@ -317,13 +330,8 @@ image::images/apps_and_creds.png[]
 . In the Admin Portal, navigate to *Audience -> Accounts* and verify that the account and user were created:
 +
 image::images/3scale_amp_custom_signup_multi_plan_5.png[]
-+
-TIP: If there are any services with default application plans, a default application is created for the account that was created using the signup form.
-In order to prevent this, do NOT mark any application plan as default in the service specification.
 
-
-
-
+. Optional: Now that your API consumer has created an account (and has been assigned an  _application_ associated with the _application plan_ they selected), modify your partial to allow the authenticated API consumer to select additional _application plans_ to subscribe to.
 
 == Custom Field Flow
 
