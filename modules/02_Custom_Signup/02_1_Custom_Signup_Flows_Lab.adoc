@@ -34,20 +34,25 @@ If that still does not help, then please switch to the Firefox browser.
 
 The existance of a _default_ application plan for an API service will influence the behavior of API consumer sign-up flows.
 
-For example, the out of the box api that comes pre-provisioned with the creation of a new 3scale tenant specifies a _Default Plan_ called:  `Basic`
+For example, the out of the box api (whose name happens to be called _API_) that comes pre-provisioned with the creation of a new tenant includes two Application Plans.
+One of the Application Plans (called _Basic_ ) is optionally designated as the  _Default Application Plan_ for the _API_ service.
 
 image::images/default_app_plan.png[]
 
-Subsequently, upon creation of a new _account_, a new _application_ derived from the _Basic_ application and the account is created.
+Subsequently, upon creation of a new API Consumer  _account_, a new _application_ (derived from the _Basic_ application plan and the new account) is created.
 
-From the perspective of the API Consumer, this behavior could support the most basic type of signup to your Developer Portal:
+[blue]#From the perspective of the API Consumer, this behavior could support the most basic type of signup to your Developer Portal#:
 
-. API Consumer navigate to the Developer Portal of your API
-. API Consumer creates an account
-.. An _application_ derived from that API Consumer's account and the _default application plan_ of each API service is created.
+. API Consumer navigates to the Developer Portal of your tenant.
+. API Consumer creates an account.
+.. An _application_ derived from that API Consumer's account and the _default application plan_ of each API service is automatically created.
+.. The API Consumer could send requests using credentials associated with this automatically generated _application_ to the API Gateway 
 
-The remainder of the exercises in this lab assume API services that do not define a default application plan.
-Subsequently, the signup flow to your Developer Portal involves requiring the API Consumer to select specific applications plans from the APIs offered by your tenant.
+The remainder of the exercises in this lab assume API services that do not define a _default_ application plan.
+Navigate to the _Application Plans_ section of each of your APIs to verify this is the case.
+
+Because your services do not specify a default Application Plan, an _application_ that an API Consumer can get started with will not be created.
+Instead, the signup flow via the Developer Portal involves requiring the API Consumer to select specific applications plans to signup for.
 
 == Save Original Signup Flow as a _Partial_
 
