@@ -13,22 +13,40 @@ Several signup flows are covered in this lab, including _single application sign
 
 == Introduction
 
+=== Design Considerations
 First, read this excellent article from Kevin Price on link:https://developers.redhat.com/blog/2017/12/18/3scale-developer-portal-signup-flows/["3scale Developer Portal signup flows"].
 
 In this lab, you follow the four examples discussed in the blog article and adapt them to the services and APIs managed here.
 
 The signup flow that you, as an API provider, select and implement in your production environment to onboard API consumers is a function of several considerations, including the following:
 
-* Should any of your API services be made available to non-registered API consumers?
+* Should any of your API services be made available to non-registered API consumers ?
+* Should default _applications_ be created for each service API upon account creation ?
 * Should API consumers be prevented from sign-up to more than one application ?
+* Should the API provider manually activate all accounts created by API consumers ?
 * Are API services available to all API consumers or should they be made available via a group?
-* Should your service(s) specify a  _default application plan_?
 
-NOTE: With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
+=== Issues with Chrome browser
+
+With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
+
 In particular, the iframes needed to support viewing of the 3scale Content Management System (CMS) and the 3scale Developer Portal in different tabs of the same Chrome browser can be problematic.
+
 This problem only affects some versions of Chrome.
 Please try upgrading to the latest version of Chrome.
 If that still does not help, then please switch to the Firefox browser.
+
+== SMTP Provider
+The signup flows utilized in this lab make use of emails to communicate with the API consumer.
+
+Subsequently, the 3scale site admin will have had to configure the 3scale API Manager to authenticate with a remote SMTP provider.
+You can verify this as follows:
+
+-----
+$ oc get configmap smtp -o json -n $API_MANAGER_NS | jq .data
+-----
+
+These SMTP provider configurations are applicable site wide and are used to send out emails from all tenants in the 3scale API Manager.
 
 == Automatic Signup via Account Creation
 
@@ -46,13 +64,13 @@ Subsequently, upon creation of a new API Consumer  _account_, a new _application
 . API Consumer navigates to the Developer Portal of your tenant.
 . API Consumer creates an account.
 .. An _application_ derived from that API Consumer's account and the _default application plan_ of each API service is automatically created.
-.. The API Consumer could send requests using credentials associated with this automatically generated _application_ to the API Gateway 
+.. Using the details of this new _application_, the API Consumer can send requests to corresponding backend business services via the API Gateway.
 
 The remainder of the exercises in this lab assume API services that do not define a _default_ application plan.
-Navigate to the _Application Plans_ section of each of your APIs to verify this is the case.
+Navigate to the _Application Plans_ section of each of your APIs to verify that a default application plan is not defined.
 
-Because your services do not specify a default Application Plan, an _application_ that an API Consumer can get started with will not be created.
-Instead, the signup flow via the Developer Portal involves requiring the API Consumer to select specific applications plans to signup for.
+Because your API services do not specify a default Application Plan, an _application_ that an API Consumer can get started with will not be created by simply creating a new account.
+Instead, the signup flow via the Developer Portal involves requiring the API Consumer to select specific applications plans.
 
 == Save Original Signup Flow as a _Partial_
 
@@ -126,18 +144,19 @@ endif::showscript[]
 
 === Overview
 
-This is the simplest signup flow.
+This is the simplest signup flow that requires the API Consumer to select from application plans.
+
 It allows a subscription to a single service and application plan upon account creation.
 
 This signup flow is actually very similar to the original signup flow you saved as a partial in the previous section of this lab.
 
 The only differences between this signup flow and the original are:
 
-* The original partial is focused specifically on the sample `Echo` API that comes with a fresh installation of the product.
+* The original partial is hard-coded to render the details of the sample `Echo` API that comes with a fresh installation of the product.
 * The `single-app` signup flow used in this section iterates through the application plans of all of the services from the provider account.
 The API consumer is allowed to sign up for one of the many application plans displayed.
 
-** You do not need to enable any special features in the Developer Portal to use this flow.
+You do not need to enable any special features in the Developer Portal to use this flow.
 
 The signup flow is provided in the `~/lab/3scale_development_labs/DevPortal/_single_app_signup_form.html.liquid` partial.
 
@@ -240,7 +259,7 @@ image::images/3scale_amp_custom_signup_single_plan_2.png[]
 . Navigate to the *Developer Portal* and make sure you are currently logged out.
 . Verify that the Homepage now displays all of the API services and application plans that you created in the previous labs:
 +
-image::images/3scale_amp_custom_signup_single_plan_3.png[width="90%"]
+image::images/3scale_amp_custom_signup_single_plan_3.png[width="80%"]
 
 . Sign up by clicking the signup link for one of the application plans.
 
@@ -342,7 +361,7 @@ image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 
 === Overview
 
-This flow uses a custom field on the API consumer accounts is used to control which services those API consumers can see and subscribe to.
+This flow uses a custom field on the API consumer account to control which services those API consumers can see and subscribe to.
 
 A typical use case is one in which there are multiple application plans, each with different access--for example, one plan for internal developers and another for external developers.
 This field can be combined with signup flows that include the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
@@ -404,7 +423,7 @@ The values (`internal` and `public`) of these features correspond to the values 
 
 ==== Modify Stores SOAP Policy API
 
-. Navigate to *Settings* for the `Stores SOAP Policy API`, select *Default* for the *Default plan*, and check the *Developers can select a plan when creating a new application* box:
+. Navigate to *Settings* for the `Stores SOAP Policy API` and check the *Developers can select a plan when creating a new application* box:
 +
 image::images/3scale_amp_custom_signup_field_plan_10.png[]
 
@@ -423,7 +442,7 @@ image::images/3scale_amp_custom_signup_field_plan_4.png[]
 
 ==== Modify Stores SOAP Transformation API
 
-. For the *Default plan* of the `Stores SOAP Transformation API`, enable the *Developers can select a plan when creating a new application* option.
+. In the `Settings` section of the `Stores SOAP Transformation API`, enable the *Developers can select a plan when creating a new application* option.
 . Navigate to the `StoresTransPremiumPlan` of the `Stores SOAP Transformation API`.
 . Check the *Application requires approval?* box.
 . Create a new *Feature* for this plan with the following values:
@@ -491,8 +510,10 @@ Account activation is required because you (as an admin of your tenant) previous
 . Log in to the Developer Portal as the new user and note that the Homepage now displays the *PUBLIC* plan for the user to subscribe to:
 +
 image::images/3scale_amp_custom_signup_field_plan_9.png[]
-+
-Why are *INTERNAL* plans that may exist not rendered as an option to the API consumer?
+
+.. This plan is viewable to the authenticated API Consumer because the API Provider previously enabled the option: `Developers can select a plan when creating a new application` on the API.
+
+.. Why are *INTERNAL* plans that may exist not rendered as an option to the API consumer?
 +
 HINT: Study the _liquid_ code embedded in the first 15 lines of the _partial_ executed for authenticated users: _custom_field_signup_form_.
 
