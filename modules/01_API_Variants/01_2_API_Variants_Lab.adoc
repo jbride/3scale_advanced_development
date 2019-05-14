@@ -9,9 +9,10 @@
 .Goals
 
 * Use Red Hat 3scale API Management's API gateway to manage SOAP 1.1-based web services
-* Explore two solutions for the management of SOAP-based web services:
-** A SOAP policy to automatically associate metrics to SOAP operations
-** A Camel route installed in Red Hat Fuse Integration Services to route a REST request from Red Hat 3scale's API gateway to a SOAP web service endpoint
+* Explore the following solutions for the management of SOAP-based web services:
+** Manage SOAP requests through the API gateway with no additional configuration applied
+** Manage SOAP requests using a _SOAP Policy_ to gain fine-grained visibility of each SOAP _operation_ invocation
+** Manage SOAP requests by introducing a JBoss Fuse _route_ that transforms inbound REST requests to the backend SOAP endpoint
 * Clarify the difference between a Method and a Metric
 
 
@@ -27,12 +28,11 @@ It is possible for these SOAP requests to be sent to 3scale's API gateway, forwa
 
 However, if there is an additional requirement to gather metrics on requests to specific SOAP _operations_ exposed by a back-end SOAP service, some additional setup is needed.
 
-In this lab, you experiment with the following two approaches for gathering of metrics on specific SOAP _operations_:
+In this lab, you explore the following solutions for the management of SOAP-based web services:
 
-* Utilization of the API gateway `SOAP` policy
-* REST-to-XML transformations via a Fuse on OpenShift application
-
-** This application serves as a RESTful proxy to the back-end SOAP service and transforms between SOAP and REST.
+. Manage SOAP requests through the API gateway with no additional configuration applied
+. Manage SOAP requests using a _SOAP Policy_ to gain fine-grained visibility of each SOAP _operation_ invocation
+. Manage SOAP requests by introducing a JBoss Fuse _route_ that transforms inbound REST requests to the backend SOAP endpoint
 
 === Install SoapUI (Optional)
 
@@ -241,7 +241,7 @@ NOTE: Later, you configure these routes as the production and sandbox API endpoi
 
 == Basic SOAP Service Management
 In this section of the lab, SOAP requests are sent to the 3scale API gateway, forwared to your back-end SOAP service and reported to the 3scale API Manager.
-Analytics report on the number of invocations based on the SOAP service.
+Analytics are "course grained" in nature and only report on the number of invocations of the SOAP service (not on the number of _hits_ on each SOAP operation).
 
 === Define Account and User
 
@@ -343,18 +343,10 @@ $ curl -k "https://`oc get route stores-soap-policy-staging-route \
 $ curl -v -k -X POST \
        --header "Content-Type: application/soap+xml"  \
        --header "Accept: application/soap+xml"  \
-       --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
        -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' \
        "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
 
 -----
-
-* Note the inclusion of the `SOAPAction` header.
-+
-[IMPORTANT]
-====
-As per the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification], an HTTP client must use this header field when issuing a SOAP HTTP request.
-====
 +
 .Sample Response
 [source,texinfo]
@@ -399,11 +391,15 @@ In this section, you leverage the SOAP API gateway _policy_ to track invocations
 
 The SOAP policy is one of many out-of-the-box link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/deployment_options/#standard-policies[API Gateway Stanadard Policies] provided by 3scale.
 
-As in the previous section of this lab, you continue to use a SOAP 1.1 web service and you continue to make use of the HTTP header called `SOAPAction` in the requests to that SOAP web service.
-
-These `SOAPAction` header fields are now used by your API gateway to update appropriate API _metrics_.
+The implementation of the _SOAP policy_ is build on the _SOAPAction_ HTTP header as defined in the link:https://www.w3.org/TR/2000/NOTE-SOAP-20000508/#_Toc478383528[SOAP 1.1 specification].  As per the specification: _The SOAPAction HTTP request header field can be used to indicate the intent of the SOAP HTTP request_.
 
 
+In this section of the lab, your HTTP client will send a request with the same SOAP 1.1 payload as was done in the previous section.
+In addition, your HTTP client will also include a SOAPActition header; `--header "SOAPAction: http://www.rhmart.com/Stores/getAllStores"`.
+
+These `SOAPAction` HTTP header fields are now used by your API gateway to update appropriate API _metrics_.
+This update of API _metrics_ is done only using the HTTP header and not by parsing the SOAP payload.
+Subsequently, there is not a substantial performance hit by use of the _SOAP Policy_.
 
 === Understand Methods and Metrics
 
@@ -437,7 +433,7 @@ This _AuthRep_ request contains an additional increment on the custom metric cor
 
 image::images/authrep.png[]
  
-For example, if a SOAP request with operation _createStore_ is posted to the API gateway, the SOAP policy of the API gateway will increment a custom metric called: _createStore_.
+For example, if a SOAP request with a HTTP header of `--header "SOAPAction: http://www.rhmart.com/Stores/createStore"` is posted to the API gateway, the _SOAP policy_ of the API gateway will increment a custom metric called: _createStore_.
 
 The analytics charts provided by 3scale will then display an increment on this custom _createStore_ metric. 
 
@@ -480,7 +476,7 @@ image:images/3scale_amp_stores_soap_policies_order.png[]
 |1|`Stores/getStore`|`http://www.rhmart.com/Stores/getStore`
 |=======================
 +
-IMPORTANT: The pattern must match the `SOAPAction` for each operation. 
+IMPORTANT: The pattern must match the `SOAPAction` HTTP header for each operation. 
 The `metric_system_name` must match the *System Name* entered for the *Metrics* of each operation.
 Note that the mapping is between custom metric and SOAP operation (as opposed to a _method_ and a URI path like you created earlier in the lab)
 
@@ -500,21 +496,36 @@ stage-apicast-5-49cv1           1/1       Running   0          1m
 
 === Invoke Various SOAP Service Operations
 
-In this section of the lab, you make more SOAP-based invocations to your API gateway.
+In this section of the lab, you make more SOAP-based invocations to your API gateway by specifying the _SOAPAction_ HTTP header.
+Examples are provided for both the cURL utility as well as SOAP UI.
+Use one of the two.
 
-You specify the `SOAPAction` header corresponding to the other `getStore`, `createStore`, and `deleteStore` SOAP operations of the `Stores` API.
-By doing so, you can visualize your invocations to each SOAP operation in the built-in analytics capabilities of 3scale API Management.
+Verify that the requests are served with correct responses.
 
-To invoke the other SOAP operations of your `Stores` API, you can continue to use the cURL utility (similar to how you previously invoked the `getAllStores` operation).
-Alternatively, it may be easier to execute the SOAP requests using SoapUI.
+
+==== cURL utility
+
+The following can be used to make a POST request to the `getAllStores` operation of the `Stores` web service:
+
+-----
+$ curl -v -k -X POST \
+       --header "Content-Type: application/soap+xml"  \
+       --header "Accept: application/soap+xml"  \
+       --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores" \
+       -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>' \
+       "https://`oc get route stores-soap-policy-staging-route -o template --template {{.spec.host}} -n $GW_PROJECT`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
+-----
+
+Note the inclusion of the `SOAPAction` HTTP header.
+This header corresponds to one of your _metrics_ that you previously defined.
+
+==== SOAP UI
+Alternatively, it may be easier to execute the SOAP requests using SoapUI (in particular if you are interested in invoking either the _createStore_ or _deleteStore_ operations).
 As with the cURL utility, SoapUI allows you to set the custom `SOAPAction` header in the HTTP request.
 
 image::images/3scale_amp_stores_soap_soapui.png[]
 
 If you decide to use SoapUI, refer to the appendix of this lab for tips regarding the import of the `Stores` API WSDL file.
-
-. Using either the cURL utility or SoapUI, make several invocations to each of the four SOAP operations of the `Stores` API via your API gateways.
-. Verify that the requests are served with correct responses.
 
 === Explore Analytics
 
@@ -527,6 +538,7 @@ image::images/3scale_amp_stores_api_metrics.png[]
 . If you navigate to the *Analytics* section of your API, expect to see the following type of charts providing similar information:
 +
 image::images/detailed_analytics.png[]
+
 
 === Manage SOAP 1.2 Web Services (Reference)
 
@@ -554,14 +566,6 @@ For SOAP 1.2, you need to make the following changes:
 
 Now you can use *Promote to Production* to push the custom policies to the Production API gateway. 
 Redeploy the gateway to ensure that the latest configuration is updated, and repeat the SOAP requests to the production endpoint.
-
-ifdef::showscript[]
-
------
-curl -v -k -X POST        --header "Content-Type: application/soap+xml"         --header "Accept: application/soap+xml"         --header "SOAPAction: http://www.rhmart.com/Stores/getAllStores"        -d '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:stor="http://www.rhmart.com/Stores/"><soapenv:Header/><soapenv:Body><stor:getAllStores/></soapenv:Body></soapenv:Envelope>'        "https://`oc get route stores-soap-policy-production-route -o template --template {{.spec.host}} -n $GW_PROJECT`/StoresWS?&user_key=$STORES_SOAP_API_KEY"
------
-
-endif::showscript[]
 
 
 == SOAP Transformation Using Fuse on OpenShift
