@@ -399,7 +399,7 @@ In addition, your HTTP client will also include a SOAPActition header; `--header
 
 These `SOAPAction` HTTP header fields are now used by your API gateway to update appropriate API _metrics_.
 This update of API _metrics_ is done only using the HTTP header and not by parsing the SOAP payload.
-Subsequently, there is not a substantial performance hit by use of the _SOAP Policy_.
+[blue]#Subsequently, there is not a substantial performance hit by use of the _SOAP Policy_.#
 
 === Understand Methods and Metrics
 
