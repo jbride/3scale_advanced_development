@@ -54,7 +54,7 @@ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                    
 #  Review, copy & paste the following in same terminal #
 
 echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where 3scale API Management resides "   >> ~/.bashrc
-echo "export GW_PROJECT=\$OCP_USERNAME-gw                                               #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
+echo "export GW_PROJECT=\$API_TENANT_USERNAME=-gw                                               #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
 echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
 echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.openshift.opentlc.com                    #   OCP Wildcard DNS" >> ~/.bashrc
 
@@ -132,7 +132,7 @@ For the purposes of this lab, you serve as the administrator of your own 3scale 
 +
 [source,texinfo]
 -----
-$ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
+$ echo -en "\n\nhttps://`oc get route $API_TENANT_USERNAME=-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
 -----
 
 . Authenticate using the following values:
@@ -193,7 +193,7 @@ wc-router       1         0         0            0           7h
 +
 [source,sh]
 -----
-$ oc describe deploy prod-apicast -n $OCP_USERNAME-gw | grep THREESCALE_PORTAL_ENDPOINT
+$ oc describe deploy prod-apicast -n $API_TENANT_USERNAME=-gw | grep THREESCALE_PORTAL_ENDPOINT
 
 ...
 
