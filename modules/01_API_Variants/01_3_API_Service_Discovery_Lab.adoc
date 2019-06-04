@@ -13,12 +13,17 @@
 
 :numbered:
 
+== Overview
+
+In this section of the lab, you deploy an OData (Open Data Protocol) based application to your OpenShift environment.
+
+Afterwards, this application will be auto-discovered by the 3scale API Manager running on the same OpenShift cluster.
+Upon discovery of this OData application, the 3scale API Manager will generate an initial skeleton of a 3scale _API_ to manage the RESTful OData endpoint.
+
+As you work through this lab, consider when and why you may opt to utilize this _auto-discovery_ feature of 3scale as well as its trade-offs.
+
 
 == OData Service Management
-
-=== Overview
-In this section of the lab, you deploy an OData (Open Data Protocol) service to your OpenShift environment.
-Later in this lab, this service will be auto-detected by the 3scale API Manager running on the same OpenShift cluster.
 
 link:http://www.odata.org/[OData] is a standard that defines a set of best practices for building and consuming RESTful APIs. 
 The service you deploy is based on a Red Hat Data Virtualization for OpenShift Container Platform virtual database (VDB). 
@@ -193,7 +198,7 @@ oc edit svc stock-api
 ----
 +
 NOTE: The _description-path_ annotation is currently left blank because the OData RESTful backend service currently does not expose _OpenAPI_ documentation.
-If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate _ActiveDocs_ from this _OpenAPI_ documentation.
+If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate corresponding 3scale _ActiveDocs_ from this _OpenAPI_ documentation.
 
 .. YAML is very white-space sensitive.  Ensure that when adding these labels and annotations, the indentations are correct.
 .. The modified service should be similar to the following:
@@ -273,7 +278,6 @@ $ echo -en "\n\nhttps://`oc get route stock-odata-staging-route --template {{.sp
 $ echo -en "\n\nhttps://`oc get route stock-odata-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
-
 . Create a mapping rule:
 * *Operation*: `GET`
 * *Pattern*: `/odata4/Stock-API/FederatedStock/stock`
@@ -283,6 +287,11 @@ $ echo -en "\n\nhttps://`oc get route stock-odata-production-route --template {{
 . Make a test request to the staging URL.
 . Promote the API to production and make a test request to the production URL.
 
+=== Discussion
+
+What scenarios would you consider leveraging this auto-discovery feature of 3scale ?
+What would be the alternatives ?
+What would be the trade-offs ?
 
 
 ifdef::showscript[]
