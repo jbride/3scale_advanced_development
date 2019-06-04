@@ -297,7 +297,7 @@ In addition, the *Multiple Applications* feature needs to be enabled in the Deve
 
 . Log in to the Admin Portal and navigate to *Developer Portal*.
 . Click *Feature Visibility*.
-. Confirm that the *Multiple Applications* feature is marked *Visible*:
+. Confirm that the *Multiple Services* and *Multiple Applications* features are marked *Visible*:
 +
 image::images/3scale_amp_custom_signup_multi_plan.png[]
 +
