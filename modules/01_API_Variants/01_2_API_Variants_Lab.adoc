@@ -546,7 +546,7 @@ Consider the trade-offs of this approach:
 * SOAP Policy does not incur a relatively significant performance hit because it utilizes the _SOAPAction_ HTTP header (so no need to unmarshal the SOAP payload).
 * SOAP clients may likely need to be modified to add the _SOAPAction_ HTTP header (assuming they are not already doing so).
 +
-Would could be an alternative approach to the 3scale SOAP _policy_ if the requirement is to track invocations of specific SOAP operations but the SOAP clients can not be modified to add the _SOAPAction_ HTTP header ?
+What could be an alternative approach to the 3scale SOAP _policy_ if the requirement is to track invocations of specific SOAP operations but the SOAP clients can not be modified to add the _SOAPAction_ HTTP header ?
 
 === Manage SOAP 1.2 Web Services (Reference)
 
