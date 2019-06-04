@@ -174,7 +174,7 @@ The signup flow is provided in the `~/lab/3scale_development_labs/DevPortal/_sin
 ----
 +
 ** The above liquid filter iterates through the list of all services for the provider, and then further iterates through all of the application plans.
-Thus, this filter allows you to display a list of all services along with the service plans.
+Thus, this filter allows you to display a list of all services along with the _service plans_.
 
 * Plan features/limits:
 +
@@ -364,7 +364,8 @@ image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 This flow uses a custom field on the API consumer account to control which services those API consumers can see and subscribe to.
 
 A typical use case is one in which there are multiple application plans, each with different access--for example, one plan for internal developers and another for external developers.
-This field can be combined with signup flows that include the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
+
+Also, this custom field can be combined with signup flows that make use of the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
 
 In this use case, you utilize two of the `Stores`-related APIs that you created in previous labs.
 
@@ -546,7 +547,7 @@ Group membership signup flow is especially useful when you want to control acces
 If you want to specify _sections_ of HTML content that API consumers can access only when they have the correct permissions, this is the flow to use.
 
 The use case for this exercise is similar to the previous exercise on custom field signup.
-Instead of relying on application plans for `internal` and `public` user signup, you rely on service plan features to restrict signups to API services.
+Instead of relying on application plans for `internal` and `public` user signup, you rely on _service plan_ features to restrict signups to API services.
 
 Specifically in this use case, APIs are designated--via a feature of their default service plans--as either `external` or `private`.
 In this manner, API consumers who are assigned to an `external` group by the API provider can only sign up for application plans from an `external` API.
@@ -556,7 +557,15 @@ You need a mechanism to allow an API provider to specify the type (`external` or
 You use *Groups* and *Sections* for this.
 
 === Enable Service Plans
-To set up this group membership signup flow, you need to enable service plans.
+To set up this group membership signup flow, you need to enable _service plans_.
+
+==== What are _service plans_ ?
+
+Service Plans establish pricing and features on the service API level (as opposed to the application plan level).
+
+They allow an API provider with the ability to define grades of service for each of the APIs available through the developer portal.
+
+==== Procedure
 
 . As an API provider, log in to the Admin Portal and navigate to *Audience -> Accounts -> Settings -> Usage Rules*.
 . Check the *Service Plans* box and click *Update Settings*:
@@ -597,7 +606,7 @@ image::images/3scale_amp_group_member_signup_plan_4.png[]
 * *System name*: `serviceplan/private`
 * *Description*: `This is the private service plan.`
 
-. Make sure that a *Default* service plan is _not_ selected for this API.
+. As you did with the previous service, make sure that a *Default* service plan text box for this API is empty.
 
 === Enable Features in Developer Portal
 
@@ -605,8 +614,9 @@ By default, some features of the Developer Portal are configured as `hidden`.
 Specifically for this group membership signup flow, you need to enable two important features of the Developer Portal.
 
 . Navigate to *Audience -> Developer Portal -> Feature Visibility*.
-. For *Service Plans* and *Multiple Services*, click *Show*.
-. Confirm that both features are marked as *Visible*:
+. For *Multiple Services*, click *Show*.
++
+It's status should change to: _visible_.
 +
 image::images/advanced_features.png[]
 
@@ -661,7 +671,7 @@ image::images/3scale_amp_group_member_signup_plan_9.png[]
 . Copy and paste the contents from the `~/lab/3scale_development_labs/DevPortal/_group_membership_plans.html.liquid` file to your new partial.
 
 . Navigate to the CMS and make the following changes to the *Homepage*:
-.. At about line 88, remove the reference to the following line you created previously:
+.. At about line 88 (above the {% else %} liquid tag), remove the reference to the following line you created previously:
 +
 [source,texinfo]
 ----
@@ -672,21 +682,26 @@ image::images/3scale_amp_group_member_signup_plan_9.png[]
 +
 [source,texinfo]
 ----
-{% if current_user and current_account.applications.size == 0 %}
+  {% if current_user and current_account.applications.size == 0 %}
 
-  {% if current_user.sections.size > 0 %}
+      {% if current_user.sections.size > 0 %}
 
-    {% include 'group_member_signup_form' %}
+        {% include 'group_member_signup_form' %}
 
-  {% else %}
+      {% else %}
 
-    {% include 'custom_field_signup_form' %}
+        {% include 'custom_field_signup_form' %}
+
+    {% endif %}
 
   {% endif %}
-{% endif %}
 ----
 +
 NOTE: This liquid code ensures that if the user has a private section--that is, they are part of the group--then the section is presented to the user. Otherwise, the custom field signup form section is presented.
+
+. In your *HomePage*, you should still have an include statement below the `{% else %}` tag that references the `unauthenticated_noplan_signup_form`
++
+image::images/unauthenticated_noplan_signup_form_again.png[]
 
 . Publish all of the changes in the Developer Portal.
 
