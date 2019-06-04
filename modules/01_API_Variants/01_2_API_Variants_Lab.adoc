@@ -395,7 +395,7 @@ The implementation of the _SOAP policy_ is build on the _SOAPAction_ HTTP header
 
 
 In this section of the lab, your HTTP client will send a request with the same SOAP 1.1 payload as was done in the previous section.
-In addition, your HTTP client will also include a SOAPActition header; `--header "SOAPAction: http://www.rhmart.com/Stores/getAllStores"`.
+In addition, your HTTP client will also include a SOAPAction header; `--header "SOAPAction: http://www.rhmart.com/Stores/getAllStores"`.
 
 These `SOAPAction` HTTP header fields are now used by your API gateway to update appropriate API _metrics_.
 This update of API _metrics_ is done only using the HTTP header and not by parsing the SOAP payload.
@@ -539,6 +539,14 @@ image::images/3scale_amp_stores_api_metrics.png[]
 +
 image::images/detailed_analytics.png[]
 
+[blue]#Congradulations!  You have now utilized a SOAP _policy_ in your API gateway to track invocations to specific _operations_ of a legacy SOAP 1.1 web service.#
+Consider the trade-offs of this approach:
+
+* SOAP Policy is easy to add and configure to your API gateway
+* SOAP Policy does not incur a relatively significant performance hit because it utilizes the _SOAPAction_ HTTP header (so no need to unmarshal the SOAP payload).
+* SOAP clients may likely need to be modified to add the _SOAPAction_ HTTP header (assuming they are not already doing so).
++
+Would could be an alternative approach to the 3scale SOAP _policy_ if the requirement is to track invocations of specific SOAP operations but the SOAP clients can not be modified to add the _SOAPAction_ HTTP header ?
 
 === Manage SOAP 1.2 Web Services (Reference)
 
@@ -571,7 +579,9 @@ Redeploy the gateway to ensure that the latest configuration is updated, and rep
 == SOAP Transformation Using Fuse on OpenShift
 
 In the previous section of the lab, you observed how 3scale API Management can manage SOAP services.
-You also introduced a SOAP policy into your API gateways for gathering metrics based on SOAP operations.
+You also introduced a SOAP _policy_ into your API gateways for gathering metrics based on SOAP operations.
+The SOAP _policy_ is valuable however it requires that all SOAP clients send requests with a _SOAPAction_ HTTP header (which as per the SOAP specification is optional).
+There may often times be scenarios where adding this _SOAPAction_ HTTP header is not an option.
 
 As an alternative to having 3scale API Management manage SOAP services, you can introduce a _mediation_ layer into your architecture that exposes REST and transforms to SOAP.
 An ideal tool for this purpose is Red Hat Fuse.
@@ -844,7 +854,7 @@ $ curl -v -k "https://`oc get route stores-soap-transformation-production-route 
 
 -----
 
-* A Camel route can be used to provide routing for the API gateway to the SOAP web service.
+[blue]#Congradulations!  You have successfully used a Camel _route_ from Red Hat Fuse as a _mediation_ layers between the 3scale API gateway and a legacy backend SOAP web service.#
 
 == Appendix
 
