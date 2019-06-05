@@ -29,12 +29,16 @@ Note that these workshop environments already come pre-provisioned using a wildc
 After OCP workshop environent has been provisioned, install link:https://galaxy.ansible.com/gpe_mw_ansible/rh_sso_multi_realm[SSO]
 
 .. link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
-.. Tenants
+
+.. OCP Realm
 +
-After RH-SSO has been installed, configure the following SSO realms:
+After RH-SSO has been installed, a SSO realm called: _OCP Realm_ should be created.
+The purpose of this realm is to serve as the Identity Provider for the same OCP that RH-SSO is installed on.
 
 ... *ocp-realm*: https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#openshift-realm
-... *generic-realms*: https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#generic-realms 
+.... This realm should be populated with at least the same number of users as there are students in your ILT (ie: via _start_ocp_user_ and _end_ocp_user_ ).
+.... Value of _ocp_realm_user_base_name_ should remain:  *ocp*  (which is the defualt)
+
 
 
 . *3scale Multi-tenant environment*
@@ -44,8 +48,18 @@ After OCP workshop environment and RH-SSO has been configured to serve as the id
 For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc[this ansible].
 
 .. Tenants
+
+... After 3scale has been installed, configure the appropriate number of tenants as per the section link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc#tenant-management[tenant management]
+... Value of CREATE_GWS_WITH_EACH_TENANT should remain: true
+... Value of ocp_user_name_base should remain: ocp
+... Value of tenant_admin_user_name_base should remain: api
+
+
+
+. *Security lab SSO Realms*
 +
-After 3scale has been installed, configure the appropriate number of tenants as per the section link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc#tenant-management[tenant management]
+The security labs of this course require additional SSO Realms:
 
-
+.. *dplane* realms
+.. *dportal* realms
 
