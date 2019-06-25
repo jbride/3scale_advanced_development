@@ -193,7 +193,7 @@ wc-router       1         0         0            0           7h
 +
 [source,sh]
 -----
-$ oc describe deploy prod-apicast -n $API_TENANT_USERNAME-gw | grep THREESCALE_PORTAL_ENDPOINT
+$ oc describe deploy prod-apicast -n $OCP_USERNAME-gw | grep THREESCALE_PORTAL_ENDPOINT
 
 ...
 
