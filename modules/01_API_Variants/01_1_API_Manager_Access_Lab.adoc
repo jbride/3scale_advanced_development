@@ -132,7 +132,7 @@ For the purposes of this lab, you serve as the administrator of your own 3scale 
 +
 [source,texinfo]
 -----
-$ echo -en "\n\nhttps://`oc get route $-OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
+$ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
 -----
 
 . Authenticate using the following values:
