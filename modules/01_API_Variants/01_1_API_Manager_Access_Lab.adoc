@@ -103,6 +103,22 @@ If you do not already have a compatible version of the `oc` utility installed on
 $ oc login https://master.$REGION.openshift.opentlc.com -u $OCP_USERNAME -p $OCP_PASSWD
 ----
 
+.. If your instructor configured your OpenShift environment to use Red Hat SSO as its authentication mechanism (as opposed to the out-of-the-box _htpasswd_ OAuth implementation), then OpenShift will respond with a statement similar to the following:
++
+-----
+Login failed (401 Unauthorized)
+Verify you have provided correct credentials.
+You must obtain an API token by visiting https://master.13d11.openshift.opentlc.com:443/oauth/token/request
+-----
+
+.. In your browser, navigate to the exact URL specified by OpenShift in the previous statment.
+.. In doing so, your browser will be re-directed to the login page of RH-SSO.  Log in using the values of $OCP_USERNAME and $OCP_PASSWD.
+.. Copy the oc login command provided, paste into your shell terminal and execute.
++
+image::images/oc_login_command.png[]
++
+The oc utility in your shell terminal is now authenticated with the master node of your OpenShift lab environment.
+
 === Verify RHOCP Projects
 
 . After you authenticate, confirm that you see these two OpenShift projects:
