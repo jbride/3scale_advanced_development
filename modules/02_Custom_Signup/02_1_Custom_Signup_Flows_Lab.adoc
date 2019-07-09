@@ -36,7 +36,9 @@ This problem only affects some versions of Chrome.
 Please try upgrading to the latest version of Chrome.
 If that still does not help, then please switch to the Firefox browser.
 
-== SMTP Provider
+== SMTP Considerations
+
+=== SMTP Provider used by 3scale API Manager
 The signup flows utilized in this lab make use of emails to communicate with the API consumer.
 
 Subsequently, the 3scale site admin will have had to configure the 3scale API Manager to authenticate with a remote SMTP provider.
@@ -47,6 +49,18 @@ $ oc get configmap smtp -o json -n $API_MANAGER_NS | jq .data
 -----
 
 These SMTP provider configurations are applicable site wide and are used to send out emails from all tenants in the 3scale API Manager.
+
+=== Multiple email addresses
+
+The various sign-up flow use-cases of this lab will have you play the role of both API provider as well as API consumer of multiple applications.
+As an API consumer, you will need a unique email address to register for each application.
+
+Subsequently, for the purpose of this lab, you will need multiple email addresses.
+
+If you are a Red Hat associate, then you can use an smtp email trick implemented by Red Hat's IT department; in particular you can append a string in the form of  _+[a-z1-9]_ after your email name.ie:  if your email address was _shadowman@redhat.com_, you could also use the following aliases:  _shadowman+1@redhat.com_, _shadowman+2@redhat.com_, etc  .  Emails sent to all of these aliases would be routed to your inbox at _shadowman@redhat.com_.
+
+If you are a Red Hat partner, your email provider might not implement the same SMTP trick that Red Hat's IT department has.
+In that case, you can use a zero-cost service such as the following:  http://www.yopmail.com/en/email-generator.php
 
 == Automatic Signup via Account Creation
 
