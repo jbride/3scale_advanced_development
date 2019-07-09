@@ -30,7 +30,14 @@ The signup flow that you, as an API provider, select and implement in your produ
 
 With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
 
-In particular, the iframes needed to support viewing of the 3scale Content Management System (CMS) and the 3scale Developer Portal in different tabs of the same Chrome browser can be problematic.
+In particular, the iframes needed to support viewing of the 3scale Developer Portal and 3scale Content Management System (CMS) in different frames or tabs of the same Chrome browser can be problematic.
+The following is an example page where the Dev Portal and CMS are being accessed in separate frames of the same tab:
+
+image::images/multiple_frames.png[]
+
+When submitting the form in the example screenshot above, the Chrome browser will often fail with a message as follows:
+
+image::images/aw_snap.png[]
 
 This problem only affects some versions of Chrome.
 Please try upgrading to the latest version of Chrome.
