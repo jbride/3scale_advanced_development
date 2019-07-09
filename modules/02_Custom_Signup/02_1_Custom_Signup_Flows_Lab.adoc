@@ -36,6 +36,11 @@ This problem only affects some versions of Chrome.
 Please try upgrading to the latest version of Chrome.
 If that still does not help, then please switch to the Firefox browser.
 
+=== _APIs as a Product_ considerations
+
+link:https://issues.jboss.org/browse/THREESCALE-1714[APIs as a Product] is an upcoming new capability that once implemented will greatly affect the on-boarding of API consumers.
+Please track this Jira to stay abreast of those changes.
+
 == SMTP Considerations
 
 === SMTP Provider used by 3scale API Manager
