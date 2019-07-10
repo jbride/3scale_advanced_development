@@ -61,5 +61,10 @@ For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible
 The security labs of this course require additional SSO Realms:
 
 .. *dplane* realms
++
+1 per student.  Used to secure the _data plane_ of the student's API Management environment.
+
 .. *dportal* realms
++
+1 per student.  Used to secure the student's _Developer Portal_ .
 
