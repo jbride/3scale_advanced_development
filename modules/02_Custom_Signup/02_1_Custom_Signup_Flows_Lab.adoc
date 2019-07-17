@@ -124,13 +124,13 @@ You can then compare and contrast their features and behaviors.
 * Make note of the default look and feel of the Developer Portal along with its focus on the _Echo API_.
 
 . In the CMS, navigate to *My -> Root -> Homepage*.
-. In the text editor, cut lines 119 through 182 and save the change.
+. In the text editor, cut lines 119 through 182 (NOTE: do not delete) and save the change.
 . From the *New Page* list at the top right, select *New Partial*:
 +
 image::images/click_new_partial.png[]
 
 . Enter `original_app_signup_form` as the *System name*.
-. Paste the contents you cut from the *Homepage* into the text box and click *Create Partial*.
+. Paste the contents you previously cut from the *Homepage* into the text box and click *Create Partial*.
 . Return to the *Homepage* text editor and enter the following at line 119:
 +
 [source,texinfo]
