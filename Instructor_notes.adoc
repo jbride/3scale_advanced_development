@@ -5,7 +5,7 @@
 == Agenda
 . link:https://etherpad.net/p/3scale_Feb_4_2019[Sample ILT agenda]
 
-== Setup
+== Initial Setup
 The lab environment for this course is used by both this course as well as 3scale_advanced_implementation.
 
 Components needed are OCP, RH-SSO and 3scale.
@@ -15,22 +15,23 @@ Subsequently, both 3scale and RH-SSO need to be configured with details of your 
 Each instructor should have their own SMTP provider account (typically a zero-cost account that allows for about 1000 emails for the week).
 Further details are found in the links below to the RH-SSO and 3scale installation ansible.
 
-. *OCP Cluster Workshop*
-+
+===  *OCP Cluster Workshop*
+ 
 Provision a link:https://github.com/redhat-gpe/mw_docs/blob/master/ocp_cluster_workshop.adoc[3.11 OCP workshop environment] sized appropriately for your course.
-+
+ 
 Assume that each 64 GB OCP node can support 6 students of this course.
-+
+ 
 Note that these workshop environments already come pre-provisioned using a wildcard certificate using LetsEncrypt
 
-. *RH-SSO*
-.. Installation
+===  *RH-SSO*
+
+ . Installation
 +
 After OCP workshop environent has been provisioned, install link:https://galaxy.ansible.com/gpe_mw_ansible/rh_sso_multi_realm[SSO]
 
-.. link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
+ . link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
 
-.. OCP Realm
+ . OCP Realm
 +
 After RH-SSO has been installed, a SSO realm called: _OCP Realm_ should be created.
 The purpose of this realm is to serve as the Identity Provider for the same OCP that RH-SSO is installed on.
@@ -39,15 +40,19 @@ The purpose of this realm is to serve as the Identity Provider for the same OCP 
 .... This realm should be populated with at least the same number of users as there are students in your ILT (ie: via _start_ocp_user_ and _end_ocp_user_ ).
 .... Value of _ocp_realm_user_base_name_ should remain:  *ocp*  (which is the defualt)
 
+. Beyond the _ocp_realm_ (configured with an appropriate number of users in this realm), no other realm is initially needed.
++
+Later in the course you will provision additional SSO realms to suppor the API security lab of the Advanced 3scale Implementation course.
 
 
-. *3scale Multi-tenant environment*
-.. Installation
+===  *3scale Multi-tenant environment*
+
+. Installation
 +
 After OCP workshop environment and RH-SSO has been configured to serve as the identity provider of OCP itself, you'll need to install 3scale.
 For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc[this ansible].
 
-.. Tenants
+. Tenants
 
 ... After 3scale has been installed, configure the appropriate number of tenants as per the section link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc#tenant-management[tenant management]
 ... Value of CREATE_GWS_WITH_EACH_TENANT should remain: true
@@ -56,8 +61,8 @@ For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible
 
 
 
-. *Security lab SSO Realms*
-+
+==  *Security lab SSO Realms*
+
 The security labs of this course require additional SSO Realms:
 
 .. *dplane* realms
