@@ -16,11 +16,11 @@ Each instructor should have their own SMTP provider account (typically a zero-co
 Further details are found in the links below to the RH-SSO and 3scale installation ansible.
 
 ===  *OCP Cluster Workshop*
- 
+
 Provision a link:https://github.com/redhat-gpe/mw_docs/blob/master/ocp_cluster_workshop.adoc[3.11 OCP workshop environment] sized appropriately for your course.
- 
+
 Assume that each 64 GB OCP node can support 6 students of this course.
- 
+
 Note that these workshop environments already come pre-provisioned using a wildcard certificate using LetsEncrypt
 
 ===  *RH-SSO*
@@ -42,7 +42,29 @@ The purpose of this realm is to serve as the Identity Provider for the same OCP 
 
 . Beyond the _ocp_realm_ (configured with an appropriate number of users in this realm), no other realm is initially needed.
 +
-Later in the course you will provision additional SSO realms to suppor the API security lab of the Advanced 3scale Implementation course.
+Later in the course you will provision additional SSO realms to support the API security lab of the Advanced 3scale Implementation course.
+
+ . Login to OCP Cluster
++
+A user account `gpte-mgr`, with cluster admin rights, was created as part of the RH-SSO installation.
+
+... Login to the OpenShift console through the web browser, using the `gpte-mgr` user account.
+... Attempt to login to the master API of your OCP cluster at command line:
++
+----
+# oc login master.Gu1D.openshift.opentlc.com
+Login failed (401 Unauthorized)
+Verify you have provided correct credentials.
+You must obtain an API token by visiting https://master.Gu1D.openshift.opentlc.com:443/oauth/token/request
+----
++
+... Read the error message.
+... As the *ocp-realm* is now active and enforcing user privileges, you must obtain the API token by browsing the token request page using the URL stated in the error message.
+... Login to the master API of your OCP cluster at command line, using the API token:
++
+----
+# oc login --token=<token_string> --server=https://master.Gu1D.openshift.opentlc.com:443
+----
 
 
 ===  *3scale Multi-tenant environment*
@@ -72,4 +94,3 @@ The security labs of this course require additional SSO Realms:
 .. *dportal* realms
 +
 1 per student.  Used to secure the student's _Developer Portal_ .
-
