@@ -53,14 +53,14 @@ Please track this Jira to stay abreast of those changes.
 === SMTP Provider used by 3scale API Manager
 The signup flows utilized in this lab make use of emails to communicate with the API consumer.
 
-Subsequently, the 3scale site admin will have had to configure the 3scale API Manager to authenticate with a remote SMTP provider.
+Subsequently, the 3scale site admin will have had to configure the 3scale API Manager to authenticate with a remote SMTP provider to deliver those emails.
 You can verify this as follows:
 
 -----
 $ oc get configmap smtp -o json -n $API_MANAGER_NS | jq .data
 -----
 
-These SMTP provider configurations are applicable site wide and are used to send out emails from all tenants in the 3scale API Manager.
+These SMTP provider configurations are applicable site wide (as opposed to specific and configureable per 3scale tenant) and are used to send out emails from all tenants in the 3scale API Manager.
 
 === Multiple email addresses
 
@@ -73,6 +73,14 @@ If you are a Red Hat associate, then you can use an smtp email trick implemented
 
 If you are a Red Hat partner, your email provider might not implement the same SMTP trick that Red Hat's IT department has.
 In that case, you can use a zero-cost service such as the following:  http://www.yopmail.com/en/email-generator.php
+
+== API Consumer Signup initiated by Administrators
+All of the examples of API Consumer signup in this course as well as pre-req courses have involved creation of a _developer account_ by the tenant administrator.
+This approach to API consumer onboarding is fine for demo purposes but most likely is not scalable in a real-world production environment.
+
+Also, recall (from a previous lab in the _3scale API Development_ course pre-req) that an API _Account Admin_ can invite multiple additional new API Consumers to that account via the Developer Portal. 
+
+The follow-on sections in this lab focus on API Consumer sign-up flows initiated by the API Consumer.
 
 == Automatic Signup via Account Creation
 
