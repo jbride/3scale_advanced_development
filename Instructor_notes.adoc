@@ -1,3 +1,8 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:linkattrs:
+
 = Instructor Notes
 
 :numbered:
@@ -94,3 +99,5 @@ The security labs of this course require additional SSO Realms:
 .. *dportal* realms
 +
 1 per student.  Used to secure the student's _Developer Portal_ .
+
+To provision each of the above realms for the security lab, you can use the link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm/blob/master/README.adoc#generic-realms[Generic Realms] feature of the RH-SSO provisioning ansible.
