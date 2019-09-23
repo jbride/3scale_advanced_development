@@ -89,14 +89,15 @@ For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible
 
 == Lab Spreadsheet
 You will want to communicate the details of the lab environment to your students.
-You can do so by creating a lab spreadsheet similar to the link:https://docs.google.com/spreadsheets/d/1-Ud5zOFfjjcLFZZOwLzfPeKkFNBdJb3mhOWNq1g3unk/edit#gid=959461386[following].
+You can do so by creating a lab spreadsheet similar to the link:https://docs.google.com/spreadsheets/d/1-Ud5zOFfjjcLFZZOwLzfPeKkFNBdJb3mhOWNq1g3unk/edit#gid=959461386[this example].
 
 == Class Etherpad
 You will want to communicate the agenda of your class to your students.
-You can do so by creating an etherpad specific to your class similar to the link:https://etherpad.net/p/3scale_Jul_8_2019[following].
+You can do so by creating an etherpad specific to your class similar to the link:https://etherpad.net/p/3scale_Jul_8_2019[this example].
 
 
 ==  *Security lab SSO Realms*
+The security labs found in the link:https://github.com/redhat-gpe/3scale_advanced_implementation[3scale_Advanced_Implementation] git repository are typically executed on day 3 (Wednesday) of the course.
 
 The security labs of this course require additional SSO Realms:
 
