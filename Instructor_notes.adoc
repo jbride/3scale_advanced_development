@@ -87,6 +87,14 @@ For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible
 ... Value of tenant_admin_user_name_base should remain: api
 
 
+== Lab Spreadsheet
+You will want to communicate the details of the lab environment to your students.
+You can do so by creating a lab spreadsheet similar to the link:https://docs.google.com/spreadsheets/d/1-Ud5zOFfjjcLFZZOwLzfPeKkFNBdJb3mhOWNq1g3unk/edit#gid=959461386[following].
+
+== Class Etherpad
+You will want to communicate the agenda of your class to your students.
+You can do so by creating an etherpad specific to your class similar to the link:https://etherpad.net/p/3scale_Jul_8_2019[following].
+
 
 ==  *Security lab SSO Realms*
 
@@ -101,3 +109,4 @@ The security labs of this course require additional SSO Realms:
 1 per student.  Used to secure the student's _Developer Portal_ .
 
 To provision each of the above realms for the security lab, you can use the link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm/blob/master/README.adoc#generic-realms[Generic Realms] feature of the RH-SSO provisioning ansible.
+Once provisioned, the names of these _dplane_ and _dportal_ realms are then entered into your lab detail spreadsheet.  An example spreadsheet is found link:https://docs.google.com/spreadsheets/d/1-Ud5zOFfjjcLFZZOwLzfPeKkFNBdJb3mhOWNq1g3unk/edit#gid=959461386[here].
