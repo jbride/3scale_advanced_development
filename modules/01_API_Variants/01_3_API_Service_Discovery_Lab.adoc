@@ -4,7 +4,7 @@
 :linkattrs:
 
 
-== OData Service Discovery Lab
+== API Service Discovery Lab
 
 .Goals
 
@@ -13,24 +13,38 @@
 
 :numbered:
 
+== Overview
+
+In this section of the lab, you deploy an OData (Open Data Protocol) based application to your OpenShift environment.
+
+Afterwards, this application will be auto-discovered by the 3scale API Manager running on the same OpenShift cluster.
+Upon discovery of this OData application, the 3scale API Manager will generate an initial skeleton of a 3scale _API_ to manage the RESTful OData endpoint.
+
+As you work through this lab, consider when and why you may opt to utilize this _auto-discovery_ feature of 3scale as well as its trade-offs.
+
 
 == OData Service Management
 
-=== Overview
-In this lab, you deploy an OData (Open Data Protocol) service. link:http://www.odata.org/[OData] is a standard that defines a set of best practices for building and consuming RESTful APIs. The service you deploy is based on a Red Hat Data Virtualization for OpenShift Container Platform virtual database (VDB). This VDB has a virtual view that retrieves data from two database tables (MySQL and PostgreSQL) and presents them as a single SQL ANSI table. Then, out of the box, this view is exposed in Red Hat Data Virtualization as an OData REST service. You can find more information here:
+link:http://www.odata.org/[OData] is a standard that defines a set of best practices for building and consuming RESTful APIs. 
+The service you deploy is based on a Red Hat Data Virtualization for OpenShift Container Platform virtual database (VDB). 
+This VDB has a virtual view that retrieves data from two database tables (MySQL and PostgreSQL) and presents them as a single SQL ANSI table. 
+Then, out of the box, this view is exposed in Red Hat Data Virtualization as an OData REST service. 
+You can find more information here:
 
 * link:https://www.redhat.com/en/technologies/jboss-middleware/data-virtualization[Red Hat Data Virtualization]
 
 * link:https://access.redhat.com/documentation/en-us/red_hat_jboss_data_virtualization/6.3/html/red_hat_jboss_data_virtualization_for_openshift/[Red Hat Data Virtualization for OpenShift].
 
 
+NOTE:  Red Hat Data Virtualization is no longer a stand-alone product.  Instead, it is now being sold as part of a subscription to Red Hat Fuse.
+
 === Deploy Stock API Project to OpenShift
 
-In this section you deploy the Stock API project onto a JBoss EAP container running on OpenShift. 
-The stock data exists in two databases: MySQL and PostgreSQL. 
-Red Hat Data Virtualization is used to provide data virtualization and present the combined data view as an OData REST service.
+In this section you deploy a backend business service called the:  _Stock API_.
+The _Stock API_ service is a JEE application that runs in a JBoss EAP container on OpenShift. 
 
-IMPORTANT: When executing commands using the `oc` utility, you must be logged in to the master API of your OpenShift Container Platform environment with your `OCP_USER_ID` credentials.
+The _stock data_ (which the _Stock API_ exposes)  exists in two databases: MySQL and PostgreSQL. 
+Red Hat Data Virtualization is used to provide data virtualization and present the combined data view as an OData REST service.
 
 . At the terminal, ensure you are logged into your OpenShift environment using the *oc* utility.
 . Create a new project for your Stock API business service applications:
@@ -91,7 +105,7 @@ stockpg-5-j8181       1/1       Running     0          18h
 +
 [source,texinfo]
 -----
-$ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERNAME-stock-api`/odata4/Stock-API/FederatedStock/stock?$format=JSON
+$ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERNAME-stock-api`/odata4/Stock-API/FederatedStock/stock?format=JSON
 -----
 +
 .Sample Response				
@@ -184,7 +198,7 @@ oc edit svc stock-api
 ----
 +
 NOTE: The _description-path_ annotation is currently left blank because the OData RESTful backend service currently does not expose _OpenAPI_ documentation.
-If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate _ActiveDocs_ from this _OpenAPI_ documentation.
+If it did and this annotation was populated, then upon discovery of this OpenShift _service_, 3scale would auto-generate corresponding 3scale _ActiveDocs_ from this _OpenAPI_ documentation.
 
 .. YAML is very white-space sensitive.  Ensure that when adding these labels and annotations, the indentations are correct.
 .. The modified service should be similar to the following:
@@ -264,7 +278,6 @@ $ echo -en "\n\nhttps://`oc get route stock-odata-staging-route --template {{.sp
 $ echo -en "\n\nhttps://`oc get route stock-odata-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
 
-
 . Create a mapping rule:
 * *Operation*: `GET`
 * *Pattern*: `/odata4/Stock-API/FederatedStock/stock`
@@ -274,6 +287,11 @@ $ echo -en "\n\nhttps://`oc get route stock-odata-production-route --template {{
 . Make a test request to the staging URL.
 . Promote the API to production and make a test request to the production URL.
 
+=== Discussion
+
+What scenarios would you consider leveraging this auto-discovery feature of 3scale ?
+What would be the alternatives ?
+What would be the trade-offs ?
 
 
 ifdef::showscript[]

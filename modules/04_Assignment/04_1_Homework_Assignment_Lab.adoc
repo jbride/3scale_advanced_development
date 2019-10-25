@@ -36,29 +36,28 @@
 * You may choose where to deploy your solution.
 ** If you recently completed the _Red Hat 3scale API Management Implementation_ course or _Red Hat 3scale API Management Development_ course, you may use the same environment for this assignment.
 ** You can set up your own environment, but it must be accessible by the instructor.
-** You may use the OPENTLC shared environment, as during class.
 
 
 :numbered:
 
 == Business Use Case
 
-You are a consultant assigned to WebRetail Inc., an e-commerce hosting platform. They are developing a new online retail platform branded "CoolStore" through which their partners can provide a catalog and inventory to sell products through the platform.
+You are a consultant assigned to WebRetail Inc., an e-commerce hosting platform. 
+They are developing a new online retail platform branded "CoolStore" through which their partners can provide a catalog and inventory to sell products through the platform.
 
-WebRetail Inc. is adopting a new microservices architecture and wants to make its retail platform APIs available as REST APIs. It has asked you to lead a proof-of-concept (POC) using Red Hat 3scale API Management. The purpose of the POC is to determine the feasibility of using 3scale API Management for managing WebRetail's APIs, providing a standard portal for its partners to access the APIs, setting up partner tier-based plans, providing standard API documentation, and automating signup for the developers.
+WebRetail Inc. is adopting a new microservices architecture and wants to make its retail platform APIs available as REST APIs. 
+It has asked you to lead a proof-of-concept (POC) using Red Hat 3scale API Management. 
+The purpose of the POC is to determine the feasibility of using 3scale API Management for managing WebRetail's APIs, providing a standard portal for its partners to access the APIs, setting up partner tier-based plans, providing standard API documentation, and automating signup for the developers.
 
 == Business Services
 
 WebRetail Inc. has made its CoolStore microservices project available to you:
 
-* Microservices: link:https://github.com/jbossdemocentral/coolstore-microservice[https://github.com/jbossdemocentral/coolstore-microservice]
-
-* Additional collateral: link:https://github.com/gpe-mw-training/3scale_development_labs/tree/master/CoolStore[https://github.com/gpe-mw-training/3scale_development_labs/tree/master/CoolStore]
+* link:https://github.com/gpe-mw-training/3scale_development_labs/tree/master/CoolStore[Inventory and Catalog service source code]
 
 === Provision Business Services
 
 You need to deploy the catalog and inventory services in your OpenShift project to enable these to be accessed by your 3scale API Management environment.
-
 
 ==== Provision Catalog Service
 
@@ -235,17 +234,16 @@ The following are the valid product IDs seeded for this POC, which you can use t
 
 === Explore APIs
 
-Note that the Swagger specification is provided for both APIs.
+Recall from the previous section that OpenAPI documentation is provided for both APIs.
 
 You can use the link:http://editor.swagger.io/[Swagger editor] to explore the available methods and mappings that you can set up for the APIs in 3scale API Management.
-
 
 
 == POC Requirements
 
 WebRetail Inc. management requires that you include all of the items listed in these subsections in your POC.
 
-=== Services
+=== 3scale API Services
 
 * The inventory and catalog services must be managed separately.
 * Each service must have a basic plan and a premium plan so that WebRetail Inc. can provide differentiated plans to users.
@@ -267,17 +265,15 @@ WebRetail Inc. management requires that you include all of the items listed in t
 === API Gateway
 
 * The API gateway must be colocated with the backend business services in the same OpenShift cluster to reduce latency.
-* The API gateway must expose separate routes for each service.
-* The API gateway must expose HTTPS endpoints to the APIs.
+* The API gateway must expose separate HTTPS based routes for each service.
 * Once the API services are exposed on the APIcast gateway, the API back-end routes must not have a publicly available URL that can be accessed directly.
-* The production API route URLs must be provided to management for testing.
 
 == Homework Submittal
 
 * You submit your homework via one of the following:
 
 ** *Red Hat employees*: link:https://docs.google.com/document/d/1nxlvAOlSdNs3-y8AkmDjnc8vtCH9rJdI5zbN9deCK50/edit[Red Hat LMS]
-** *Business partners*: link:https://partner.redhat.com[Red Hat Connect]
+** *Red Hat partners*: link:https://partner.redhat.com[Red Hat Connect]
 
 * To submit the assignment for grading, upload a README file with the following information:
 
@@ -288,4 +284,4 @@ WebRetail Inc. management requires that you include all of the items listed in t
 ** Any additional points or information relating to the assignment that you want to share
 ** Any time limits, such as an environment expiry date after which the solution is inaccessible for testing
 +
-NOTE: Make sure that the lab environment is accessible for up to one week after submission, to enable the grader to access the URLs for grading.
+NOTE: Make sure that the lab environment is accessible for up to one week after submission, to enable the instructor to access the URLs for grading.
