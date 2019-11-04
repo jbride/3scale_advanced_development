@@ -49,6 +49,7 @@ echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
 echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
 echo "export API_TENANT_PASSWORD=<provided by instructor>                            #   Password of tenant admin " >> ~/.bashrc
 echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                         #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
+echo "export SUBDOMAIN_BASE=<provided by instructor>                                 #   SUBDOMAIN Base of OCP " >> ~/.bashrc
 
 
 #  Review, copy & paste the following in same terminal #
@@ -56,7 +57,7 @@ echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                    
 echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where 3scale API Management resides "   >> ~/.bashrc
 echo "export GW_PROJECT=\$OCP_USERNAME-gw                                        #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
 echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
-echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.openshift.opentlc.com                    #   OCP Wildcard DNS" >> ~/.bashrc
+echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.\$SUBDOMAIN_BASE                    #   OCP Wildcard DNS" >> ~/.bashrc
 
 
 # Execute the following to enable the variables in your existing shell
@@ -75,7 +76,7 @@ All of the labs for this course execute in this remote OpenShift cluster environ
 +
 [source,texinfo]
 -----
-$ echo -en "\n\nhttps://master.$REGION.openshift.opentlc.com\n\n"
+$ echo -en "\n\nhttps://master.$REGION.$SUBDOMAIN_BASE\n\n"
 -----
 
 . At the login prompt, use the `$OCP_USERNAME` and `$OCP_PASSWD` values.
@@ -100,7 +101,7 @@ If you do not already have a compatible version of the `oc` utility installed on
 +
 [source,sh]
 ----
-$ oc login https://master.$REGION.openshift.opentlc.com -u $OCP_USERNAME -p $OCP_PASSWD
+$ oc login https://master.$REGION.$SUBDOMAIN_BASE -u $OCP_USERNAME -p $OCP_PASSWD
 ----
 
 .. If your instructor configured your OpenShift environment to use Red Hat SSO as its authentication mechanism (as opposed to the out-of-the-box _htpasswd_ OAuth implementation), then OpenShift will respond with a statement similar to the following:
