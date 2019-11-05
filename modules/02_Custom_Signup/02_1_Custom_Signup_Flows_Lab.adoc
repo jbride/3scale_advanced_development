@@ -566,7 +566,14 @@ image::images/3scale_amp_custom_signup_field_plan_9.png[]
 +
 HINT: Study the _liquid_ code embedded in the first 15 lines of the _partial_ executed for authenticated users: _custom_field_signup_form_.
 
-. Click *Signup to plan StoresTransPremiumPlan*, provide a name and description for the new plan, and click *Create Application*.
+. Click *Signup to plan StoresTransPremiumPlan*
+. Your browser will redirect to a page warning you that you currently have not yet selected an application plan:
++
+image::images/unsubscribed_warning.png[]
++
+Click the _Subscribe to Stores SOAP Transformation API_ link.
+
+. In the new page, provide a name and description for the new plan, and click *Create Application*.
 
 * Note that the *Pending* status notification indicates that the application is awaiting approval:
 +
