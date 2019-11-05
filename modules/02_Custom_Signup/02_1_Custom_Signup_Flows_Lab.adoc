@@ -712,6 +712,8 @@ Later in the lab, you see how an API provider can associate groups to API consum
 . Create a new group called `External` and assign it the `external` section:
 +
 image::images/3scale_amp_group_member_signup_plan_8.png[]
++
+NOTE: You may have to repeat this step due to link:https://issues.jboss.org/browse/THREESCALE-836[THREESCALE-836].
 
 . Create another new group called `Private` and assign it the `private` section.
 . Confirm that both groups are created and the correct sections are assigned:
