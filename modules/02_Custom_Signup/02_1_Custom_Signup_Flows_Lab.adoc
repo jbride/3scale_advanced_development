@@ -395,12 +395,26 @@ image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 
 === Overview
 
-This flow uses a custom field on the API consumer account to control which services those API consumers can see and subscribe to.
+In this section of the lab, you will make use of the following 3scale capabilities:
 
+. *Custom _fields_ on API consumer accounts*
++
+This flow uses a custom field on the API consumer account to control which services those API consumers can see and subscribe to.
++
 A typical use case is one in which there are multiple application plans, each with different access--for example, one plan for internal developers and another for external developers.
 
-Also, this custom field can be combined with signup flows that make use of the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
+. *API consumer account approval*
++
+The custom field that you define on an API consumer account can be combined with signup flows that make use of the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
 
+. *Custom _features_ on application plans*
++
+Custom _features_ on application plans correspond to the custom _fields_ on API consumer accounts and assist in the filtering of application plans visible in the Developer Portal during sign-up.
+
+. *Allow consumers to select an application plan after account sign-up*
+
+
+==== APIs
 In this use case, you utilize two of the `Stores`-related APIs that you created in previous labs.
 
 * *Stores SOAP Policy API*: Manages SOAP services and introduces a custom SOAP policy to track metrics for each SOAP operation.
