@@ -67,7 +67,7 @@ echo "export SUBDOMAIN_BASE=<provided by instructor>                            
 
 echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where 3scale API Management resides "   >> ~/.bashrc
 echo "export GW_PROJECT=\$OCP_USERNAME-gw                                        #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
-echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
+echo "export API_RESPONSE_DIR=$HOME/lab/api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
 echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.\$SUBDOMAIN_BASE                    #   OCP Wildcard DNS" >> ~/.bashrc
 
 
