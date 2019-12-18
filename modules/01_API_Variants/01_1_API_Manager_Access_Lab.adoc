@@ -21,7 +21,18 @@
 
 :numbered:
 
-== Clone Lab Assets
+== Local Workstation Setup
+
+=== Install client utilities
+
+For this course, the following client utilities should be installed on your local workstion:
+
+. `curl`
+. `openssl`
+. `python`
+. link:https://stedolan.github.io/jq/[jq]
+
+=== Clone Lab Assets
 
 The lab assets for this course are version-controlled at `https://github.com/gpe-mw-training/3scale_development_labs.git`.
 
@@ -34,7 +45,7 @@ $ mkdir -p $HOME/lab
 $ git clone https://github.com/gpe-mw-training/3scale_development_labs.git $HOME/lab/3scale_development_labs
 -----
 
-== Set Environment Variables
+=== Set Environment Variables
 
 . Open a terminal window on your local machine and set the following environment variables for use throughout the duration of this course:
 +
@@ -49,14 +60,15 @@ echo 'export OCP_PASSWD=<provided by your instructor>' >> ~/.bashrc
 echo "export API_TENANT_USERNAME=<provided by instructor>                            #   Name of tenant admin " >> ~/.bashrc
 echo "export API_TENANT_PASSWORD=<provided by instructor>                            #   Password of tenant admin " >> ~/.bashrc
 echo "export API_ADMIN_ACCESS_TOKEN=<provided by instructor>                         #   Access token specific to tenant to invoke 3scale Admin APIs" >> ~/.bashrc
+echo "export SUBDOMAIN_BASE=<provided by instructor>                                 #   SUBDOMAIN Base of OCP " >> ~/.bashrc
 
 
 #  Review, copy & paste the following in same terminal #
 
 echo "export API_MANAGER_NS=3scale-mt-\$OCP_AMP_ADMIN_ID                                #   Name of OCP namespace where 3scale API Management resides "   >> ~/.bashrc
 echo "export GW_PROJECT=\$OCP_USERNAME-gw                                        #   Name of OCP namespace where API gateways resides" >> ~/.bashrc
-echo "export API_RESPONSE_DIR=$HOME/lab/amp_api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
-echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.openshift.opentlc.com                    #   OCP Wildcard DNS" >> ~/.bashrc
+echo "export API_RESPONSE_DIR=$HOME/lab/api_responses                               #   Name of local directory where responses from invoking 3scale admin API will be stored" >> ~/.bashrc
+echo "export OCP_WILDCARD_DOMAIN=apps.\$REGION.\$SUBDOMAIN_BASE                    #   OCP Wildcard DNS" >> ~/.bashrc
 
 
 # Execute the following to enable the variables in your existing shell
@@ -75,7 +87,7 @@ All of the labs for this course execute in this remote OpenShift cluster environ
 +
 [source,texinfo]
 -----
-$ echo -en "\n\nhttps://master.$REGION.openshift.opentlc.com\n\n"
+$ echo -en "\n\nhttps://master.$REGION.$SUBDOMAIN_BASE\n\n"
 -----
 
 . At the login prompt, use the `$OCP_USERNAME` and `$OCP_PASSWD` values.
@@ -100,8 +112,24 @@ If you do not already have a compatible version of the `oc` utility installed on
 +
 [source,sh]
 ----
-$ oc login https://master.$REGION.openshift.opentlc.com -u $OCP_USERNAME -p $OCP_PASSWD
+$ oc login https://master.$REGION.$SUBDOMAIN_BASE -u $OCP_USERNAME -p $OCP_PASSWD
 ----
+
+.. If your instructor configured your OpenShift environment to use Red Hat SSO as its authentication mechanism (as opposed to the out-of-the-box _htpasswd_ OAuth implementation), then OpenShift will respond with a statement similar to the following:
++
+-----
+Login failed (401 Unauthorized)
+Verify you have provided correct credentials.
+You must obtain an API token by visiting https://master.13d11.openshift.opentlc.com:443/oauth/token/request
+-----
+
+.. In your browser, navigate to the exact URL specified by OpenShift in the previous statment.
+.. In doing so, your browser will be re-directed to the login page of RH-SSO.  Log in using the values of $OCP_USERNAME and $OCP_PASSWD.
+.. Copy the oc login command provided, paste into your shell terminal and execute.
++
+image::images/oc_login_command.png[]
++
+The oc utility in your shell terminal is now authenticated with the master node of your OpenShift lab environment.
 
 === Verify RHOCP Projects
 
@@ -132,7 +160,7 @@ For the purposes of this lab, you serve as the administrator of your own 3scale 
 +
 [source,texinfo]
 -----
-$ echo -en "\n\nhttps://`oc get route $OCP_USERNAME-$API_MANAGER_NS-provider --template {{.spec.host}} -n $API_MANAGER_NS`\n"
+$ echo -en "\n\nhttps://$(oc get routes -n $API_MANAGER_NS | grep admin | grep $OCP_USERNAME | awk '{print $2}')\n"
 -----
 
 . Authenticate using the following values:

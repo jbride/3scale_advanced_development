@@ -30,23 +30,57 @@ The signup flow that you, as an API provider, select and implement in your produ
 
 With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
 
-In particular, the iframes needed to support viewing of the 3scale Content Management System (CMS) and the 3scale Developer Portal in different tabs of the same Chrome browser can be problematic.
+In particular, the iframes needed to support viewing of the 3scale Developer Portal and 3scale Content Management System (CMS) in different frames or tabs of the same Chrome browser can be problematic.
+The following is an example page where the Dev Portal and CMS are being accessed in separate frames of the same tab:
+
+image::images/multiple_frames.png[]
+
+When submitting the form in the example screenshot above, the Chrome browser will often fail with a message as follows:
+
+image::images/aw_snap.png[]
 
 This problem only affects some versions of Chrome.
 Please try upgrading to the latest version of Chrome.
 If that still does not help, then please switch to the Firefox browser.
 
-== SMTP Provider
+=== _APIs as a Product_ considerations
+
+link:https://issues.jboss.org/browse/THREESCALE-1714[APIs as a Product] is an upcoming new capability that once implemented will greatly affect the on-boarding of API consumers.
+Please track this Jira to stay abreast of those changes.
+
+== SMTP Considerations
+
+=== SMTP Provider used by 3scale API Manager
 The signup flows utilized in this lab make use of emails to communicate with the API consumer.
 
-Subsequently, the 3scale site admin will have had to configure the 3scale API Manager to authenticate with a remote SMTP provider.
+Subsequently, the 3scale site admin will have had to configure the 3scale API Manager to authenticate with a remote SMTP provider to deliver those emails.
 You can verify this as follows:
 
 -----
 $ oc get configmap smtp -o json -n $API_MANAGER_NS | jq .data
 -----
 
-These SMTP provider configurations are applicable site wide and are used to send out emails from all tenants in the 3scale API Manager.
+These SMTP provider configurations are applicable site wide (as opposed to specific and configureable per 3scale tenant) and are used to send out emails from all tenants in the 3scale API Manager.
+
+=== Multiple email addresses
+
+The various sign-up flow use-cases of this lab will have you play the role of both API provider as well as API consumer of multiple applications.
+As an API consumer, you will need a unique email address to register for each application.
+
+Subsequently, for the purpose of this lab, you will need multiple email addresses.
+
+If you are a Red Hat associate, then you can use an smtp email trick implemented by Red Hat's IT department; in particular you can append a string in the form of  _+[a-z1-9]_ after your email name.ie:  if your email address was _shadowman@redhat.com_, you could also use the following aliases:  _shadowman+1@redhat.com_, _shadowman+2@redhat.com_, etc  .  Emails sent to all of these aliases would be routed to your inbox at _shadowman@redhat.com_.
+
+If you are a Red Hat partner, your email provider might not implement the same SMTP trick that Red Hat's IT department has.
+In that case, you can use a zero-cost service such as the following:  http://www.yopmail.com/en/email-generator.php
+
+== API Consumer Signup initiated by Administrators
+All of the examples of API Consumer signup in this course as well as pre-req courses have involved creation of a _developer account_ by the tenant administrator.
+This approach to API consumer onboarding is fine for demo purposes but most likely is not scalable in a real-world production environment.
+
+Also, recall (from a previous lab in the _3scale API Development_ course pre-req) that an API _Account Admin_ can invite multiple additional new API Consumers to that account via the Developer Portal. 
+
+The follow-on sections in this lab focus on API Consumer sign-up flows initiated by the API Consumer.
 
 == Automatic Signup via Account Creation
 
@@ -98,13 +132,13 @@ You can then compare and contrast their features and behaviors.
 * Make note of the default look and feel of the Developer Portal along with its focus on the _Echo API_.
 
 . In the CMS, navigate to *My -> Root -> Homepage*.
-. In the text editor, cut lines 119 through 182 and save the change.
+. In the text editor, cut lines 119 through 182 (NOTE: do not delete) and save the change.
 . From the *New Page* list at the top right, select *New Partial*:
 +
 image::images/click_new_partial.png[]
 
 . Enter `original_app_signup_form` as the *System name*.
-. Paste the contents you cut from the *Homepage* into the text box and click *Create Partial*.
+. Paste the contents you previously cut from the *Homepage* into the text box and click *Create Partial*.
 . Return to the *Homepage* text editor and enter the following at line 119:
 +
 [source,texinfo]
@@ -361,12 +395,26 @@ image::images/3scale_amp_custom_signup_multi_plan_5.png[]
 
 === Overview
 
-This flow uses a custom field on the API consumer account to control which services those API consumers can see and subscribe to.
+In this section of the lab, you will make use of the following 3scale capabilities:
 
+. *Custom _fields_ on API consumer accounts*
++
+This flow uses a custom field on the API consumer account to control which services those API consumers can see and subscribe to.
++
 A typical use case is one in which there are multiple application plans, each with different access--for example, one plan for internal developers and another for external developers.
 
-Also, this custom field can be combined with signup flows that make use of the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
+. *API consumer account approval*
++
+The custom field that you define on an API consumer account can be combined with signup flows that make use of the _Account Approval_ feature that an administrator uses to view and approve a user for a particular service.
 
+. *Custom _features_ on application plans*
++
+Custom _features_ on application plans correspond to the custom _fields_ on API consumer accounts and assist in the filtering of application plans visible in the Developer Portal during sign-up.
+
+. *Allow consumers to select an application plan after account sign-up*
+
+
+==== APIs
 In this use case, you utilize two of the `Stores`-related APIs that you created in previous labs.
 
 * *Stores SOAP Policy API*: Manages SOAP services and introduces a custom SOAP policy to track metrics for each SOAP operation.
@@ -518,7 +566,14 @@ image::images/3scale_amp_custom_signup_field_plan_9.png[]
 +
 HINT: Study the _liquid_ code embedded in the first 15 lines of the _partial_ executed for authenticated users: _custom_field_signup_form_.
 
-. Click *Signup to plan StoresTransPremiumPlan*, provide a name and description for the new plan, and click *Create Application*.
+. Click *Signup to plan StoresTransPremiumPlan*
+. Your browser will redirect to a page warning you that you currently have not yet selected an application plan:
++
+image::images/unsubscribed_warning.png[]
++
+Click the _Subscribe to Stores SOAP Transformation API_ link.
+
+. In the new page, provide a name and description for the new plan, and click *Create Application*.
 
 * Note that the *Pending* status notification indicates that the application is awaiting approval:
 +
@@ -657,6 +712,8 @@ Later in the lab, you see how an API provider can associate groups to API consum
 . Create a new group called `External` and assign it the `external` section:
 +
 image::images/3scale_amp_group_member_signup_plan_8.png[]
++
+NOTE: You may have to repeat this step due to link:https://issues.jboss.org/browse/THREESCALE-836[THREESCALE-836].
 
 . Create another new group called `Private` and assign it the `private` section.
 . Confirm that both groups are created and the correct sections are assigned:

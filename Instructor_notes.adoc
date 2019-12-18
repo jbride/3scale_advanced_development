@@ -1,3 +1,8 @@
+:scrollbar:
+:data-uri:
+:toc2:
+:linkattrs:
+
 = Instructor Notes
 
 :numbered:
@@ -5,7 +10,7 @@
 == Agenda
 . link:https://etherpad.net/p/3scale_Feb_4_2019[Sample ILT agenda]
 
-== Setup
+== Initial Setup
 The lab environment for this course is used by both this course as well as 3scale_advanced_implementation.
 
 Components needed are OCP, RH-SSO and 3scale.
@@ -15,22 +20,23 @@ Subsequently, both 3scale and RH-SSO need to be configured with details of your 
 Each instructor should have their own SMTP provider account (typically a zero-cost account that allows for about 1000 emails for the week).
 Further details are found in the links below to the RH-SSO and 3scale installation ansible.
 
-. *OCP Cluster Workshop*
-+
+===  *OCP Cluster Workshop*
+
 Provision a link:https://github.com/redhat-gpe/mw_docs/blob/master/ocp_cluster_workshop.adoc[3.11 OCP workshop environment] sized appropriately for your course.
-+
+
 Assume that each 64 GB OCP node can support 6 students of this course.
-+
+
 Note that these workshop environments already come pre-provisioned using a wildcard certificate using LetsEncrypt
 
-. *RH-SSO*
-.. Installation
+===  *RH-SSO*
+
+ . Installation
 +
 After OCP workshop environent has been provisioned, install link:https://galaxy.ansible.com/gpe_mw_ansible/rh_sso_multi_realm[SSO]
 
-.. link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
+ . link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm#smtp-providers[SMTP provider]
 
-.. OCP Realm
+ . OCP Realm
 +
 After RH-SSO has been installed, a SSO realm called: _OCP Realm_ should be created.
 The purpose of this realm is to serve as the Identity Provider for the same OCP that RH-SSO is installed on.
@@ -39,15 +45,41 @@ The purpose of this realm is to serve as the Identity Provider for the same OCP 
 .... This realm should be populated with at least the same number of users as there are students in your ILT (ie: via _start_ocp_user_ and _end_ocp_user_ ).
 .... Value of _ocp_realm_user_base_name_ should remain:  *ocp*  (which is the defualt)
 
+. Beyond the _ocp_realm_ (configured with an appropriate number of users in this realm), no other realm is initially needed.
++
+Later in the course you will provision additional SSO realms to support the API security lab of the Advanced 3scale Implementation course.
+
+ . Login to OCP Cluster
++
+A user account `gpte-mgr`, with cluster admin rights, was created as part of the RH-SSO installation.
+
+... Login to the OpenShift console through the web browser, using the `gpte-mgr` user account.
+... Attempt to login to the master API of your OCP cluster at command line:
++
+----
+# oc login master.Gu1D.openshift.opentlc.com
+Login failed (401 Unauthorized)
+Verify you have provided correct credentials.
+You must obtain an API token by visiting https://master.Gu1D.openshift.opentlc.com:443/oauth/token/request
+----
++
+... Read the error message.
+... As the *ocp-realm* is now active and enforcing user privileges, you must obtain the API token by browsing the token request page using the URL stated in the error message.
+... Login to the master API of your OCP cluster at command line, using the API token:
++
+----
+# oc login --token=<token_string> --server=https://master.Gu1D.openshift.opentlc.com:443
+----
 
 
-. *3scale Multi-tenant environment*
-.. Installation
+===  *3scale Multi-tenant environment*
+
+. Installation
 +
 After OCP workshop environment and RH-SSO has been configured to serve as the identity provider of OCP itself, you'll need to install 3scale.
 For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc[this ansible].
 
-.. Tenants
+. Tenants
 
 ... After 3scale has been installed, configure the appropriate number of tenants as per the section link:https://github.com/gpe-mw-ansible-org/3scale_multitenant/blob/master/README.adoc#tenant-management[tenant management]
 ... Value of CREATE_GWS_WITH_EACH_TENANT should remain: true
@@ -55,11 +87,27 @@ For this purpose it is recommended to use link:https://github.com/gpe-mw-ansible
 ... Value of tenant_admin_user_name_base should remain: api
 
 
+== Lab Spreadsheet
+You will want to communicate the details of the lab environment to your students.
+You can do so by creating a lab spreadsheet similar to the link:https://docs.google.com/spreadsheets/d/1-Ud5zOFfjjcLFZZOwLzfPeKkFNBdJb3mhOWNq1g3unk/edit#gid=959461386[this example].
 
-. *Security lab SSO Realms*
-+
+== Class Etherpad
+You will want to communicate the agenda of your class to your students.
+You can do so by creating an etherpad specific to your class similar to the link:https://etherpad.net/p/3scale_Jul_8_2019[this example].
+
+
+==  *Security lab SSO Realms*
+The security labs found in the link:https://github.com/redhat-gpe/3scale_advanced_implementation[3scale_Advanced_Implementation] git repository are typically executed on day 3 (Wednesday) of the course.
+
 The security labs of this course require additional SSO Realms:
 
 .. *dplane* realms
-.. *dportal* realms
++
+1 per student.  Used to secure the _data plane_ of the student's API Management environment.
 
+.. *dportal* realms
++
+1 per student.  Used to secure the student's _Developer Portal_ .
+
+To provision each of the above realms for the security lab, you can use the link:https://github.com/gpe-mw-ansible-org/rh-sso-multi-realm/blob/master/README.adoc#generic-realms[Generic Realms] feature of the RH-SSO provisioning ansible.
+Once provisioned, the names of these _dplane_ and _dportal_ realms are then entered into your lab detail spreadsheet.  An example spreadsheet is found link:https://docs.google.com/spreadsheets/d/1-Ud5zOFfjjcLFZZOwLzfPeKkFNBdJb3mhOWNq1g3unk/edit#gid=959461386[here].

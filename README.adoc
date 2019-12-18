@@ -45,4 +45,5 @@
 
 
 ==Versions
-1.1 - Mar 13, 2019 - removed bogus assessments
+1.1 - Mar 13, 2019 - removed bogus assessments for build
+1.2 - Oct 25, 2019 - Agile updates from past 6 months of ILTs

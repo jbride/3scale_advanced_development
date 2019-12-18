@@ -105,7 +105,7 @@ stockpg-5-j8181       1/1       Running     0          18h
 +
 [source,texinfo]
 -----
-$ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERNAME-stock-api`/odata4/Stock-API/FederatedStock/stock?$format=JSON
+$ curl -k http://`oc get route stock-api --template {{.spec.host}} -n $OCP_USERNAME-stock-api`/odata4/Stock-API/FederatedStock/stock?format=JSON
 -----
 +
 .Sample Response				
