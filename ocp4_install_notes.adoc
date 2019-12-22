@@ -109,6 +109,33 @@ spec:
 
 ----
 
+. Create the *smtp.yml* configmap to configure SMTP access:
++
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: smtp
+  labels:
+    app: 3scale-api-management
+    threescale_component: system
+    threescale_component_element: smtp
+data:
+  address: 'smtp.gmail.com'
+  authentication: 'login'
+  domain: 'redhat.com'
+  openssl.verify.mode: 'false'
+  password: '<< your password>>'
+  port: '587'
+  username: '<< your userid>>'
+----
+
+. Add the configmap to *3scale-amp* namespace:
++
+----
+oc create -f smtp.yml
+----
+
 . From the OpenShift admin console, Install the *3scale-community-operator* from Operator Hub to the *3scale-amp* namespace.
 . Choose Version 2.7
 . Once Operator is installed and ready, get back to the terminal and add the APIManager:
@@ -130,6 +157,12 @@ TODO: In the next section, we will explore creating the tenants using operator.
 == Ansible
 
 TODO: Use an ansible role to deploy 3scale-operator and manage installation of AMP and tenants.
+
+
+-----
+
+8500
+
 
 
 
