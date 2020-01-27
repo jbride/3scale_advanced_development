@@ -165,7 +165,7 @@ You do not need to execute the above command at this time.
 See link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html/service_discovery/service-discovery-configuration-procedure#making-service-discoverable[Service Discovery] for details on this new 3scale by Red Hat feature.
 
 
-NOTE:  With 3scale 2.4, there is a known problem when executing this section of the lab using Google Chrome as your browser.
+NOTE:  With 3scale 2.6, there is a known problem when executing this section of the lab using Google Chrome as your browser.
 The JavaScript that retrieves and renders the list of discovered APIs breaks in certain versions of Chrome.
 Subsequently, if using some versions of Chrome you will not see the list of APIs.
 Please try upgrading to the latest version of Chrome.

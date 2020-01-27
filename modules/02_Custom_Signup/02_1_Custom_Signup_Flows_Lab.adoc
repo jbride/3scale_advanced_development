@@ -28,7 +28,7 @@ The signup flow that you, as an API provider, select and implement in your produ
 
 === Issues with Chrome browser
 
-With 3scale 2.4, there are known problems with the Chrome browser when executing this lab.
+With 3scale 2.6, there are known problems with the Chrome browser when executing this lab.
 
 In particular, the iframes needed to support viewing of the 3scale Developer Portal and 3scale Content Management System (CMS) in different frames or tabs of the same Chrome browser can be problematic.
 The following is an example page where the Dev Portal and CMS are being accessed in separate frames of the same tab:

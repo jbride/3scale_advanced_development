@@ -240,6 +240,7 @@ $ oc create route edge stores-soap-policy-production-route \
 NOTE: Later, you configure these routes as the production and sandbox API endpoints for the `Stores` SOAP service.
 
 == Basic SOAP Service Management
+
 In this section of the lab, SOAP requests are sent to the 3scale API gateway, forwared to your back-end SOAP service and reported to the 3scale API Manager.
 Analytics are "course grained" in nature and only report on the number of invocations of the SOAP service (not on the number of _hits_ on each SOAP operation).
 
@@ -255,12 +256,33 @@ In this lab you use an organization called `RHBank` with a developer called `rhb
 * *Password*: Enter a unique, easy-to-remember password
 * *Organization/Group Name*: `RHBank`
 
+=== Define New Backend
+
+. In the Admin Portal, navigate to *Dashboard* and click *NEW BACKEND*. Populate the form with the following details:
+
+* *Name*:  `Stores SOAP Policy Backend`
+* *System Name*: `stores-soap-policy-backend`
+* *Description*: `Stores SOAP Policy Backend`
+* *Private Endpoint*: Populate with the output of the following:
++
+[source,texinfo]
+-----
+$ echo -en "\n\nhttp://stores-soap.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
+-----
+
+. Click on *Create Backend*.
+
 === Define New API
 
-. In the Admin Portal, navigate to *Dashboard* and click: *NEW API*.  Populate the form with with the following details:
+. In the Admin Portal, navigate to *Dashboard* and click: *NEW API*. 
+. Select *Define Manually*.
+. Populate the form with the following details:
 * *Name*: `Stores SOAP Policy API`
 * *System Name*: `stores-soap-policy-api`
 * *Description*: `Stores SOAP Policy API`
+
+. You will now see the API Overview page.
+
 . Create an application plan:
 * *Name*: `StoresSOAPBasicPlan`
 * *System Name*: `storesSOAPBasicPlan`
@@ -281,14 +303,14 @@ In this lab you use an organization called `RHBank` with a developer called `rhb
 A _method_ will be used to track the number of _hits_ on the SOAP API.
 You'll see later in this lab how this _method_ is not granular enough to track the number of _hits_ on each SOAP operation.
 
-. Set up the `Stores SOAP Policy API` integrations as follows:
-* *Private Base URL*: Populate with the output of the following:
-+
-[source,texinfo]
------
-$ echo -en "\n\nhttp://stores-soap.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
------
+. Set up the `Stores SOAP Policy API` backend for the service as follows:
+* Click on `Add Backend`.
+* In the dropbox for *Backend*, select `Stores SOAP Policy Backend`.
+* *Path*: `\`
+* Click *Add to Product*.
 
+. Set up Deployment and API Gateway settings.
+* *Deployment*: ` APIcast self-managed`
 * *Staging Public Base URL*: Populate with the output of the following:
 +
 [source,texinfo]
@@ -302,6 +324,8 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-staging-route --templat
 -----
 $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --template {{.spec.host}} -n $GW_PROJECT`:443\n"
 -----
+
+* Leave the rest of the fields unchanged and click on *Update Product*.
 
 . Define mapping rules for `POST` and `GET` HTTP verbs to the previously created `StoreWS` _method_:
 +
@@ -806,13 +830,33 @@ $ oc create route edge stores-soap-transformation-production-route \
 * *Name*: `StoresTransformationApp`
 * *Description*: `Stores Transformation Application`
 
-. Enter the following information for the `Stores SOAP Transformation API` integration:
-* *Private Base URL*: Populate with the output of the following:
+=== Define New Backend
+
+. In the Admin Portal, navigate to *Dashboard* and click *NEW BACKEND*. Populate the form with the following details:
+
+* *Name*:  `Stores SOAP Transformation Backend`
+* *System Name*: `stores-soap-transformation-backend`
+* *Description*: `Stores SOAP transformation Backend`
+* *Private Endpoint*: Populate with the output of the following:
 +
 [source,texinfo]
 -----
 $ echo -en "\n\nhttp://stores-fis.$OCP_USERNAME-stores-api.svc.cluster.local:8080\n"
 -----
+
+. Click on *Create Backend*.
+
+=== Define API Integration
+
+. Set up the `Stores SOAP Policy API` backend for the service as follows:
+* Click on `Add Backend`.
+* In the dropbox for *Backend*, select `Stores SOAP Transformation Backend`.
+* *Path*: `\`
+* Click *Add to Product*.
+
+. Set up Deployment and API Gateway settings.
+* *Deployment*: ` APIcast self-managed`
+
 
 * *Staging Public Base URL*: Populate with the output of the following:
 +

@@ -184,7 +184,6 @@ $ oc get dc -n $API_MANAGER_NS | grep apicast
 
 apicast-production        1          1         1         config,image(amp-apicast:latest)
 apicast-staging           1          1         1         config,image(amp-apicast:latest)
-apicast-wildcard-router   1          1         1         config,image(amp-wildcard-router:latest)-
 -----
 
 It is technically feasible that your back-end services, if they are co-located in the same cluster as the API Manager, can be managed by these default 3scale API Management gateways.
@@ -212,47 +211,31 @@ $ oc get deploy -n $GW_PROJECT
 NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
 prod-apicast    1         0         0            0           7h
 stage-apicast   1         0         0            0           7h
-wc-router       1         0         0            0           7h
 -----
 
 * This functionality provides the conveniance of allowing a single OCP wildcard route to manage requests for all your APIs.
 
-. Note that the value of `$THREESCALE_PORTAL_ENDPOINT` is already set for you in `prod-apicast` and `stage-apicast` gateways:
+. Note that the value of `$THREESCALE_PORTAL_ENDPOINT` is already set for you in `prod-apicast` and `stage-apicast` gateways in a secret:
 +
 [source,sh]
 -----
-$ oc describe deploy prod-apicast -n $OCP_USERNAME-gw | grep THREESCALE_PORTAL_ENDPOINT
+$ oc get secret apicast-configuration-url-secret -o json -n $OCP_USERNAME-gw | jq ' . | .data.password ' | sed -e 's/^"//' -e 's/"$//' | base64 -d
 
-...
 
-      THREESCALE_PORTAL_ENDPOINT:    https://b753490aa7586f8e0663f5d5ec62b63cf9e71540d9138e4869eede4446e8e871@user1-3scale-mt-amp0-admin.apps.3295.openshift.opentlc.com
 -----
 
 * The API Gateway uses the value of `THREESCALE_PORTAL_ENDPOINT` to invoke the API Manager and retrieve details of your APIs.
+
 
 . Resume the paused deploy objects:
 +
 [source,sh]
 -----
-$ oc rollout resume deploy stage-apicast prod-apicast wc-router -n $GW_PROJECT
+$ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
 -----
 
 
-==== Wildcard API router
-Your lab environment comes provisioned with a link:https://github.com/3scale/wildcard-router-service[wildcard-router-service] whose name is: _wc-router_.
-
-The purpose of this extra router is to optionally eliminate the need to manually create OpenShift routes to your _prod_ and _stage_ API gateways for each 3scale API.
-
-The instructions in this course do provide commands to assist in the creation of these OpenShift routes.
-You can choose to create these routes or as an alternative make use of your wildcard router service.
-
-If you choose to make use of your wildcard router service (and not create additional OCP routes to your gateway for each API), then the following are coouple of considerations:
-
-. *Public Base URLs*
-+
-The values you set in the _Integration_ page of your _Staging Public Base URL_ and _Production Public Base URL_ must be of the following convention:
-+
-*<any string>.$OCP_USERNAME.$OCP_WILDCARD_DOMAIN*
+==== TLS Certificates
 
 . *TLS Certificates*
 +
