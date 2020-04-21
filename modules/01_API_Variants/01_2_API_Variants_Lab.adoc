@@ -210,7 +210,7 @@ In this section, you create the routes for your staging and production API gatew
 +
 [source,sh]
 -----
-$ oc get deploy -n $GW_PROJECT
+$ oc get dc -n $GW_PROJECT
 
 prod-apicast    1         1         1            1           12m
 stage-apicast   1         1         1            1           12m
@@ -272,9 +272,9 @@ $ echo -en "\n\nhttp://stores-soap.$OCP_USERNAME-stores-api.svc.cluster.local:80
 
 . Click on *Create Backend*.
 
-=== Define New API
+=== Define New Product
 
-. In the Admin Portal, navigate to *Dashboard* and click: *NEW API*. 
+. In the Admin Portal, navigate to *Dashboard* and click: *NEW PRODUCT*. 
 . Select *Define Manually*.
 . Populate the form with the following details:
 * *Name*: `Stores SOAP Policy API`
@@ -306,11 +306,11 @@ You'll see later in this lab how this _method_ is not granular enough to track t
 . Set up the `Stores SOAP Policy API` backend for the service as follows:
 * Click on `Add Backend`.
 * In the dropbox for *Backend*, select `Stores SOAP Policy Backend`.
-* *Path*: `\`
+* *Path*: `/`
 * Click *Add to Product*.
 
 . Set up Deployment and API Gateway settings.
-* *Deployment*: ` APIcast self-managed`
+* *Deployment*: `APIcast self-managed`
 * *Staging Public Base URL*: Populate with the output of the following:
 +
 [source,texinfo]
@@ -336,13 +336,11 @@ $ echo -en "\n\nhttps://`oc get route stores-soap-policy-production-route --temp
 |`GET`|`/StoresWS`|`1`|`hits`
 |=======================
 
-* The `POST`verb mapping enables the `StoresWS` _method_ to be incremented every time a SOAP request is made to any of the SOAP operations of your back-end `Stores` service.
+* The `POST` verb mapping enables the `StoresWS` _method_ to be incremented every time a SOAP request is made to any of the SOAP operations of your back-end `Stores` service.
 * The `GET` verb mapping enables the out-of-the-box `hits` _metric_ to be incremented every time a request is made to the `Stores` service's WSDL file.
 
-. Set an API Test GET request:
-* *API Test GET Request*: `/StoresWS?wsdl`
 
-. Click *Update and test in Staging Environment*.
+. Click *Promote v. 1 to Staging*.
 
 
 === Test API-Managed SOAP Service
@@ -851,7 +849,7 @@ $ echo -en "\n\nhttp://stores-fis.$OCP_USERNAME-stores-api.svc.cluster.local:808
 . Set up the `Stores SOAP Policy API` backend for the service as follows:
 * Click on `Add Backend`.
 * In the dropbox for *Backend*, select `Stores SOAP Transformation Backend`.
-* *Path*: `\`
+* *Path*: `/`
 * Click *Add to Product*.
 
 . Set up Deployment and API Gateway settings.

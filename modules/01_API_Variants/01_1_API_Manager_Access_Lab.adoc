@@ -205,7 +205,7 @@ These are the API gateways that you use to manage your back-end services for the
 +
 [source,sh]
 -----
-$ oc get deploy -n $GW_PROJECT
+$ oc get dc -n $GW_PROJECT
 
 
 NAME            DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
@@ -225,14 +225,8 @@ $ oc get secret apicast-configuration-url-secret -o json -n $OCP_USERNAME-gw | j
 -----
 
 * The API Gateway uses the value of `THREESCALE_PORTAL_ENDPOINT` to invoke the API Manager and retrieve details of your APIs.
+* You can open this secret in the OpenShift console and use _Reveal Secret_ to see the `THREESCALE_ENDPOINT` value.
 
-
-. Resume the paused deploy objects:
-+
-[source,sh]
------
-$ oc rollout resume deploy stage-apicast prod-apicast -n $GW_PROJECT
------
 
 
 ==== TLS Certificates
