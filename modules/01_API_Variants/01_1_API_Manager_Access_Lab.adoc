@@ -89,6 +89,8 @@ All of the labs for this course execute in this remote OpenShift cluster environ
 -----
 $ echo -en "\n\nhttps://console-openshift-console.$SUBDOMAIN_BASE\n\n"
 -----
++
+NOTE: Reconfirm the OpenShift API URL with your instructor, as the URL and SUBDOMAIN may change for some environments.
 
 . At the login prompt, use the `$OCP_USERNAME` and `$OCP_PASSWD` values.
 
@@ -112,8 +114,10 @@ If you do not already have a compatible version of the `oc` utility installed on
 +
 [source,sh]
 ----
-$ oc login https://api.cluster-$REGION.$REGION.example.opentlc.com -u $OCP_USERNAME -p $OCP_PASSWD
+$ oc login https://api.cluster-$REGION.$REGION.example.opentlc.com:6443 -u $OCP_USERNAME -p $OCP_PASSWD
 ----
++
+NOTE: Reconfirm the OpenShift API URL with your instructor, as the URL and SUBDOMAIN may change for some environments.
 
 .. If your instructor configured your OpenShift environment to use Red Hat SSO as its authentication mechanism (as opposed to the out-of-the-box _htpasswd_ OAuth implementation), then OpenShift will respond with a statement similar to the following:
 +
