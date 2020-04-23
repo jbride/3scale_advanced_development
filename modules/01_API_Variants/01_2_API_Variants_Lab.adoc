@@ -505,16 +505,7 @@ Note that the mapping is between custom metric and SOAP operation (as opposed to
 .. Click *Update Policy* to save the changes.
 . Click *Update and test in Staging Environment*.
 
-. Redeploy the `stage-apicast` pod in OpenShift by simply deleting the existing one.
-* Kubernetes makes sure a new one is started.
 
-. Wait a few minutes for the deployment to complete and the pod to be in the `Running` state, then run this command:
-+
-[source,sh]
------
-$ oc get pods | grep stage-apicast
-stage-apicast-5-49cv1           1/1       Running   0          1m
------
 
 === Invoke Various SOAP Service Operations
 

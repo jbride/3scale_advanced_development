@@ -156,7 +156,7 @@ For informational purposes only, the following command is used by the cluster ad
 
 [source,sh]
 -----
-oc adm policy add-cluster-role-to-user view system:serviceaccount:3scale-mt-api0:default
+oc adm policy add-cluster-role-to-user view system:serviceaccount:3scale-mt-api0:amp
 -----
 
 You do not need to execute the above command at this time.

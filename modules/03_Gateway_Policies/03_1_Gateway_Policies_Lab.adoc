@@ -15,7 +15,7 @@ You study two popular standard policies available and learn about using them in 
 * Create a custom `IP check` policy in an APIcast gateway
 
 .Reference
-* link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/deployment_options/#standard-policies[API Gateway Stanadard Policies]
+* link:https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.4/html-single/deployment_options/#standard-policies[API Gateway Standard Policies]
 
 :numbered:
 
